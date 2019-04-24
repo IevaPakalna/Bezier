@@ -1,11 +1,12 @@
 import dxfgrabber
 
-dxf = dxfgrabber.readfile("kvadrats_002.dxf")
+dxf = dxfgrabber.readfile("svarki_002.dxf")
 print("DXF version: {}".format(dxf.dxfversion))
 header_var_count = len(dxf.header) # dict of dxf header vars
 layer_count = len(dxf.layers) # collection of layer definitions
 block_definition_count = len(dxf.blocks) #  dict like collection of block definitions
 entity_count = len(dxf.entities) # list like collection of entities
+
 
 print("header")
 print(header_var_count)
@@ -36,65 +37,160 @@ print("type of objects in file")
 type=[entity.dxftype for entity in dxf.entities]
 print(type)
 
-for x in type:
-#Circle
-    if x == 'CIRCLE':
-        print("CIRCLE")
-        CenterPoints = [entity.center for entity in dxf.entities]
-        print("Center Point")
-        print(CenterPoints)
-        Radius = [entity.radius for entity in dxf.entities]
-        print("Radius")
-        print(Radius)
-#Polyline
-    if x == 'POLYLINE':
-        print("POLYLINE")
-        PolylineIsClosed = [Polyline.is_closed for Polyline in dxf.entities]
-        print("is closed")
-        print(PolylineIsClosed)
 
-        PolylineSplineType = [Polyline.spline_type for Polyline in dxf.entities]
-        print("Spline type")
-        print(PolylineSplineType)
+output = [entity for entity in dxf.entities]
 
-        PolylinePoints = [Polyline.points for Polyline in dxf.entities]
-        print("line points")
-        print(PolylinePoints)
+Color = [entity.color for entity in output]
+print(Color)
+Linetype = [entity.linetype for entity in output if entity.dxftype != 'POINT']
+print(Linetype)
 
-        PolylineControlPoints = [Polyline.control_points for Polyline in dxf.entities]
-        print("Control points")
-        print(PolylineControlPoints)
+#get parameters of objects
+PointCoord = [entity.point for entity in output if entity.dxftype == 'POINT']
 
-        PolylineBulge = [Polyline.bulge for Polyline in dxf.entities]
-        print("bulge")
-        print(PolylineBulge)
+LineStart = [entity.start for entity in output if entity.dxftype == 'LINE']
+LineEnd = [entity.end for entity in output if entity.dxftype == 'LINE']
 
-        PolylineVertexCount = [Polyline.__len__() for Polyline in dxf.entities]
-        print("vertex count:")
-        print(PolylineVertexCount)
+CenterPoints = [entity.center for entity in output if entity.dxftype == 'CIRCLE']
+Radius = [entity.radius for entity in output if entity.dxftype == 'CIRCLE']
+
+PolylineIsClosed = [entity.is_closed for entity in output if entity.dxftype == 'POLYLINE']
+PolylineSplineType = [entity.spline_type for entity in output if entity.dxftype == 'POLYLINE']
+PolylinePoints = [entity.points for entity in output if entity.dxftype == 'POLYLINE']
+PolylineControlPoints = [entity.control_points for entity in output if entity.dxftype == 'POLYLINE']
+PolylineBulge = [entity.bulge for entity in output if entity.dxftype == 'POLYLINE']
+PolylineVertexCount = [entity.__len__() for entity in output if entity.dxftype == 'POLYLINE']
+
+LWPolylinePoints = [entity.points for entity in output if entity.dxftype == 'LWPOLYLINE']
+LWPolylineIsClosed = [entity.is_closed for entity in output if entity.dxftype == 'LWPOLYLINE']
+LWPolylinePointsCount = [entity.__len__() for entity in output if entity.dxftype == 'LWPOLYLINE']
+
+EllipseCenter = [entity.center for entity in output if entity.dxftype == 'ELLIPSE']
+EllipseMajorAxis = [entity.major_axis for entity in output if entity.dxftype == 'ELLIPSE']
+
+ArcCenter = [entity.center for entity in output if entity.dxftype == 'ARC']
+ArcRadius = [entity.radius for entity in output if entity.dxftype == 'ARC']
+ArcStartAngle = [entity.start_angle for entity in output if entity.dxftype == 'ARC']
+ArcEndAngle = [entity.end_angle for entity in output if entity.dxftype == 'ARC']
+
+SplineDegree = [entity.degree for entity in output if entity.dxftype == 'SPLINE']
+SplineStartTangent = [entity.start_tangent for entity in output if entity.dxftype == 'SPLINE']
+SplineEndTangent = [entity.end_tangent for entity in output if entity.dxftype == 'SPLINE']
+SplineControlPoints = [entity.control_points for entity in output if entity.dxftype == 'SPLINE']
+SplineFitPoints = [entity.fit_points for entity in output if entity.dxftype == 'SPLINE']
+SplineKnots = [entity.knots for entity in output if entity.dxftype == 'SPLINE']
+SplineIsClosed = [entity.is_closed for entity in output if entity.dxftype == 'SPLINE']
+
+
 #Point
-    if x == 'POINT':
-        print("POINT")
-        PointCoord = [entity.point for entity in dxf.entities]
-        print(PointCoord)
+for x in range(len(PointCoord)):
+    print(" POINT\n")
+
+    print(len(PointCoord))
+    print(x)
+    print("^")
+    print(PointCoord[x])
 #Line
-    if x == 'LINE':
-        print("LINE")
-        LineStart = [Line.start for Line in dxf.blocks]
-        print("Line start")
-        print(LineStart)
-        LineEnd = [Line.end for Line in dxf.blocks]
-        print("Line end")
-        print(LineEnd)
+for x in range(len(LineStart)):
+
+    print(" LINE\n")
+
+    print("Line start")
+    print(LineStart[x])
+
+    print("Line end")
+    print(LineEnd[x])
+#Circle
+for x in range(len(CenterPoints)):
+
+    print(" CIRCLE \n")
+
+    print("Center Point")
+    print(CenterPoints[x])
+
+    print("Radius")
+    print(Radius[x])
+#Polyline
+for x in range(len(PolylineIsClosed)):
+
+    print(" POLYLINE\n")
+
+    print("is closed")
+    print(PolylineIsClosed[x])
 
 
-CenterPoints = [entity.center for entity in dxf.entities]
+    print("Spline type")
+    print(PolylineSplineType[x])
+
+
+    print("line points")
+    print(PolylinePoints[x])
+
+
+    print("Control points")
+    print(PolylineControlPoints[x])
+
+
+    print("bulge")
+    print(PolylineBulge[x])
+
+
+    print("vertex count:")
+    print(PolylineVertexCount[x])
+#LWPolyline
+for x in range(len(LWPolylineIsClosed)):
+
+    print(" LWPOLYLINE\n")
+
+    print(LWPolylinePoints)
+
+    print(LWPolylineIsClosed)
+
+    print(LWPolylinePointsCount)
+#Ellipse
+for x in range(len(EllipseCenter)):
+
+    print(" ELLIPSE\n")
+
+    print(EllipseCenter)
+
+    print(EllipseMajorAxis)
+#Arc
+for x in range(len(ArcCenter)):
+
+    print(" ARC\n")
+
+    print(ArcCenter)
+
+    print(ArcRadius)
+
+    print(ArcStartAngle)
+
+    print(ArcEndAngle)
+#Spline
+for x in range(len(SplineIsClosed)):
+
+    print(" SPLINE\n")
+    SplineDegree = [entity.degree for entity in output if entity.dxftype == 'SPLINE']
+    print(SplineDegree)
+    SplineStartTangent = [entity.start_tangent for entity in output if entity.dxftype == 'SPLINE']
+    print(SplineStartTangent)
+    SplineEndTangent = [entity.end_tangent for entity in output if entity.dxftype == 'SPLINE']
+    print(SplineEndTangent)
+    SplineControlPoints = [entity.control_points for entity in output if entity.dxftype == 'SPLINE']
+    print(SplineControlPoints)
+    SplineFitPoints = [entity.fit_points for entity in output if entity.dxftype == 'SPLINE']
+    print(SplineFitPoints)
+    SplineKnots = [entity.knots for entity in output if entity.dxftype == 'SPLINE']
+    print(SplineKnots)
+    SplineIsClosed = [entity.is_closed for entity in output if entity.dxftype == 'SPLINE']
+    print(SplineIsClosed)
 
 
 
 
 print("=============")
 #Block
-print("BLOCKS")
-BlockBasepoint= [block.BlockBasepoint for block in dxf.blocks]
-print(BlockBasepoint)
+#print("BLOCKS")
+#BlockBasepoint= [Block.BlockBasepoint for Block in dxf.entities]
+#print(BlockBasepoint)
