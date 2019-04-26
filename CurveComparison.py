@@ -14,22 +14,27 @@ def BinCoef(n, k):
     return Fact(n)/(Fact(k) * Fact(n - k))
 #Getting Bezier (currently from whole polyline)
 def GetBezier(PointCnt, Points):
-    M = MMtrx(PointCnt)
     P = PMtrx(PointCnt, Points)
+    M = MMtrx(PointCnt, P)
     T = TMtrx(PointCnt, P)
     C = CMtrx(PointCnt, M, P, T)
+    n = min(PointCnt, 8)
+    return BezierFormula(n, P)
+
+def BezierFormula(n, P):
     Bx = ""
     By = ""
-    n = min(PointCnt, 8)
     for i in range(1, n + 1):
         BinC = BinCoef(n - 1, i - 1)
-        Bx = f"{Bx} + {BinC} * (1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
-        By = f"{By} + {BinC} * (1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
+        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
+        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
     return (f"({Bx},{By})")
-        #'+' BinC '* (1 - t) *' (1 - t)**(n - i) * t**i * P[i - 1][i - 1])
+
+def ToCubicBezier()
+
 #Get M matrix, where number represents number of Bezier fit-points https://pomax.github.io/bezierinfo/#curvefitting
 #Max 8 - degree Bezier to get close enough results
-def MMtrx(PointCnt):
+def MMtrx(n, P):
     M3 = [[1, 0, 0],[-2, 2, 0],[1, -2, 1]]
     M4 = [[1, 0, 0, 0],[-3, 3, 0, 0],[3, -6, 3, 0],[-1, 3, -3, 1]]
     M5 = [[1, 0, 0, 0, 0],[-4, 4, 0, 0, 0],[6, -12, 6, 0, 0],[-4, 12, -12, 4, 0],[1, -4, 6, -4, 1]]
@@ -37,10 +42,26 @@ def MMtrx(PointCnt):
     M7 = [[1, 0, 0, 0, 0, 0, 0],[-6, 6, 0, 0, 0, 0, 0],[15, -30, 15, 0, 0, 0, 0],[-20, 60, -60, 20, 0, 0, 0],[15, -60, 90, -60, 15, 0, 0],[-6, 30, -60, 60, -30, 6, 0],[1, -6, 15, -20, 15, -6, 1]]
     M8 = [[1, 0, 0, 0, 0, 0, 0, 0],[-7, 7, 0, 0, 0, 0, 0, 0],[21, -42, 21, 0, 0, 0, 0, 0],[-35, 105, -105, 35, 0, 0, 0, 0],[35, -140, 210, -140, 35, 0, 0, 0],[-21, 105, -210, 210, -105, 21, 0, 0],[7, -42, 105, -140, 105, -42, 7, 0], [-1, 7, -21, 35, -35, 21, -7, 1]]
     M = [M3, M4, M5, M6, M7]
-    if (PointCnt >= 8):
+    if (n >= 8):
         return M8
     else:
-        return M[PointCnt - 3]
+        return M[n - 3]
+    for i in range(i, n + 1):
+        B = BezierFormula(n, P)
+        for k in B:
+            if B[k] == '+':
+                k += 1
+                while B[k] != '+':
+                    Btmp.append(B[k])
+                    k += 1
+                Expand(Btmp)
+
+#def Expand(B):
+#    for i in B:
+#        if B[i] == '*':
+#            MultiplyStr()
+
+
 #Get fit-point matrix
 def PMtrx(PointCnt, Points):
     it = (PointCnt - 1) / 7   #choose points evenly from polyline point array
@@ -82,7 +103,10 @@ def CMtrx(PointCnt, M, P, T):
 def PointDist(ax, ay, bx, by):
     return np.sqrt((ax-bx)**2+(ay-by)**2)
 
-dxf = dxfgrabber.readfile("svarki_002.dxf")
+
+
+
+dxf = dxfgrabber.readfile("aplis_002.dxf")
 
 #type of objects in file
 print("type of objects in file")
