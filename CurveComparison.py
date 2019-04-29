@@ -2,6 +2,8 @@ import dxfgrabber
 import numpy as np
 from numpy.linalg import inv
 import array as arr
+import sympy
+from sympy import init_printing, Symbol, UnevaluatedExpr
 
 #get factorial
 def Fact(n):
@@ -11,7 +13,7 @@ def Fact(n):
     return f
 #get binominal coefficients
 def BinCoef(n, k):
-    return Fact(n)/(Fact(k) * Fact(n - k))
+    return int(Fact(n)/(Fact(k) * Fact(n - k)))
 #Getting Bezier (currently from whole polyline)
 def GetBezier(PointCnt, Points):
     P = PMtrx(PointCnt, Points)
@@ -22,15 +24,20 @@ def GetBezier(PointCnt, Points):
     return BezierFormula(n, P)
 
 def BezierFormula(n, P):
-    Bx = ""
-    By = ""
+    Bx = 0
+    By = 0
+    t = Symbol('t')
     for i in range(1, n + 1):
         BinC = BinCoef(n - 1, i - 1)
-        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
-        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
+        Bxtmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(P[i - 1][0])    #Create Bx(t) formula as a string
+        Bx = Bxtmp + Bx
+        Bytmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(P[i - 1][1])  #Create Bx(t) formula as a string
+        By = By + Bytmp
+#        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
+#        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
     return (f"({Bx},{By})")
 
-def ToCubicBezier()
+#def ToCubicBezier()
 
 #Get M matrix, where number represents number of Bezier fit-points https://pomax.github.io/bezierinfo/#curvefitting
 #Max 8 - degree Bezier to get close enough results
@@ -106,7 +113,7 @@ def PointDist(ax, ay, bx, by):
 
 
 
-dxf = dxfgrabber.readfile("aplis_002.dxf")
+dxf = dxfgrabber.readfile("svarki_002.dxf")
 
 #type of objects in file
 print("type of objects in file")
