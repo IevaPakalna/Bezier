@@ -3,7 +3,7 @@ import numpy as np
 from numpy.linalg import inv
 import array as arr
 import sympy
-from sympy import init_printing, Symbol, UnevaluatedExpr
+from sympy import init_printing, Symbol, UnevaluatedExpr, expand
 
 #get factorial
 def Fact(n):
@@ -15,89 +15,75 @@ def Fact(n):
 def BinCoef(n, k):
     return int(Fact(n)/(Fact(k) * Fact(n - k)))
 #Getting Bezier (currently from whole polyline)
-def GetBezier(PointCnt, Points):
-    P = PMtrx(PointCnt, Points)
-    M = MMtrx(PointCnt, P)
-    T = TMtrx(PointCnt, P)
-    C = CMtrx(PointCnt, M, P, T)
-    n = min(PointCnt, 8)
-    return BezierFormula(n, P)
+def GetBezier(n, Points):
+    P = PMtrx(n, Points)
+    T = TMtrx(n, P)
+    M = MMtrx(n)
+    C = CMtrx(n, M, P, T)
+    return BezierFormula(n, C)
 
-def BezierFormula(n, P):
+
+def BezierFormula(n, C):
     Bx = 0
     By = 0
     t = Symbol('t')
     for i in range(1, n + 1):
         BinC = BinCoef(n - 1, i - 1)
-        Bxtmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(P[i - 1][0])    #Create Bx(t) formula as a string
-        Bx = Bxtmp + Bx
-        Bytmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(P[i - 1][1])  #Create Bx(t) formula as a string
+        Bxtmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(C[i - 1][0])    #Create Bx(t) formula as a string
+        Bx = Bx + Bxtmp
+        Bytmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(C[i - 1][1])  #Create Bx(t) formula as a string
         By = By + Bytmp
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
+
     return (f"({Bx},{By})")
 
 #def ToCubicBezier()
 
 #Get M matrix, where number represents number of Bezier fit-points https://pomax.github.io/bezierinfo/#curvefitting
 #Max 8 - degree Bezier to get close enough results
-def MMtrx(n, P):
-    M3 = [[1, 0, 0],[-2, 2, 0],[1, -2, 1]]
-    M4 = [[1, 0, 0, 0],[-3, 3, 0, 0],[3, -6, 3, 0],[-1, 3, -3, 1]]
-    M5 = [[1, 0, 0, 0, 0],[-4, 4, 0, 0, 0],[6, -12, 6, 0, 0],[-4, 12, -12, 4, 0],[1, -4, 6, -4, 1]]
-    M6 = [[1, 0, 0, 0, 0, 0],[-5, 5, 0, 0, 0, 0],[10, -20, 10, 0, 0, 0],[-10, 30, -30, 10, 0, 0],[5, -20, 30, -20, 5, 0],[-1, 5, -10, 10, -5, 1]]
-    M7 = [[1, 0, 0, 0, 0, 0, 0],[-6, 6, 0, 0, 0, 0, 0],[15, -30, 15, 0, 0, 0, 0],[-20, 60, -60, 20, 0, 0, 0],[15, -60, 90, -60, 15, 0, 0],[-6, 30, -60, 60, -30, 6, 0],[1, -6, 15, -20, 15, -6, 1]]
-    M8 = [[1, 0, 0, 0, 0, 0, 0, 0],[-7, 7, 0, 0, 0, 0, 0, 0],[21, -42, 21, 0, 0, 0, 0, 0],[-35, 105, -105, 35, 0, 0, 0, 0],[35, -140, 210, -140, 35, 0, 0, 0],[-21, 105, -210, 210, -105, 21, 0, 0],[7, -42, 105, -140, 105, -42, 7, 0], [-1, 7, -21, 35, -35, 21, -7, 1]]
-    M = [M3, M4, M5, M6, M7]
-    if (n >= 8):
-        return M8
-    else:
-        return M[n - 3]
-    for i in range(i, n + 1):
-        B = BezierFormula(n, P)
-        for k in B:
-            if B[k] == '+':
-                k += 1
-                while B[k] != '+':
-                    Btmp.append(B[k])
-                    k += 1
-                Expand(Btmp)
-
-#def Expand(B):
-#    for i in B:
-#        if B[i] == '*':
-#            MultiplyStr()
-
+#def MMtrx(i, eq)
+def MMtrx(n):
+    t = Symbol('t')
+    Mtrx = []
+    for i in range(n):
+        Mtrx.append([])
+        BinC = BinCoef(n - 1 , i)
+        Mtmp = expand((BinC)*(1 - t)**(n - i - 1)*t**(i))
+        for j in range(n):
+            Mtrx[i].append(float(Mtmp.coeff(t, n - j - 1)))
+    return(Mtrx)
 
 #Get fit-point matrix
-def PMtrx(PointCnt, Points):
-    it = (PointCnt - 1) / 7   #choose points evenly from polyline point array
+def PMtrx(n, Points):
+    it = (n - 1) / 7   #choose points evenly from polyline point array
     if (it == 0):
         it = 1
     P = []
     k = 0
-    for i in range(min(PointCnt, 8) - 1):
+    for i in range(n - 1):
         P.append(Points[int(round(k))])
         k += it
     P.append(Points[-1])
     return P
 #get T matrix with parameter values
-def TMtrx(PointCnt, P):
+def TMtrx(n, P):
     d = []
     d.append(0)
-    for i in range(1, min(PointCnt, 8)):   #create point (t) distance array
+    for i in range(1, n):   #create point (t) distance array
         dist = d[i - 1] + PointDist(P[i-1][0], P[i][0], P[i-1][1], P[i][1])
         d.append(dist)
-    for i in range(min(PointCnt, 8)):   #scale points to interval [0..1]
+    for i in range(n):   #scale points to interval [0..1]
         d[i] = d[i] / d[-1]
     T = []
-    for i in range(min(PointCnt, 8)):   #fill T matrix
+    for i in range(n):   #fill T matrix
         T.append([])
-        for j in range(min(PointCnt, 8)):
+        for j in range(n):
             T[i].append(d[i]**j)
     return T
 #get controlpoint matrix
-def CMtrx(PointCnt, M, P, T):
+def CMtrx(n, M, P, T):
+    M = np.flip(M,0)
     Tt = np.transpose(T)
     Mi = inv(M)
     C = np.matmul(Tt, T)
@@ -106,6 +92,7 @@ def CMtrx(PointCnt, M, P, T):
     C = np.matmul(C, Tt)
     C = np.matmul(C, P)
     return C
+
 #Returns distance between two points
 def PointDist(ax, ay, bx, by):
     return np.sqrt((ax-bx)**2+(ay-by)**2)
@@ -200,7 +187,7 @@ for entity in output:
         print("vertex count:")
         print(PolylineVertexCount)
         PointCnt = PolylineVertexCount
-        Bezier = GetBezier(PointCnt, PolylinePoints)
+        Bezier = GetBezier(min(8, PointCnt), PolylinePoints)
         print("formula")
         print(Bezier)
 
