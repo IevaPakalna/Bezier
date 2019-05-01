@@ -3,7 +3,7 @@ import numpy as np
 from numpy.linalg import inv
 import array as arr
 import sympy
-from sympy import init_printing, Symbol, UnevaluatedExpr, expand
+from sympy import init_printing, Symbol, UnevaluatedExpr, expand, pretty_print as pprint, latex
 
 #get factorial
 def Fact(n):
@@ -16,10 +16,14 @@ def BinCoef(n, k):
     return int(Fact(n)/(Fact(k) * Fact(n - k)))
 #Getting Bezier (currently from whole polyline)
 def GetBezier(n, Points):
+
     P = PMtrx(n, Points)
+    print(P)
+    n = len(P)
     T = TMtrx(n, P)
     M = MMtrx(n)
     C = CMtrx(n, M, P, T)
+
     return BezierFormula(n, C)
 
 
@@ -36,7 +40,7 @@ def BezierFormula(n, C):
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
 
-    return (f"({Bx},{By})")
+    return (Bx, By)
 
 #def ToCubicBezier()
 
@@ -56,14 +60,22 @@ def MMtrx(n):
 
 #Get fit-point matrix
 def PMtrx(n, Points):
-    it = (n - 1) / 7   #choose points evenly from polyline point array
+    print("PPPPP")
+    print(n)
+    it = (len(Points) - 1) / (n - 1)   #choose points evenly from polyline point array
+    print(it)
     if (it == 0):
         it = 1
     P = []
     k = 0
+    print(P)
     for i in range(n - 1):
         P.append(Points[int(round(k))])
         k += it
+        if (int(round(k)) >= len(Points) - 1):
+            if (P[-1] != Points[-1]):
+                P.append(Points[-1])
+            return P
     P.append(Points[-1])
     return P
 #get T matrix with parameter values
@@ -83,7 +95,7 @@ def TMtrx(n, P):
     return T
 #get controlpoint matrix
 def CMtrx(n, M, P, T):
-    M = np.flip(M,0)
+    M = np.flip(M, 0)
     Tt = np.transpose(T)
     Mi = inv(M)
     C = np.matmul(Tt, T)
@@ -91,6 +103,9 @@ def CMtrx(n, M, P, T):
     C = np.matmul(Mi, C)
     C = np.matmul(C, Tt)
     C = np.matmul(C, P)
+    print(M)
+    print(P)
+    print(C)
     return C
 
 #Returns distance between two points
@@ -187,9 +202,10 @@ for entity in output:
         print("vertex count:")
         print(PolylineVertexCount)
         PointCnt = PolylineVertexCount
-        Bezier = GetBezier(min(8, PointCnt), PolylinePoints)
+        Bx, By = GetBezier(min(9, PointCnt), PolylinePoints)
         print("formula")
-        print(Bezier)
+        print(latex(Bx))
+        print(latex(By))
 
     #LWPolyline
     if entity.dxftype == 'LWPOLYLINE':
