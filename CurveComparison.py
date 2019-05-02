@@ -5,6 +5,98 @@ import array as arr
 import sympy
 from sympy import init_printing, Symbol, UnevaluatedExpr, expand, pretty_print as pprint, latex
 
+#Crete Composite Bezier from given points
+def CompositeBezier(n, Points):
+    P = PMtrx(n, Points)
+    C = [[0],[1],[2],[3]]
+    Bezier = []
+    t = Symbol('t')
+    print((P[0][0] + P[1][0]) / 2)
+    MiddlePnt = (P[0][0] + P[1][0]) / 2
+    LF = LineFormula(P[0], P[2])
+    d = PointDist(P[0][0], P[0][1], P[1][0], P[1][1]) / 3
+    dp = DistantPoint(P[1], - d, LineSlope(P[0], P[1]))
+    PF = PerpFormula(P[0], P[2], dp)
+    print("Middle")
+    print(MiddlePnt[0])
+    tmp = (LineIntersect(PerpFormula(P[0], P[1], MiddlePnt), LF))
+    C[1] = 2 * MiddlePnt - tmp
+    C[0].append(P[0])
+    C[3].append(P[1])
+    for i in (Points):
+        LF = LineFormula(P[i + 1], P[i + 2])
+        dp = PointDist(P[i], P[i + 1]) / 3
+        C[2] = DistantPoint(P[i + 1], - d, LineSlope(P[i], P[i + 1]))
+        Bezier.append(BezierFormulaComp(C))
+        C[1] = DistantPoint(P[i + 1], d, LineSlope(P[i + 1], P[i + 2]))
+        if i == len(Points) - 3:
+            MiddlePnt = (P[n - 1][0] + P[n - 2][0]) / 2
+            LF = LineFormula(P[i], P[i + 1])
+            d = PointDist(P[i], P[i + 2]) / 3
+            dp = DistantPoint(P[i + 2], - d, LineSlope(P[i + 1], P[i - 1]))
+            PF = PerpFormula(P[i], P[i + 2], dp)
+            tmp = (LineIntersect(PerpFormula(P[-1], P[-2], MiddlePnt), LineFormula(P[-1],P[-3])))
+            C[1] = 2 * MiddlePnt - tmp
+            Bezier.append(BezierFormulaComp(C))
+            break
+    return Bezier
+
+def BezierFormulaComp(C):
+    t = Symbol('t')
+    for i in range(4):
+        BinC = BinCoef(3 - i, i)
+        Bxtmp = (UnevaluatedExpr(BinC))*(1 - t)**(4 - i - 1)*t**(i - 2)*(C[i][0])    #Create Bx(t) formula as a string
+        Bx = Bx + Bxtmp
+        Bytmp = (UnevaluatedExpr(BinC))*(1 - t)**(4 - i - 1)*t**(i - 2)*(C[i][1])  #Create Bx(t) formula as a string
+        By = By + Bytmp
+#        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
+#        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
+
+    return (Bx, By)
+
+def LineIntersect(P11, P12, P21, P22):
+    LF1 = LineFormula(P11, P12)
+    LF2 = LineFormula(P21, P22)
+    LFx = solve(LF1 - LF2, x)
+    Px, Py = solve([LF1, LF2], [x, y])
+    P = []
+    P.append(x)
+    P[x].append(Py)
+    return P
+
+#Returns slope of line trough two given points
+def LineSlope(P1, P2):
+    return (P1[1] - P2[1])/(P1[0] - P2[0])
+#Returns distance between two points
+def PointDist(ax, ay, bx, by):
+    return np.sqrt((ax-bx)**2+(ay-by)**2)
+
+#Point coordinates given distance from point on a line
+def DistantPoint(P, d, slope):
+    nP = []
+    dist = P[0] + d * np.cos(np.arctan(slope))
+    nP.append(dist)
+    nP.append(P[1] + d * np.sin(np.arctan(slope)))
+    return(P)
+#Get parametric line Formula
+def ParamLineFormula(P1, P2):
+    t = Symbol('t')
+    PLFx = ((1 - t) * P1[0] + t * P2[0])
+    PLFy = ((1 - t) * P1[1] + t * P2[1])
+
+#Get Perpendicular formula
+def PerpFormula(P1, P2, P):
+    x = Symbol('x')
+    print(P[0] * ((P1[0] - P2[0]) / (P1[1] - P2[1])))
+    PF = (- (P1[0] + P2[0]) / (P1[1] - P2[1]) * x + P[0] * ((P1[0] - P2[0]) / (P1[1] - P2[1])) + P[1])
+    return(PF)
+
+#Get line formula
+def LineFormula(P1, P2):
+    x = Symbol('x')
+    LF = ((P1[1] - P2[1]) / (P1[0] - P2[0])) * x + (P1[0] * P2[1] - P2[0] * P1[1]) / (P1[0] - P2[0])
+    return LF
+
 #get factorial
 def Fact(n):
     f = 1
@@ -15,15 +107,12 @@ def Fact(n):
 def BinCoef(n, k):
     return int(Fact(n)/(Fact(k) * Fact(n - k)))
 #Getting Bezier (currently from whole polyline)
-def GetBezier(n, Points):
-
-    P = PMtrx(n, Points)
-    print(P)
-    n = len(P)
-    T = TMtrx(n, P)
+def GetBezier(n, Pn, Points):
+    P = PMtrx(Pn, Points)
+    Pn = len(P)
+    T = TMtrx(n, Pn, P)
     M = MMtrx(n)
-    C = CMtrx(n, M, P, T)
-
+    C = CMtrx(Pn, M, P, T)
     return BezierFormula(n, C)
 
 
@@ -60,15 +149,11 @@ def MMtrx(n):
 
 #Get fit-point matrix
 def PMtrx(n, Points):
-    print("PPPPP")
-    print(n)
     it = (len(Points) - 1) / (n - 1)   #choose points evenly from polyline point array
-    print(it)
     if (it == 0):
         it = 1
     P = []
     k = 0
-    print(P)
     for i in range(n - 1):
         P.append(Points[int(round(k))])
         k += it
@@ -79,16 +164,16 @@ def PMtrx(n, Points):
     P.append(Points[-1])
     return P
 #get T matrix with parameter values
-def TMtrx(n, P):
+def TMtrx(n, Pn, P):
     d = []
     d.append(0)
-    for i in range(1, n):   #create point (t) distance array
+    for i in range(1, Pn):   #create point (t) distance array
         dist = d[i - 1] + PointDist(P[i-1][0], P[i][0], P[i-1][1], P[i][1])
         d.append(dist)
-    for i in range(n):   #scale points to interval [0..1]
+    for i in range(Pn):   #scale points to interval [0..1]
         d[i] = d[i] / d[-1]
     T = []
-    for i in range(n):   #fill T matrix
+    for i in range(Pn):   #fill T matrix
         T.append([])
         for j in range(n):
             T[i].append(d[i]**j)
@@ -103,14 +188,9 @@ def CMtrx(n, M, P, T):
     C = np.matmul(Mi, C)
     C = np.matmul(C, Tt)
     C = np.matmul(C, P)
-    print(M)
-    print(P)
-    print(C)
     return C
 
-#Returns distance between two points
-def PointDist(ax, ay, bx, by):
-    return np.sqrt((ax-bx)**2+(ay-by)**2)
+
 
 
 
@@ -202,11 +282,13 @@ for entity in output:
         print("vertex count:")
         print(PolylineVertexCount)
         PointCnt = PolylineVertexCount
-        Bx, By = GetBezier(min(9, PointCnt), PolylinePoints)
+        Bx, By = GetBezier(5, min(8, PointCnt), PolylinePoints)
         print("formula")
-        print(latex(Bx))
-        print(latex(By))
-
+#        print(latex(Bx))
+#        print(latex(By))
+        CompositeBezier(min(8, PointCnt), PolylinePoints)
+        for i in (Bezier):
+            a = 1
     #LWPolyline
     if entity.dxftype == 'LWPOLYLINE':
         LWPolylinePoints = entity.points
