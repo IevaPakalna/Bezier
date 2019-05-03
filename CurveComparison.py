@@ -1,83 +1,127 @@
+#PF problem - (something with const y line)
 import dxfgrabber
 import numpy as np
 from numpy.linalg import inv
 import array as arr
 import sympy
 from sympy import init_printing, Symbol, UnevaluatedExpr, expand, pretty_print as pprint, latex
+from sympy.solvers import solve
 
 #Crete Composite Bezier from given points
 def CompositeBezier(n, Points):
-    P = PMtrx(n, Points)
+    P = PMtrx(len(Points), Points)
     C = [[0],[1],[2],[3]]
     Bezier = []
     t = Symbol('t')
-    print((P[0][0] + P[1][0]) / 2)
-    MiddlePnt = (P[0][0] + P[1][0]) / 2
-    LF = LineFormula(P[0], P[2])
-    d = PointDist(P[0][0], P[0][1], P[1][0], P[1][1]) / 3
-    dp = DistantPoint(P[1], - d, LineSlope(P[0], P[1]))
-    PF = PerpFormula(P[0], P[2], dp)
-    print("Middle")
-    print(MiddlePnt[0])
-    tmp = (LineIntersect(PerpFormula(P[0], P[1], MiddlePnt), LF))
-    C[1] = 2 * MiddlePnt - tmp
-    C[0].append(P[0])
-    C[3].append(P[1])
-    for i in (Points):
+    x = Symbol('x')
+    LF = LineFormula(P[1], P[2])
+    d = PointDist(P[0], P[1])
+    C[2] = DistantPoint(P[1], - d / 3, LineSlope(P[1], P[2]))
+    dp = DistantPoint(P[1], -d / 2, LineSlope(P[0], P[1]))
+    PF1 = PerpFormula(P[0], P[1], dp)
+
+    PF1tmp = []
+    PF1tmp.append(0)
+    PF1tmp.append((PF1).subs(x, 0))
+
+    PF2 = PerpFormula(dp, PF1tmp, C[2])
+
+    PF2tmp = []
+    PF2tmp.append(0)
+    PF2tmp.append((PF2).subs(x, 0))
+
+    print(PF1tmp)
+    PF1xPF2 = LineIntersect(dp, PF1tmp, C[2], PF2tmp)
+    C1x = 2 * PF1xPF2[0] - C[2][0]
+    C1y = 2 * PF1xPF2[1] - C[2][1]
+
+    C1 = []
+    C1.append(C1x)
+    C1.append(C1y)
+    C[1] = C1
+
+    C[0] = (P[0])
+    C[3] = (P[1])
+    Bezier.append(BezierFormulaComp(C))
+    for i in range(len(P)):
         LF = LineFormula(P[i + 1], P[i + 2])
         dp = PointDist(P[i], P[i + 1]) / 3
-        C[2] = DistantPoint(P[i + 1], - d, LineSlope(P[i], P[i + 1]))
+        C[2] = DistantPoint(P[i + 1], - dp, LineSlope(P[i + 1], P[i + 2]))
+        C[0] = P[i]
+        C[3] = P[i + 1]
         Bezier.append(BezierFormulaComp(C))
-        C[1] = DistantPoint(P[i + 1], d, LineSlope(P[i + 1], P[i + 2]))
-        if i == len(Points) - 3:
-            MiddlePnt = (P[n - 1][0] + P[n - 2][0]) / 2
-            LF = LineFormula(P[i], P[i + 1])
-            d = PointDist(P[i], P[i + 2]) / 3
-            dp = DistantPoint(P[i + 2], - d, LineSlope(P[i + 1], P[i - 1]))
-            PF = PerpFormula(P[i], P[i + 2], dp)
-            tmp = (LineIntersect(PerpFormula(P[-1], P[-2], MiddlePnt), LineFormula(P[-1],P[-3])))
-            C[1] = 2 * MiddlePnt - tmp
+        C[1] = DistantPoint(P[i], dp, LineSlope(P[i - 1], P[i]))
+        if i == len(P) - 3:
+            LF = LineFormula(P[-2], P[-3])
+            d = PointDist(P[-1], P[-2])
+            C[1] = DistantPoint(P[-2], - d / 3, LineSlope(P[-2], P[-3]))
+            dp = DistantPoint(P[-2], -d / 2, LineSlope(P[-1], P[-2]))
+            PF1 = PerpFormula(P[-1], P[-2], dp)
+
+            PF1tmp = []
+            PF1tmp.append(0)
+            PF1tmp.append((PF1).subs(x, 0))
+
+            PF2 = PerpFormula(dp, PF1tmp, C[1])
+
+            PF2tmp = []
+            PF2tmp.append(0)
+            PF2tmp.append((PF2).subs(x, 0))
+
+            PF1xPF2 = LineIntersect(dp, PF1tmp, C[1], PF2tmp)
+            C2x = 2 * PF1xPF2[0] - C[1][0]
+            C2y = 2 * PF1xPF2[1] - C[1][1]
+
+            C2 = []
+            C2.append(C2x)
+            C2.append(C2y)
+            C[2] = C2
+
+            C[0] = (P[-1])
+            C[3] = (P[-4])
             Bezier.append(BezierFormulaComp(C))
             break
     return Bezier
 
 def BezierFormulaComp(C):
     t = Symbol('t')
+    Bx = 0
+    By = 0
     for i in range(4):
-        BinC = BinCoef(3 - i, i)
-        Bxtmp = (UnevaluatedExpr(BinC))*(1 - t)**(4 - i - 1)*t**(i - 2)*(C[i][0])    #Create Bx(t) formula as a string
-        Bx = Bx + Bxtmp
-        Bytmp = (UnevaluatedExpr(BinC))*(1 - t)**(4 - i - 1)*t**(i - 2)*(C[i][1])  #Create Bx(t) formula as a string
-        By = By + Bytmp
+        BinC = BinCoef(3, i)
+        Bxtmp = (UnevaluatedExpr(BinC))*(1 - t)**(4 - i - 1)*t**(i)*(C[i][0])    #Create Bx(t) formula
+        Bx = UnevaluatedExpr(Bx) + Bxtmp
+        Bytmp = (UnevaluatedExpr(BinC))*(1 - t)**(4 - i - 1)*t**(i)*(C[i][1])  #Create Bx(t) formula
+        By = UnevaluatedExpr(By) + Bytmp
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
-
+    print(Bx, '  ', By)
     return (Bx, By)
 
 def LineIntersect(P11, P12, P21, P22):
+    x = Symbol('x')
+    y = Symbol('y')
     LF1 = LineFormula(P11, P12)
     LF2 = LineFormula(P21, P22)
-    LFx = solve(LF1 - LF2, x)
-    Px, Py = solve([LF1, LF2], [x, y])
+    Ptmp = solve([LF1 - y, LF2 - y], [x, y])
     P = []
-    P.append(x)
-    P[x].append(Py)
+    P.append(Ptmp[x])
+    P.append(Ptmp[y])
     return P
 
 #Returns slope of line trough two given points
 def LineSlope(P1, P2):
     return (P1[1] - P2[1])/(P1[0] - P2[0])
 #Returns distance between two points
-def PointDist(ax, ay, bx, by):
-    return np.sqrt((ax-bx)**2+(ay-by)**2)
+def PointDist(a, b):
+    return np.sqrt((a[0] - b[0])**2+(a[1] - b[1])**2)
 
 #Point coordinates given distance from point on a line
 def DistantPoint(P, d, slope):
     nP = []
-    dist = P[0] + d * np.cos(np.arctan(slope))
-    nP.append(dist)
+    nP.append(P[0] + d * np.cos(np.arctan(slope)))
     nP.append(P[1] + d * np.sin(np.arctan(slope)))
-    return(P)
+    return(nP)
 #Get parametric line Formula
 def ParamLineFormula(P1, P2):
     t = Symbol('t')
@@ -87,8 +131,13 @@ def ParamLineFormula(P1, P2):
 #Get Perpendicular formula
 def PerpFormula(P1, P2, P):
     x = Symbol('x')
-    print(P[0] * ((P1[0] - P2[0]) / (P1[1] - P2[1])))
-    PF = (- (P1[0] + P2[0]) / (P1[1] - P2[1]) * x + P[0] * ((P1[0] - P2[0]) / (P1[1] - P2[1])) + P[1])
+    if P1[1] == P2[1]:
+        PF = P[1] + 0 * x
+        return PF
+    if P1[0] == P2[0]:
+        PF = P[0] + 0 * y
+        return PF
+    PF = - (P1[0] - P2[0]) / (P1[1] - P2[1]) * x + P[0] * ((P1[0] - P2[0]) / (P1[1] - P2[1])) + P[1]
     return(PF)
 
 #Get line formula
@@ -122,9 +171,9 @@ def BezierFormula(n, C):
     t = Symbol('t')
     for i in range(1, n + 1):
         BinC = BinCoef(n - 1, i - 1)
-        Bxtmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(C[i - 1][0])    #Create Bx(t) formula as a string
+        Bxtmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(C[i - 1][0])    #Create Bx(t) formula
         Bx = Bx + Bxtmp
-        Bytmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(C[i - 1][1])  #Create Bx(t) formula as a string
+        Bytmp = (UnevaluatedExpr(BinC))*(1 - t)**(n - i)*t**(i - 1)*(C[i - 1][1])  #Create Bx(t) formula
         By = By + Bytmp
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
@@ -168,7 +217,7 @@ def TMtrx(n, Pn, P):
     d = []
     d.append(0)
     for i in range(1, Pn):   #create point (t) distance array
-        dist = d[i - 1] + PointDist(P[i-1][0], P[i][0], P[i-1][1], P[i][1])
+        dist = d[i - 1] + PointDist(P[i-1], P[i])
         d.append(dist)
     for i in range(Pn):   #scale points to interval [0..1]
         d[i] = d[i] / d[-1]
@@ -286,9 +335,10 @@ for entity in output:
         print("formula")
 #        print(latex(Bx))
 #        print(latex(By))
-        CompositeBezier(min(8, PointCnt), PolylinePoints)
+        Bezier = []
+        Bezier.append(CompositeBezier(min(8, PointCnt), PolylinePoints))
         for i in (Bezier):
-            a = 1
+            print()
     #LWPolyline
     if entity.dxftype == 'LWPOLYLINE':
         LWPolylinePoints = entity.points
