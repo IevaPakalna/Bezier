@@ -30,7 +30,6 @@ def CompositeBezier(n, Points):
     PF2tmp.append(0)
     PF2tmp.append((PF2).subs(x, 0))
 
-    print(PF1tmp)
     PF1xPF2 = LineIntersect(dp, PF1tmp, C[2], PF2tmp)
     C1x = 2 * PF1xPF2[0] - C[2][0]
     C1y = 2 * PF1xPF2[1] - C[2][1]
@@ -99,14 +98,22 @@ def BezierFormulaComp(C):
     return (Bx, By)
 
 def LineIntersect(P11, P12, P21, P22):
-    x = Symbol('x')
-    y = Symbol('y')
-    LF1 = LineFormula(P11, P12)
-    LF2 = LineFormula(P21, P22)
-    Ptmp = solve([LF1 - y, LF2 - y], [x, y])
+    S1 = LineSlope(P11, P12)
+    S2 = LineSlope(P21, P22)
+    print(P11[0])
+    print(P11[1])
+    print(P12[0])
+    print(P12[1])
+    b1 = ((P11[0] * P12[1] - P12[0] * P11[1]) / (P11[0] - P12[0]))
+    b2 = ((P21[0] * P22[1] - P22[0] * P21[1]) / (P21[0] - P22[0]))
+    a = np.array([[S1, b1],[S2, b2]], dtype = 'float')
+    b = np.array([1, 1], dtype = 'float')
+    print(a)
+    print(b)
+    Ptmp = np.linalg.solve(a,b)
     P = []
-    P.append(Ptmp[x])
-    P.append(Ptmp[y])
+    P.append(Ptmp[0])
+    P.append(Ptmp[1])
     return P
 
 #Returns slope of line trough two given points
@@ -143,7 +150,7 @@ def PerpFormula(P1, P2, P):
 #Get line formula
 def LineFormula(P1, P2):
     x = Symbol('x')
-    LF = ((P1[1] - P2[1]) / (P1[0] - P2[0])) * x + (P1[0] * P2[1] - P2[0] * P1[1]) / (P1[0] - P2[0])
+    LF = (UnevaluatedExpr((P1[1] - P2[1]) / (P1[0] - P2[0])) * x + (P1[0] * P2[1] - P2[0] * P1[1]) / (P1[0] - P2[0]))
     return LF
 
 #get factorial
