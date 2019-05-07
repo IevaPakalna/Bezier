@@ -14,23 +14,44 @@ def CompositeBezier(n, Points):
     Bezier = []
     t = Symbol('t')
     x = Symbol('x')
-    LF = LineFormula(P[1], P[2])
-    d = PointDist(P[0], P[1])
-    C[2] = DistantPoint(P[1], - d / 3, LineSlope(P[1], P[2]))
-    dp = DistantPoint(P[1], -d / 2, LineSlope(P[0], P[1]))
-    PF1 = PerpFormula(P[0], P[1], dp)
+    LF = LineFormula(P[1], P[2])    #Line formula trough second and third point
+    dtmp = PointDist(P[0], P[1])
+    d = dtmp
+    if LineSlope(P[1], P[2]) < 0:
+        d = - dtmp
+    C[2] = DistantPoint(P[1], - d / 3, LineSlope(P[1], P[2])) #Point on (P[1], P[2]) line in 1/3 distance of [P[0],P[1]] (C2 controlpoint)
+    if LineSlope(P[0], P[1]) > 0:
+        d = dtmp
+    middlePnt = DistantPoint(P[0], d / 2, LineSlope(P[0], P[1])) #Middle point of [P[0],P[1]]
+    PF1 = PerpFormula(P[0], P[1], middlePnt)   #Middle perpendicular of [P[0],P[1]]
 
     PF1tmp = []
-    PF1tmp.append(0)
-    PF1tmp.append((PF1).subs(x, 0))
+    if P[0][0] == P[1][0]:
+        PF1tmp.append(-1)
+        PF1tmp.append(middlePnt[1])
+    elif P[0][1] == P[1][1]:
+        PF1tmp.append(middlePnt[0])
+        PF1tmp.append(+1)
+    else:
+        PF1tmp.append(0)
+        PF1tmp.append((PF1).subs(x, 0))
 
-    PF2 = PerpFormula(dp, PF1tmp, C[2])
+    PF2 = PerpFormula(middlePnt, PF1tmp, C[2]) #Perpendicular of PF1 that goes trough C[2]
 
     PF2tmp = []
-    PF2tmp.append(0)
-    PF2tmp.append((PF2).subs(x, 0))
+    #cases where x or y - constant
+    if middlePnt[1] == PF1tmp[1]:
+        PF2tmp.append(C[2][0])
+        PF2tmp.append(+1)
+    elif middlePnt[0] == PF1tmp[0]:
+        PF2tmp.append(-1)
+        PF2tmp.append(C[2][1])
+    else:
+        PF2tmp.append(0)
+        PF2tmp.append((PF2).subs(x, 0))
 
-    PF1xPF2 = LineIntersect(dp, PF1tmp, C[2], PF2tmp)
+    PF1xPF2 = LineIntersect(middlePnt, PF1tmp, C[2], PF2tmp)   #Intersection point of PF1 and PF2
+    #C1 controlpoint coords
     C1x = 2 * PF1xPF2[0] - C[2][0]
     C1y = 2 * PF1xPF2[1] - C[2][1]
 
@@ -44,40 +65,62 @@ def CompositeBezier(n, Points):
     Bezier.append(BezierFormulaComp(C))
     for i in range(len(P)):
         LF = LineFormula(P[i + 1], P[i + 2])
-        dp = PointDist(P[i], P[i + 1]) / 3
-        C[2] = DistantPoint(P[i + 1], - dp, LineSlope(P[i + 1], P[i + 2]))
+        dtmp = PointDist(P[i], P[i + 1]) / 3
+        d = dtmp
+        if LineSlope(P[i + 1], P[i + 2]) < 0:
+            d = - dtmp
+        C[2] = DistantPoint(P[i + 1], - d, LineSlope(P[i + 1], P[i + 2]))
         C[0] = P[i]
         C[3] = P[i + 1]
+        if LineSlope(P[i - 1], P[i]) < 0:
+            d = dtmp
+        C[1] = DistantPoint(P[i], d, LineSlope(P[i - 1], P[i]))
         Bezier.append(BezierFormulaComp(C))
-        C[1] = DistantPoint(P[i], dp, LineSlope(P[i - 1], P[i]))
         if i == len(P) - 3:
             LF = LineFormula(P[-2], P[-3])
-            d = PointDist(P[-1], P[-2])
-            C[1] = DistantPoint(P[-2], - d / 3, LineSlope(P[-2], P[-3]))
-            dp = DistantPoint(P[-2], -d / 2, LineSlope(P[-1], P[-2]))
-            PF1 = PerpFormula(P[-1], P[-2], dp)
+            dtmp = PointDist(P[-1], P[-2])
+            d = dtmp
+            if LineSlope(P[-3], P[-2]) < 0:
+                d = - dtmp
+            C[1] = DistantPoint(P[-2], d / 3, LineSlope(P[-2], P[-3]))
+            if LineSlope(P[-1], P[-2]) > 0:
+                d = dtmp
+            middlePnt = DistantPoint(P[-2], d / 2, LineSlope(P[-1], P[-2]))
+            PF1 = PerpFormula(P[-1], P[-2], middlePnt)
 
             PF1tmp = []
-            PF1tmp.append(0)
-            PF1tmp.append((PF1).subs(x, 0))
+            if P[-1][0] == P[-2][0]:
+                PF1tmp.append(-1)
+                PF1tmp.append(middlePnt[-2])
+            elif P[-1][1] == P[-2][1]:
+                PF1tmp.append(middlePnt[-1])
+                PF1tmp.append(+1)
+            else:
+                PF1tmp.append(0)
+                PF1tmp.append((PF1).subs(x, 0))
 
-            PF2 = PerpFormula(dp, PF1tmp, C[1])
+            PF2 = PerpFormula(middlePnt, PF1tmp, C[1])
 
             PF2tmp = []
-            PF2tmp.append(0)
-            PF2tmp.append((PF2).subs(x, 0))
-
-            PF1xPF2 = LineIntersect(dp, PF1tmp, C[1], PF2tmp)
+            #cases where x or y - constant
+            if middlePnt[-2] == PF1tmp[-2]:
+                PF2tmp.append(C[-3][0])
+                PF2tmp.append(+1)
+            elif middlePnt[-1] == PF1tmp[-1]:
+                PF2tmp.append(-1)
+                PF2tmp.append(C[-3][1])
+            else:
+                PF2tmp.append(0)
+                PF2tmp.append((PF2).subs(x, 0))
+            PF1xPF2 = LineIntersect(middlePnt, PF1tmp, C[1], PF2tmp)
             C2x = 2 * PF1xPF2[0] - C[1][0]
             C2y = 2 * PF1xPF2[1] - C[1][1]
-
             C2 = []
             C2.append(C2x)
             C2.append(C2y)
             C[2] = C2
-
             C[0] = (P[-1])
-            C[3] = (P[-4])
+            C[3] = (P[-2])
             Bezier.append(BezierFormulaComp(C))
             break
     return Bezier
@@ -94,22 +137,17 @@ def BezierFormulaComp(C):
         By = UnevaluatedExpr(By) + Bytmp
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
-    print(Bx, '  ', By)
+    print('(',latex(Bx),',', latex(By),')')
+    print()
     return (Bx, By)
 
 def LineIntersect(P11, P12, P21, P22):
     S1 = LineSlope(P11, P12)
     S2 = LineSlope(P21, P22)
-    print(P11[0])
-    print(P11[1])
-    print(P12[0])
-    print(P12[1])
     b1 = ((P11[0] * P12[1] - P12[0] * P11[1]) / (P11[0] - P12[0]))
     b2 = ((P21[0] * P22[1] - P22[0] * P21[1]) / (P21[0] - P22[0]))
-    a = np.array([[S1, b1],[S2, b2]], dtype = 'float')
-    b = np.array([1, 1], dtype = 'float')
-    print(a)
-    print(b)
+    a = np.array([[S1, -1],[S2, -1]], dtype = 'float')
+    b = np.array([-b1, -b2], dtype = 'float')
     Ptmp = np.linalg.solve(a,b)
     P = []
     P.append(Ptmp[0])
@@ -141,15 +179,15 @@ def PerpFormula(P1, P2, P):
     if P1[1] == P2[1]:
         PF = P[1] + 0 * x
         return PF
-    if P1[0] == P2[0]:
-        PF = P[0] + 0 * y
-        return PF
     PF = - (P1[0] - P2[0]) / (P1[1] - P2[1]) * x + P[0] * ((P1[0] - P2[0]) / (P1[1] - P2[1])) + P[1]
     return(PF)
 
 #Get line formula
 def LineFormula(P1, P2):
     x = Symbol('x')
+    if P1[1] == P2[1]:
+        LF = (P1[1] + 0 * x)
+        return LF
     LF = (UnevaluatedExpr((P1[1] - P2[1]) / (P1[0] - P2[0])) * x + (P1[0] * P2[1] - P2[0] * P1[1]) / (P1[0] - P2[0]))
     return LF
 
@@ -345,7 +383,9 @@ for entity in output:
         Bezier = []
         Bezier.append(CompositeBezier(min(8, PointCnt), PolylinePoints))
         for i in (Bezier):
-            print()
+            a = 1
+#            print()
+
     #LWPolyline
     if entity.dxftype == 'LWPOLYLINE':
         LWPolylinePoints = entity.points
