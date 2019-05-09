@@ -17,15 +17,19 @@ def CompositeBezier(n, Points):
     LF = LineFormula(P[1], P[2])    #Line formula trough second and third point
     dtmp = PointDist(P[0], P[1])
     d = dtmp
-    if LineSlope(P[1], P[2]) < 0:
+    if ((P[0][1] > P[2][1] and LineSlope(P[0], P[2]) > 0) or
+        (P[0][1] < P[2][1] and LineSlope(P[0], P[2]) < 0)):
         d = - dtmp
-    C[2] = DistantPoint(P[1], - d / 3, LineSlope(P[1], P[2])) #Point on (P[1], P[2]) line in 1/3 distance of [P[0],P[1]] (C2 controlpoint)
-    if LineSlope(P[0], P[1]) > 0:
+    C[2] = DistantPoint(P[1], P[0], P[2], d / 3) #Point on (P[1], P[2]) line in 1/3 distance of [P[0],P[1]] (C2 controlpoint)
+    if ((P[0][1] < P[2][1] and LineSlope(P[0], P[2]) > 0) or
+        (P[0][1] > P[2][1] and LineSlope(P[0], P[2]) < 0)):
         d = dtmp
-    middlePnt = DistantPoint(P[0], d / 2, LineSlope(P[0], P[1])) #Middle point of [P[0],P[1]]
+    else:
+        d = - dtmp
+    middlePnt = DistantPoint(P[0], P[0], P[1], - d / 2) #Middle point of [P[0],P[1]]
     PF1 = PerpFormula(P[0], P[1], middlePnt)   #Middle perpendicular of [P[0],P[1]]
 
-    PF1tmp = []
+    PF1tmp = [] #Point on line PF1
     if P[0][0] == P[1][0]:
         PF1tmp.append(-1)
         PF1tmp.append(middlePnt[1])
@@ -38,7 +42,7 @@ def CompositeBezier(n, Points):
 
     PF2 = PerpFormula(middlePnt, PF1tmp, C[2]) #Perpendicular of PF1 that goes trough C[2]
 
-    PF2tmp = []
+    PF2tmp = [] #Point on line PF2
     #cases where x or y - constant
     if middlePnt[1] == PF1tmp[1]:
         PF2tmp.append(C[2][0])
@@ -49,7 +53,6 @@ def CompositeBezier(n, Points):
     else:
         PF2tmp.append(0)
         PF2tmp.append((PF2).subs(x, 0))
-
     PF1xPF2 = LineIntersect(middlePnt, PF1tmp, C[2], PF2tmp)   #Intersection point of PF1 and PF2
     #C1 controlpoint coords
     C1x = 2 * PF1xPF2[0] - C[2][0]
@@ -63,29 +66,37 @@ def CompositeBezier(n, Points):
     C[0] = (P[0])
     C[3] = (P[1])
     Bezier.append(BezierFormulaComp(C))
-    for i in range(len(P)):
+    for i in range(len(P)): #Calculate controlpoints for P[i], P[i + 1] segment
         LF = LineFormula(P[i + 1], P[i + 2])
         dtmp = PointDist(P[i], P[i + 1]) / 3
         d = dtmp
-        if LineSlope(P[i + 1], P[i + 2]) < 0:
+        if ((P[i][1] > P[i + 2][1] and LineSlope(P[i], P[i + 2]) > 0) or
+            (P[i][1] < P[i + 2][1] and LineSlope(P[i], P[i + 2]) < 0)):
             d = - dtmp
-        C[2] = DistantPoint(P[i + 1], - d, LineSlope(P[i + 1], P[i + 2]))
+        C[2] = DistantPoint(P[i + 1], P[i], P[i + 2], d)
         C[0] = P[i]
         C[3] = P[i + 1]
-        if LineSlope(P[i - 1], P[i]) < 0:
+        if ((P[i - 1][1] < P[i + 1][1] and LineSlope(P[i - 1], P[i + 1]) > 0) or
+            (P[i - 1][1] > P[i + 1][1] and LineSlope(P[i - 1], P[i + 1]) < 0)):
             d = dtmp
-        C[1] = DistantPoint(P[i], d, LineSlope(P[i - 1], P[i]))
+        else:
+            d = - dtmp
+        C[1] = DistantPoint(P[i], P[i - 1], P[i + 1], d)
         Bezier.append(BezierFormulaComp(C))
         if i == len(P) - 3:
             LF = LineFormula(P[-2], P[-3])
-            dtmp = PointDist(P[-1], P[-2])
+            dtmp = PointDist(P[-1], P[-2]) / 3
             d = dtmp
-            if LineSlope(P[-3], P[-2]) < 0:
+            if ((P[-2][1] > P[-3][1] and LineSlope(P[-2], P[-3]) < 0) or
+                (P[-2][1] < P[-3][1] and LineSlope(P[-2], P[-3]) > 0)):
                 d = - dtmp
-            C[1] = DistantPoint(P[-2], d / 3, LineSlope(P[-2], P[-3]))
-            if LineSlope(P[-1], P[-2]) > 0:
+            C[1] = DistantPoint(P[-2], P[-1], P[-3], d)
+            if ((P[-1][1] < P[-2][1] and LineSlope(P[-1], P[-2]) > 0) or
+                (P[-1][1] > P[-2][1] and LineSlope(P[-1], P[-2]) < 0)):
                 d = dtmp
-            middlePnt = DistantPoint(P[-2], d / 2, LineSlope(P[-1], P[-2]))
+            else:
+                d = - dtmp
+            middlePnt = DistantPoint(P[-1], P[-1], P[-2], d)
             PF1 = PerpFormula(P[-1], P[-2], middlePnt)
 
             PF1tmp = []
@@ -125,6 +136,22 @@ def CompositeBezier(n, Points):
             break
     return Bezier
 
+#Coordinates of projected point on a line
+def PointProjecOnLine(P, P1, P2):
+    slope = LineSlope(P1, P2)
+    b = 0
+    if P1[0] == P2[0]:
+        b = P1[0]
+    else:
+        b = ((P1[0] * P2[1] - P2[0] * P1[1]) / (P1[0] - P2[0]))
+
+    x = (- (- P[0] - slope * P[1]) - slope * b) / (slope**2 + 1)
+    y = (slope * (P[0] + slope * P[1]) + b) / (slope**2 + 1)
+    Pp = []
+    Pp.append(x)
+    Pp.append(y)
+    return Pp
+
 def BezierFormulaComp(C):
     t = Symbol('t')
     Bx = 0
@@ -142,10 +169,22 @@ def BezierFormulaComp(C):
     return (Bx, By)
 
 def LineIntersect(P11, P12, P21, P22):
-    S1 = LineSlope(P11, P12)
-    S2 = LineSlope(P21, P22)
-    b1 = ((P11[0] * P12[1] - P12[0] * P11[1]) / (P11[0] - P12[0]))
-    b2 = ((P21[0] * P22[1] - P22[0] * P21[1]) / (P21[0] - P22[0]))
+    if P11[1] == P12[1] :
+        S1 = P11[1]
+    else:
+        S1 = LineSlope(P11, P12)
+    if P21[1] == P22[1] :
+        S2 = P21[1]
+    else:
+        S2 = LineSlope(P21, P22)
+    if P11[0] == P12[0]:
+        b1 = P11[0]
+    else:
+        b1 = ((P11[0] * P12[1] - P12[0] * P11[1]) / (P11[0] - P12[0]))
+    if P21[0] == P22[0]:
+        b2 = P21[0]
+    else:
+        b2 = ((P21[0] * P22[1] - P22[0] * P21[1]) / (P21[0] - P22[0]))
     a = np.array([[S1, -1],[S2, -1]], dtype = 'float')
     b = np.array([-b1, -b2], dtype = 'float')
     Ptmp = np.linalg.solve(a,b)
@@ -156,17 +195,32 @@ def LineIntersect(P11, P12, P21, P22):
 
 #Returns slope of line trough two given points
 def LineSlope(P1, P2):
+    if P1[0] == P2[0]:
+        return 0
     return (P1[1] - P2[1])/(P1[0] - P2[0])
 #Returns distance between two points
 def PointDist(a, b):
-    return np.sqrt((a[0] - b[0])**2+(a[1] - b[1])**2)
+    return np.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
 
-#Point coordinates given distance from point on a line
-def DistantPoint(P, d, slope):
+#Calculate distant point along a line a certain distance away given point
+def DistantPoint(P, P1, P2, d):
+    Ptmp = []
+    dist = 0
+    if P != P1 :
+        Ptmp = PointProjecOnLine(P, P1, P2) #Project point on line
+        dist = PointDist(P, Ptmp)
+        v1 = P2[0] - P[0]
+        v2 = P2[1] - P[1]
+    else:
+        v1 = P2[0] - P[0]
+        v2 = P2[1] - P[1]
+    u1 = float(v1 / np.sqrt(v1**2 + v2**2))
+    u2 = float(v2 / np.sqrt(v1**2 + v2**2))
     nP = []
-    nP.append(P[0] + d * np.cos(np.arctan(slope)))
-    nP.append(P[1] + d * np.sin(np.arctan(slope)))
+    nP.append(P[0] + d * u1)
+    nP.append(P[1] + d * u2)
     return(nP)
+
 #Get parametric line Formula
 def ParamLineFormula(P1, P2):
     t = Symbol('t')
