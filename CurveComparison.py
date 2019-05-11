@@ -14,18 +14,9 @@ def CompositeBezier(n, Points):
     Bezier = []
     t = Symbol('t')
     x = Symbol('x')
-    LF = LineFormula(P[1], P[2])    #Line formula trough second and third point
     dtmp = PointDist(P[0], P[1])
     d = dtmp
-#    if ((P[0][1] > P[2][1] and LineSlope(P[0], P[2]) > 0) or
-#        (P[0][1] < P[2][1] and LineSlope(P[0], P[2]) < 0)):
-#        d = - dtmp
     C[2] = DistantPoint(P[1], P[2], P[0], d / 3) #Point on (P[1], P[2]) line in 1/3 distance of [P[0],P[1]] (C2 controlpoint)
-#    if ((P[0][1] < P[2][1] and LineSlope(P[0], P[2]) > 0) or
-#        (P[0][1] > P[2][1] and LineSlope(P[0], P[2]) < 0)):
-#        d = dtmp
-#    else:
-#        d = - dtmp
     middlePnt = DistantPoint(P[0], P[0], P[1], d / 2) #Middle point of [P[0],P[1]]
     PF1 = PerpFormula(P[0], P[1], middlePnt)   #Middle perpendicular of [P[0],P[1]]
 
@@ -65,37 +56,21 @@ def CompositeBezier(n, Points):
 
     C[0] = (P[0])
     C[3] = (P[1])
-    Bezier.append(BezierFormulaComp(C))
+    Bx, By = BezierFormulaComp(C)
+    Bezier.append([Bx, By])
     for i in range(1, len(P)): #Calculate controlpoints for P[i], P[i + 1] segment
-        LF = LineFormula(P[i + 1], P[i + 2])
         dtmp = PointDist(P[i], P[i + 1]) / 3
         d = dtmp
-#        if ((P[i][1] > P[i + 2][1] and LineSlope(P[i], P[i + 2]) > 0) or
-#            (P[i][1] < P[i + 2][1] and LineSlope(P[i], P[i + 2]) < 0)):
-#            d = - dtmp
         C[2] = DistantPoint(P[i + 1], P[i + 2], P[i], d)
         C[0] = P[i]
         C[3] = P[i + 1]
-#        if ((P[i - 1][1] < P[i + 1][1] and LineSlope(P[i - 1], P[i + 1]) > 0) or
-#            (P[i - 1][1] > P[i + 1][1] and LineSlope(P[i - 1], P[i + 1]) < 0)):
-#            d = dtmp
-#        else:
-#            d = - dtmp
         C[1] = DistantPoint(P[i], P[i - 1], P[i + 1], d)
-        Bezier.append(BezierFormulaComp(C))
+        Bx, By = BezierFormulaComp(C)
+        Bezier.append([Bx, By])
         if i == len(P) - 3:
-            LF = LineFormula(P[-2], P[-3])
             dtmp = PointDist(P[-1], P[-2]) / 3
             d = dtmp
-#            if ((P[-2][1] > P[-3][1] and LineSlope(P[-2], P[-3]) < 0) or
-#                (P[-2][1] < P[-3][1] and LineSlope(P[-2], P[-3]) > 0)):
-#                d = - dtmp
             C[1] = DistantPoint(P[-2], P[-3], P[-1], d)
-#            if ((P[-1][1] < P[-2][1] and LineSlope(P[-1], P[-2]) > 0) or
-#                (P[-1][1] > P[-2][1] and LineSlope(P[-1], P[-2]) < 0)):
-#                d = dtmp
-#            else:
-#                d = - dtmp
             middlePnt = DistantPoint(P[-1], P[-1], P[-2], d)
             PF1 = PerpFormula(P[-1], P[-2], middlePnt)
 
@@ -132,7 +107,8 @@ def CompositeBezier(n, Points):
             C[2] = C2
             C[0] = (P[-1])
             C[3] = (P[-2])
-            Bezier.append(BezierFormulaComp(C))
+            Bx, By = BezierFormulaComp(C)
+            Bezier.append([Bx, By])
             break
     return Bezier
 
@@ -164,8 +140,6 @@ def BezierFormulaComp(C):
         By = UnevaluatedExpr(By) + Bytmp
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
-    print('(',latex(Bx),',', latex(By),')')
-    print()
     return (Bx, By)
 
 def LineIntersect(P11, P12, P21, P22):
@@ -247,6 +221,7 @@ def ParamLineFormula(P1, P2):
     t = Symbol('t')
     PLFx = ((1 - t) * P1[0] + t * P2[0])
     PLFy = ((1 - t) * P1[1] + t * P2[1])
+    return PLFx, PLFy
 
 #Get Perpendicular formula
 def PerpFormula(P1, P2, P):
@@ -378,25 +353,23 @@ print(Color1)
 Linetype1 = [entity.linetype for entity in output1 if entity.dxftype != 'POINT']
 print(Linetype1)
 
+point1 = []
+line1 = []
+Bezier1 = []
+
 #get parameters of objects
 for entity in output1:
     #Point
     if entity.dxftype == 'POINT':
-        PointCoord1 = entity.point
-#        for x in range(len(PointCoord)):
-#            print(" POINT\n")
-#            print(len(PointCoord))
-#            print(PointCoord[x])
+        pointCoord1 = entity.point
+        point1.append([pointCoord1[0], pointCoord1[1]])
     #Line
     if entity.dxftype == 'LINE':
-        LineStart1 = entity.start
-        LineEnd1 = entity.end
-#        for x in range(len(LineStart)):
-#            print(" LINE\n")
-#            print("Line start")
-#            print(LineStart[x])
-#            print("Line end")
-#            print(LineEnd[x])
+        lineStart1 = entity.start
+        lineEnd1 = entity.end
+        LFx, LFy = ParamLineFormula(lineStart1, lineEnd1)
+        line1.append([LFx, LFy])
+
     #Circle
     if entity.dxftype == 'CIRCLE':
         CenterPoints1 = entity.center
@@ -437,13 +410,13 @@ for entity in output1:
         PolylineBulge1 = entity.bulge
         PolylineVertexCount1 = entity.__len__()
 
-        print(" POLYLINE\n")
-        print("is closed")
-        print(PolylineIsClosed1)
-        print("Spline type")
-        print(PolylineSplineType1)
-        print("line points")
-        print(PolylinePoints1)
+#        print(" POLYLINE\n")
+#        print("is closed")
+#        print(PolylineIsClosed1)
+#        print("Spline type")
+#        print(PolylineSplineType1)
+#        print("line points")
+#        print(PolylinePoints1)
 #        print("Control points")
 #        print(PolylineControlPoints)
 #        print("bulge")
@@ -451,15 +424,8 @@ for entity in output1:
         print("vertex count:")
         print(PolylineVertexCount1)
         PointCnt1 = PolylineVertexCount1
-        Bx1, By1 = GetBezier(5, min(8, PointCnt1), PolylinePoints1)
-        print("formula")
-#        print(latex(Bx))
-#        print(latex(By))
-        Bezier1 = []
         Bezier1.append(CompositeBezier(min(8, PointCnt1), PolylinePoints1))
-        for i in (Bezier1):
-            a = 1
-#            print()
+
 
     #LWPolyline
     if entity.dxftype == 'LWPOLYLINE':
@@ -497,6 +463,9 @@ for entity in output1:
 #print(BlockBasepoint)
 print("=============")
 
+#Bezier formulas of file #1
+
+
 dxf2 = dxfgrabber.readfile("aplis_002.dxf")
 #type of objects in file
 print("type of objects in file")
@@ -510,25 +479,22 @@ print(Color2)
 Linetype2 = [entity.linetype for entity in output2 if entity.dxftype != 'POINT']
 print(Linetype2)
 
+point2 = []
+line2 = []
+Bezier2 = []
 #get parameters of objects
 for entity in output2:
     #Point
     if entity.dxftype == 'POINT':
-        PointCoord2 = entity.point
-#        for x in range(len(PointCoord)):
-#            print(" POINT\n")
-#            print(len(PointCoord))
-#            print(PointCoord[x])
+        pointCoord2 = entity.point
+        point2.append([pointCoord2[0], pointCoord2[1]])
     #Line
     if entity.dxftype == 'LINE':
-        LineStart2 = entity.start
-        LineEnd2 = entity.end
-#        for x in range(len(LineStart)):
-#            print(" LINE\n")
-#            print("Line start")
-#            print(LineStart[x])
-#            print("Line end")
-#            print(LineEnd[x])
+        lineStart2 = entity.start
+        lineEnd2 = entity.end
+        LFx, LFy = ParamLineFormula(lineStart2, lineEnd2)
+        line2.append([LFx, LFy])
+
     #Circle
     if entity.dxftype == 'CIRCLE':
         CenterPoints2 = entity.center
@@ -587,11 +553,7 @@ for entity in output2:
         print("formula")
 #        print(latex(Bx))
 #        print(latex(By))
-        Bezier2 = []
         Bezier2.append(CompositeBezier(min(8, PointCnt2), PolylinePoints2))
-        for i in (Bezier2):
-            a = 1
-#            print()
 
     #LWPolyline
     if entity.dxftype == 'LWPOLYLINE':
@@ -621,3 +583,42 @@ for entity in output2:
             print(SplineFitPoints2)
             print(SplineKnots2)
             print(SplineIsClosed2)
+
+
+
+#We have got data from both given files
+
+#File #1
+#for i in point1:
+#    print('(', i[0], ',', i[1], ')')
+#for i in line1:
+#    print('(',latex(i[0]),',', latex(i[1]),')')
+#for i in Bezier1 :
+#    for j in range(len(i)):
+#    #    print('(',latex(i[j][0]),',', latex(i[j][1]),')')
+#        a = 1
+
+
+
+
+#File #2
+#for i in point2:
+#    print('(', i[0], ',', i[1], ')')
+#for i in line2:
+#    print('(',latex(i[0]),',', latex(i[1]),')')
+#for i in Bezier2 :
+#    for j in range(len(i)):
+#        #    print('(',latex(i[j][0]),',', latex(i[j][1]),')')
+#        a = 1
+
+
+
+#Lets find which points are represented as the 'same' points in both files
+
+#First we will take 3 points from first file and get the distances between them
+#Based on those 3 point we are going to take three point sets from second file and compare if they match based on proportions
+#(from those three points we save proportion and angle and in the next steps we are going to use vectors to find the corresponding points)
+#If we have found the match then - take one point, pair it with all the other points and find their matching pairs in second file
+#Because we do that with vector there is no reason to compare each two points
+
+for i in points1 :    
