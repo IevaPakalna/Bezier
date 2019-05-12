@@ -334,10 +334,30 @@ def CMtrx(n, M, P, T):
     C = np.matmul(C, P)
     return C
 
-
-
-
-
+#Binary sort (for abscissa)
+def SortInsertPos(P, points, l, r): #l - left side, r - right side of segment in array
+    if l == r :
+        if points[l][0] == P[0] :
+            if points[l][1] == P[1] :
+                return -1
+            if points[l][1] < P[1] :
+                return l + 1
+            return l
+        if points[l][0] < P[0] :
+            return l + 1
+        return l
+    med = l + (r - l) // 2
+    if points[med][0] > P[0] :
+        return SortInsertPos(P, points, l, med)
+    if points[med][0] < P[0] :
+        return SortInsertPos(P, points, med + 1, r)
+    if points[med][0] == P[0] :
+        if points[med][1] == P[1] :
+            return -1 #there already exists identical point, therefore we will not save it
+        if points[med][1] > P[1] :
+            return SortInsertPos(P, points, l, med)
+        if points[med][1] < P[1] :
+            return SortInsertPos(P, points, med + 1, r)
 
 dxf1 = dxfgrabber.readfile("svarki_002.dxf")
 
@@ -353,7 +373,7 @@ print(Color1)
 Linetype1 = [entity.linetype for entity in output1 if entity.dxftype != 'POINT']
 print(Linetype1)
 
-point1 = []
+points1 = []
 line1 = []
 Bezier1 = []
 
@@ -361,8 +381,13 @@ Bezier1 = []
 for entity in output1:
     #Point
     if entity.dxftype == 'POINT':
-        pointCoord1 = entity.point
-        point1.append([pointCoord1[0], pointCoord1[1]])
+        point1 = entity.point
+        if len(points1) == 0 :
+            points1.append([point1[0], point1[1]])
+            continue
+        pos = SortInsertPos(point1, points1, 0, len(points1) - 1)
+        if pos != -1 :
+            points1.insert(pos, [point1[0], point1[1]])
     #Line
     if entity.dxftype == 'LINE':
         lineStart1 = entity.start
@@ -466,7 +491,7 @@ print("=============")
 #Bezier formulas of file #1
 
 
-dxf2 = dxfgrabber.readfile("aplis_002.dxf")
+dxf2 = dxfgrabber.readfile("svarki_002.dxf")
 #type of objects in file
 print("type of objects in file")
 type2 = [entity.dxftype for entity in dxf2.entities]
@@ -479,15 +504,20 @@ print(Color2)
 Linetype2 = [entity.linetype for entity in output2 if entity.dxftype != 'POINT']
 print(Linetype2)
 
-point2 = []
+points2 = []
 line2 = []
 Bezier2 = []
 #get parameters of objects
 for entity in output2:
     #Point
     if entity.dxftype == 'POINT':
-        pointCoord2 = entity.point
-        point2.append([pointCoord2[0], pointCoord2[1]])
+                point2 = entity.point
+                if len(points2) == 0 :
+                    points2.append([point2[0], point2[1]])
+                    continue
+                pos = SortInsertPos(point2, points2, 0, len(points2) - 1)
+                if pos != -1 :
+                    points2.insert(pos, [point2[0], point2[1]])
     #Line
     if entity.dxftype == 'LINE':
         lineStart2 = entity.start
@@ -620,5 +650,3 @@ for entity in output2:
 #(from those three points we save proportion and angle and in the next steps we are going to use vectors to find the corresponding points)
 #If we have found the match then - take one point, pair it with all the other points and find their matching pairs in second file
 #Because we do that with vector there is no reason to compare each two points
-
-for i in points1 :    
