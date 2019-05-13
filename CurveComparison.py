@@ -359,6 +359,17 @@ def SortInsertPos(P, points, l, r): #l - left side, r - right side of segment in
         if points[med][1] < P[1] :
             return SortInsertPos(P, points, med + 1, r)
 
+#transform points
+def pointTransform(P, Vx, Vy, rP, alpha) :
+    for i in len(P) :
+        tmpx = (i[0] - Vx)
+        tmpx = np.cos(alpha) * (tmpx - rP[0]) + np.sin(alpha) * (tmpy - rP[1]) + rP[0]
+        tmpy = (i[1] - Vy)
+        tmpy = np.cos(alpha) * (tmpx - rP[0]) + np.sin(alpha) * (tmpy - rP[1]) + rP[1]
+        P[i][0] = tmpx
+        P[i][1] = tmpy
+    return P
+
 dxf1 = dxfgrabber.readfile("svarki_002.dxf")
 
 #type of objects in file
@@ -619,7 +630,7 @@ for entity in output2:
 #We have got data from both given files
 
 #File #1
-#for i in point1:
+#for i in points1:
 #    print('(', i[0], ',', i[1], ')')
 #for i in line1:
 #    print('(',latex(i[0]),',', latex(i[1]),')')
@@ -632,7 +643,7 @@ for entity in output2:
 
 
 #File #2
-#for i in point2:
+#for i in points2:
 #    print('(', i[0], ',', i[1], ')')
 #for i in line2:
 #    print('(',latex(i[0]),',', latex(i[1]),')')
@@ -646,7 +657,59 @@ for entity in output2:
 #Lets find which points are represented as the 'same' points in both files
 
 #First we will take 3 points from first file and get the distances between them
-#Based on those 3 point we are going to take three point sets from second file and compare if they match based on proportions
-#(from those three points we save proportion and angle and in the next steps we are going to use vectors to find the corresponding points)
-#If we have found the match then - take one point, pair it with all the other points and find their matching pairs in second file
+#Based on those 3 point we are going to take three point sets from second file
+#   and compare if they match based on proportions
+#(from those three points we save proportion and angle and in the next steps we
+#    are going to use vectors to find the corresponding points)
+#If we have found the match then - take one point, pair it with all the other
+#   points and find their matching pairs in second file
 #Because we do that with vector there is no reason to compare each two points
+
+
+dist11 = PointDist(points1[0], points1[1])
+dist12 = PointDist(points1[0], points1[2])
+dist13 = PointDist(points1[1], points1[2])
+for i in range(len(points2)) :
+    t = True
+    transf = False
+    dist21 = PointDist(points2[i], points2[i + 1])
+    for j in range(len(points2)) :
+        if j == i:
+            continue
+        dist22 = PointDist(points2[i], points2[j])
+        if dist11 / dist21 == dist12/ dist22 :
+            dist23 = PointDist(points2[i + 1], points2[j])
+            if dist11 / dist21 == dist13 / dist23 :
+                ratio = dist21 / dist11
+                unitV = []  #Unit vector of second file point set
+                tmpVx = points2[i + 1][0] - points2[i][0]
+                tmpVy = points2[i + 1][1] - points2[i][1]
+                unitV.append(tmpVx / abs(dist21))
+                unitV.append(tmpVy / abs(dist21))
+                for k in range(3, len(points1)) :
+                    dist1 = PointDist(points1[0], points1[k])
+                    tmpPx = points2[i][0] + unitV[0] * dist1
+                    tmpPy = points2[i][1] + unitV[1] * dist1
+                    tmpP = []
+                    tmpP.append([tmpPx, tmpPy])
+                    if points2.index(tmpP) == False :
+                        t = False
+                        break
+                    if k == len(points2) - 1 :
+                        d = PointDist(points1[0], points2[i])
+                        transfVx = points2[i][0] - points1[0][0] #Transformation vector
+                        transfVy = points2[i][1] - points1[0][0]
+                        Ptmpx = points2[j + 1][0] - transfVx
+                        Ptmpy = points2[j + 1][1] - transfVy
+                        a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
+                        a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx[i][0])
+                        alpha = np.arctan((a2 - a1) / (1 + a1 * a2))
+                        points2 = pointTransform(points2, transfVx, transfVy, points1[0], - alpha)
+                        transf = True
+                        break
+                if t == False or transf == True :
+                    break
+            if t == False or transf == True :
+                break
+        if transf == True :
+            break
