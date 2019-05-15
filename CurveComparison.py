@@ -6,9 +6,10 @@ import array as arr
 import sympy
 from sympy import init_printing, Symbol, UnevaluatedExpr, expand, pretty_print as pprint, latex
 from sympy.solvers import solve
+import matplotlib.pyplot as plt
 
 #Crete Composite Bezier from given points
-def CompositeBezier(n, Points):
+def CompositeBezier(Points, nr):
     P = PMtrx(len(Points), Points)
     C = [[0],[1],[2],[3]]
     Bezier = []
@@ -56,7 +57,7 @@ def CompositeBezier(n, Points):
 
     C[0] = (P[0])
     C[3] = (P[1])
-    Bx, By = BezierFormulaComp(C)
+    Bx, By = BezierFormulaComp(C, nr)
     Bezier.append([Bx, By])
     for i in range(1, len(P)): #Calculate controlpoints for P[i], P[i + 1] segment
         dtmp = PointDist(P[i], P[i + 1]) / 3
@@ -65,7 +66,7 @@ def CompositeBezier(n, Points):
         C[0] = P[i]
         C[3] = P[i + 1]
         C[1] = DistantPoint(P[i], P[i - 1], P[i + 1], d)
-        Bx, By = BezierFormulaComp(C)
+        Bx, By = BezierFormulaComp(C, nr)
         Bezier.append([Bx, By])
         if i == len(P) - 3:
             dtmp = PointDist(P[-1], P[-2]) / 3
@@ -107,7 +108,7 @@ def CompositeBezier(n, Points):
             C[2] = C2
             C[0] = (P[-1])
             C[3] = (P[-2])
-            Bx, By = BezierFormulaComp(C)
+            Bx, By = BezierFormulaComp(C, nr)
             Bezier.append([Bx, By])
             break
     return Bezier
@@ -128,7 +129,7 @@ def PointProjecOnLine(P, P1, P2):
     Pp.append(y)
     return Pp
 
-def BezierFormulaComp(C):
+def BezierFormulaComp(C, nr):
     t = Symbol('t')
     Bx = 0
     By = 0
@@ -138,6 +139,19 @@ def BezierFormulaComp(C):
         Bx = UnevaluatedExpr(Bx) + Bxtmp
         Bytmp = (UnevaluatedExpr(BinC))*(1 - t)**(4 - i - 1)*t**(i)*(C[i][1])  #Create Bx(t) formula
         By = UnevaluatedExpr(By) + Bytmp
+    Bx1 = 0
+    By1 = 0
+    t1 = np.linspace(0, 1, 50)
+    for i in range(4):
+        BinC = BinCoef(3, i)
+        Bxtmp = ((BinC))*(1 - t1)**(4 - i - 1)*t1**(i)*(C[i][0])    #Create Bx(t) formula
+        Bx1 = (Bx1) + Bxtmp
+        Bytmp = ((BinC))*(1 - t1)**(4 - i - 1)*t1**(i)*(C[i][1])  #Create Bx(t) formula
+        By1 = (By1) + Bytmp
+    if nr == 1:
+        plt.plot(Bx1, By1, color = 'r')
+    else:
+        plt.plot(Bx1, By1, color = 'b')
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
     return (Bx, By)
@@ -370,7 +384,7 @@ def pointTransform(P, Vx, Vy, rP, alpha) :
         P[i][1] = tmpy
     return P
 
-dxf1 = dxfgrabber.readfile("svarki_002.dxf")
+dxf1 = dxfgrabber.readfile("parastie_platgurnu_m2_p2_002.dxf")
 
 #type of objects in file
 print("type of objects in file")
@@ -399,12 +413,18 @@ for entity in output1:
         pos = SortInsertPos(point1, points1, 0, len(points1) - 1)
         if pos != -1 :
             points1.insert(pos, [point1[0], point1[1]])
+        x = [point1[0]]
+        y = [point1[1]]
+        plt.plot(x, y, 'ro')
     #Line
     if entity.dxftype == 'LINE':
         lineStart1 = entity.start
         lineEnd1 = entity.end
         LFx, LFy = ParamLineFormula(lineStart1, lineEnd1)
         line1.append([LFx, LFy])
+        x = [lineStart1[0], lineEnd1[0]]
+        y = [lineStart1[1], lineEnd1[1]]
+        plt.plot(x, y, color = "r")
 
     #Circle
     if entity.dxftype == 'CIRCLE':
@@ -460,7 +480,7 @@ for entity in output1:
         print("vertex count:")
         print(PolylineVertexCount1)
         PointCnt1 = PolylineVertexCount1
-        Bezier1.append(CompositeBezier(min(8, PointCnt1), PolylinePoints1))
+        Bezier1.append(CompositeBezier(PolylinePoints1, 1))
 
 
     #LWPolyline
@@ -502,7 +522,7 @@ print("=============")
 #Bezier formulas of file #1
 
 
-dxf2 = dxfgrabber.readfile("svarki_002.dxf")
+dxf2 = dxfgrabber.readfile("Parastie_platgurnu_m3_p2_002.dxf")
 #type of objects in file
 print("type of objects in file")
 type2 = [entity.dxftype for entity in dxf2.entities]
@@ -535,6 +555,9 @@ for entity in output2:
         lineEnd2 = entity.end
         LFx, LFy = ParamLineFormula(lineStart2, lineEnd2)
         line2.append([LFx, LFy])
+        x = [lineStart2[0], lineEnd2[0]]
+        y = [lineStart2[1], lineEnd2[1]]
+        plt.plot(x, y, color = 'b')
 
     #Circle
     if entity.dxftype == 'CIRCLE':
@@ -594,7 +617,7 @@ for entity in output2:
         print("formula")
 #        print(latex(Bx))
 #        print(latex(By))
-        Bezier2.append(CompositeBezier(min(8, PointCnt2), PolylinePoints2))
+        Bezier2.append(CompositeBezier(PolylinePoints2, 2))
 
     #LWPolyline
     if entity.dxftype == 'LWPOLYLINE':
@@ -731,3 +754,6 @@ for i in range(len(points2) - 1) :
             break
     if transf == True :
         break
+
+
+plt.show()
