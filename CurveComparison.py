@@ -669,7 +669,7 @@ for entity in output2:
 dist11 = PointDist(points1[0], points1[1])
 dist12 = PointDist(points1[0], points1[2])
 dist13 = PointDist(points1[1], points1[2])
-for i in range(len(points2)) :
+for i in range(len(points2) - 1) :
     t = True
     transf = False
     dist21 = PointDist(points2[i], points2[i + 1])
@@ -692,7 +692,15 @@ for i in range(len(points2)) :
                     tmpPy = points2[i][1] + unitV[1] * dist1
                     tmpP = []
                     tmpP.append([tmpPx, tmpPy])
-                    if points2.index(tmpP) == False :
+                    print("$$$$$$$$$$$$$$$$$")
+                    print(tmpP)
+                    try:
+                        print('*')
+                        print(points2.index(tmpP))
+                    except ValueError :
+                        print("ERROR")
+                        print(tmpP)
+                        print(points2)
                         t = False
                         break
                     if k == len(points2) - 1 :
