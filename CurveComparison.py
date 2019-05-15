@@ -361,10 +361,10 @@ def SortInsertPos(P, points, l, r): #l - left side, r - right side of segment in
 
 #transform points
 def pointTransform(P, Vx, Vy, rP, alpha) :
-    for i in len(P) :
-        tmpx = (i[0] - Vx)
+    for i in range(len(P) - 1) :
+        tmpx = (P[i][0] - Vx)
+        tmpy = (P[i][1] - Vy)
         tmpx = np.cos(alpha) * (tmpx - rP[0]) + np.sin(alpha) * (tmpy - rP[1]) + rP[0]
-        tmpy = (i[1] - Vy)
         tmpy = np.cos(alpha) * (tmpx - rP[0]) + np.sin(alpha) * (tmpy - rP[1]) + rP[1]
         P[i][0] = tmpx
         P[i][1] = tmpy
@@ -681,26 +681,25 @@ for i in range(len(points2) - 1) :
             dist23 = PointDist(points2[i + 1], points2[j])
             if dist11 / dist21 == dist13 / dist23 :
                 ratio = dist21 / dist11
-                unitV = []  #Unit vector of second file point set
-                tmpVx = points2[i + 1][0] - points2[i][0]
-                tmpVy = points2[i + 1][1] - points2[i][1]
-                unitV.append(tmpVx / abs(dist21))
-                unitV.append(tmpVy / abs(dist21))
+                dist = PointDist(points1[0], points2[i])
+                unitV = []  #Unit vector of difference between points1 and points2
+                tmpVx = points1[0][0] - points2[i][0]
+                tmpVy = points2[0][1] - points2[i][1]
+                if dist != 0 :
+                    tmpVx /= abs(dist)
+                    tmpVy /= abs(dist)
+                unitV.append(tmpVx)
+                unitV.append(tmpVy)
                 for k in range(3, len(points1)) :
                     dist1 = PointDist(points1[0], points1[k])
                     tmpPx = points2[i][0] + unitV[0] * dist1
                     tmpPy = points2[i][1] + unitV[1] * dist1
                     tmpP = []
-                    tmpP.append([tmpPx, tmpPy])
-                    print("$$$$$$$$$$$$$$$$$")
-                    print(tmpP)
+                    tmpP.append(tmpPx)
+                    tmpP.append(tmpPy)
                     try:
-                        print('*')
-                        print(points2.index(tmpP))
+                        points2.index(tmpP)
                     except ValueError :
-                        print("ERROR")
-                        print(tmpP)
-                        print(points2)
                         t = False
                         break
                     if k == len(points2) - 1 :
@@ -709,9 +708,18 @@ for i in range(len(points2) - 1) :
                         transfVy = points2[i][1] - points1[0][0]
                         Ptmpx = points2[j + 1][0] - transfVx
                         Ptmpy = points2[j + 1][1] - transfVy
-                        a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
-                        a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx[i][0])
-                        alpha = np.arctan((a2 - a1) / (1 + a1 * a2))
+                        if (((points1[0][0] - points2[i][0]) == 0) and ((points1[0][0] - Ptmpx) == 0)) :
+                            alpha = 0
+                        elif (points1[0][0] - points2[i][0]) == 0 :
+                            a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx)
+                            alpha = 90 - np.arctan(a2)
+                        elif (points1[0][0] - Ptmpx[i][0]) == 0 :
+                            a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
+                            alpha = 90 - np.arcatn(a1)
+                        else:
+                            a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
+                            a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx)
+                            alpha = np.arctan((a2 - a1) / (1 + a1 * a2))
                         points2 = pointTransform(points2, transfVx, transfVy, points1[0], - alpha)
                         transf = True
                         break
@@ -721,3 +729,5 @@ for i in range(len(points2) - 1) :
                 break
         if transf == True :
             break
+    if transf == True :
+        break
