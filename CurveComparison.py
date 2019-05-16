@@ -149,9 +149,9 @@ def BezierFormulaComp(C, nr):
         Bytmp = ((BinC))*(1 - t1)**(4 - i - 1)*t1**(i)*(C[i][1])  #Create Bx(t) formula
         By1 = (By1) + Bytmp
     if nr == 1:
-        plt.plot(Bx1, By1, color = 'r')
+        plt.plot(Bx1, By1, color = '#bc3434', alpha = 0.7)
     else:
-        plt.plot(Bx1, By1, color = 'b')
+        plt.plot(Bx1, By1, color = '#227f74', alpha = 0.7)
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
     return (Bx, By)
@@ -387,16 +387,12 @@ def pointTransform(P, Vx, Vy, rP, alpha) :
 dxf1 = dxfgrabber.readfile("parastie_platgurnu_m2_p2_002.dxf")
 
 #type of objects in file
-print("type of objects in file")
 type1 = [entity.dxftype for entity in dxf1.entities]
-print(type1)
 
 output1 = [entity for entity in dxf1.entities]
 
 Color1 = [entity.color for entity in output1]
-print(Color1)
 Linetype1 = [entity.linetype for entity in output1 if entity.dxftype != 'POINT']
-print(Linetype1)
 
 points1 = []
 line1 = []
@@ -413,9 +409,9 @@ for entity in output1:
         pos = SortInsertPos(point1, points1, 0, len(points1) - 1)
         if pos != -1 :
             points1.insert(pos, [point1[0], point1[1]])
-        x = [point1[0]]
-        y = [point1[1]]
-        plt.plot(x, y, 'ro')
+            x = [point1[0]]
+            y = [point1[1]]
+            plt.plot(x, y, 'o', color = '#bc3434', alpha = 0.7)
     #Line
     if entity.dxftype == 'LINE':
         lineStart1 = entity.start
@@ -424,7 +420,7 @@ for entity in output1:
         line1.append([LFx, LFy])
         x = [lineStart1[0], lineEnd1[0]]
         y = [lineStart1[1], lineEnd1[1]]
-        plt.plot(x, y, color = "r")
+        plt.plot(x, y, color = '#bc3434', alpha = 0.7)
 
     #Circle
     if entity.dxftype == 'CIRCLE':
@@ -465,20 +461,6 @@ for entity in output1:
         PolylineControlPoints1 = entity.control_points
         PolylineBulge1 = entity.bulge
         PolylineVertexCount1 = entity.__len__()
-
-#        print(" POLYLINE\n")
-#        print("is closed")
-#        print(PolylineIsClosed1)
-#        print("Spline type")
-#        print(PolylineSplineType1)
-#        print("line points")
-#        print(PolylinePoints1)
-#        print("Control points")
-#        print(PolylineControlPoints)
-#        print("bulge")
-#        print(PolylineBulge)
-        print("vertex count:")
-        print(PolylineVertexCount1)
         PointCnt1 = PolylineVertexCount1
         Bezier1.append(CompositeBezier(PolylinePoints1, 1))
 
@@ -517,23 +499,18 @@ for entity in output1:
 #print("BLOCKS")
 #BlockBasepoint= [Block.BlockBasepoint for Block in dxf.entities]
 #print(BlockBasepoint)
-print("=============")
 
-#Bezier formulas of file #1
+#Bezier formulas of file #2
 
 
 dxf2 = dxfgrabber.readfile("Parastie_platgurnu_m3_p2_002.dxf")
 #type of objects in file
-print("type of objects in file")
 type2 = [entity.dxftype for entity in dxf2.entities]
-print(type2)
 
 output2 = [entity for entity in dxf2.entities]
 
 Color2 = [entity.color for entity in output2]
-print(Color2)
 Linetype2 = [entity.linetype for entity in output2 if entity.dxftype != 'POINT']
-print(Linetype2)
 
 points2 = []
 line2 = []
@@ -542,13 +519,16 @@ Bezier2 = []
 for entity in output2:
     #Point
     if entity.dxftype == 'POINT':
-                point2 = entity.point
-                if len(points2) == 0 :
-                    points2.append([point2[0], point2[1]])
-                    continue
-                pos = SortInsertPos(point2, points2, 0, len(points2) - 1)
-                if pos != -1 :
-                    points2.insert(pos, [point2[0], point2[1]])
+        point2 = entity.point
+        if len(points2) == 0 :
+            points2.append([point2[0], point2[1]])
+            continue
+        pos = SortInsertPos(point2, points2, 0, len(points2) - 1)
+        if pos != -1 :
+            x = [point2[0]]
+            y = [point2[1]]
+            points2.insert(pos, [point2[0], point2[1]])
+            plt.plot(x, y, 'o', color = '#227f74', alpha = 0.7)
     #Line
     if entity.dxftype == 'LINE':
         lineStart2 = entity.start
@@ -557,7 +537,7 @@ for entity in output2:
         line2.append([LFx, LFy])
         x = [lineStart2[0], lineEnd2[0]]
         y = [lineStart2[1], lineEnd2[1]]
-        plt.plot(x, y, color = 'b')
+        plt.plot(x, y, color = '#227f74', alpha = 0.7)
 
     #Circle
     if entity.dxftype == 'CIRCLE':
@@ -598,23 +578,8 @@ for entity in output2:
         PolylineControlPoints2 = entity.control_points
         PolylineBulge2 = entity.bulge
         PolylineVertexCount2 = entity.__len__()
-
-        print(" POLYLINE\n")
-        print("is closed")
-        print(PolylineIsClosed2)
-        print("Spline type")
-        print(PolylineSplineType2)
-        print("line points")
-        print(PolylinePoints2)
-#        print("Control points")
-#        print(PolylineControlPoints)
-#        print("bulge")
-#        print(PolylineBulge)
-        print("vertex count:")
-        print(PolylineVertexCount2)
         PointCnt2 = PolylineVertexCount2
         Bx2, By2 = GetBezier(5, min(8, PointCnt2), PolylinePoints2)
-        print("formula")
 #        print(latex(Bx))
 #        print(latex(By))
         Bezier2.append(CompositeBezier(PolylinePoints2, 2))
@@ -755,5 +720,5 @@ for i in range(len(points2) - 1) :
     if transf == True :
         break
 
-
+plt.grid(which = 'both', axis = 'both')
 plt.show()
