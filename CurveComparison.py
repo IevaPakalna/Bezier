@@ -7,6 +7,22 @@ import sympy
 from sympy import init_printing, Symbol, UnevaluatedExpr, expand, pretty_print as pprint, latex
 from sympy.solvers import solve
 import matplotlib.pyplot as plt
+import matplotlib.axes as axes
+
+
+plt.rcParams['xtick.bottom'] = plt.rcParams['xtick.labelbottom'] = False
+plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+major_ticks = np.arange(-10000, 10000, 100)
+minor_ticks = np.arange(-10000, 10000, 10)
+ax.set_xticks(major_ticks)
+ax.set_xticks(minor_ticks, minor = True)
+ax.set_yticks(major_ticks)
+ax.set_yticks(minor_ticks, minor = True)
+ax.grid(which = 'both')
+ax.grid(which = 'major', alpha = 0.5)
+ax.grid(which = 'minor', alpha = 0.2)
 
 #Crete Composite Bezier from given points
 def CompositeBezier(Points, nr):
@@ -149,9 +165,9 @@ def BezierFormulaComp(C, nr):
         Bytmp = ((BinC))*(1 - t1)**(4 - i - 1)*t1**(i)*(C[i][1])  #Create Bx(t) formula
         By1 = (By1) + Bytmp
     if nr == 1:
-        plt.plot(Bx1, By1, color = '#bc3434', alpha = 0.7)
+        plt.plot(Bx1, By1, color = '#055583', alpha = 0.65)
     else:
-        plt.plot(Bx1, By1, color = '#227f74', alpha = 0.7)
+        plt.plot(Bx1, By1, color = '#bc0e13', alpha = 0.5)
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
     return (Bx, By)
@@ -411,16 +427,15 @@ for entity in output1:
             points1.insert(pos, [point1[0], point1[1]])
             x = [point1[0]]
             y = [point1[1]]
-            plt.plot(x, y, 'o', color = '#bc3434', alpha = 0.7)
+            plt.plot(x, y, 'o', color = '#055583', alpha = 0.65)
     #Line
     if entity.dxftype == 'LINE':
         lineStart1 = entity.start
         lineEnd1 = entity.end
-        LFx, LFy = ParamLineFormula(lineStart1, lineEnd1)
-        line1.append([LFx, LFy])
+        line1.append([lineStart1, lineEnd1])
         x = [lineStart1[0], lineEnd1[0]]
         y = [lineStart1[1], lineEnd1[1]]
-        plt.plot(x, y, color = '#bc3434', alpha = 0.7)
+        plt.plot(x, y, color = '#055583', alpha = 0.65)
 
     #Circle
     if entity.dxftype == 'CIRCLE':
@@ -528,16 +543,15 @@ for entity in output2:
             x = [point2[0]]
             y = [point2[1]]
             points2.insert(pos, [point2[0], point2[1]])
-            plt.plot(x, y, 'o', color = '#227f74', alpha = 0.7)
+            plt.plot(x, y, 'o', color = '#bc0e13', alpha = 0.5)
     #Line
     if entity.dxftype == 'LINE':
         lineStart2 = entity.start
         lineEnd2 = entity.end
-        LFx, LFy = ParamLineFormula(lineStart2, lineEnd2)
-        line2.append([LFx, LFy])
+        line2.append([lineStart2, lineEnd2])
         x = [lineStart2[0], lineEnd2[0]]
         y = [lineStart2[1], lineEnd2[1]]
-        plt.plot(x, y, color = '#227f74', alpha = 0.7)
+        plt.plot(x, y, color = '#bc0e13', alpha = 0.5)
 
     #Circle
     if entity.dxftype == 'CIRCLE':
@@ -579,7 +593,7 @@ for entity in output2:
         PolylineBulge2 = entity.bulge
         PolylineVertexCount2 = entity.__len__()
         PointCnt2 = PolylineVertexCount2
-        Bx2, By2 = GetBezier(5, min(8, PointCnt2), PolylinePoints2)
+        #Bx2, By2 = GetBezier(5, min(8, PointCnt2), PolylinePoints2)
 #        print(latex(Bx))
 #        print(latex(By))
         Bezier2.append(CompositeBezier(PolylinePoints2, 2))
@@ -720,5 +734,63 @@ for i in range(len(points2) - 1) :
     if transf == True :
         break
 
-plt.grid(which = 'both', axis = 'both')
+#Comparison of objects
+#we will go through all objects in both files by picking the first object in first files
+#then in second file we will find the most similar one (by type and coordinates)
+#we also know that some of the objects are connected which we are going to use to specify two 'equal' objects in both files
+#to determine how similar are both files we will calculate max distance between respective objects where:
+#   *points - distance between points (but this will not be calculated because for our target it`s not important)
+#   lines - distance between end-points
+#   Bezier curves - distance for set of points on Bezier (with t parameter change of 0.1)
+#       for Bezier we need to iterate both lines because one of them can end before the other one and actual max length can be larger
+
+#for second type of comparison we will compare respective Bezier curves by getting distance between points with equal parameter value
+
+
+#find closest point from specified objects
+def ClosestPnt(P, arr):
+    for i in range(len(arr) - 1) :
+        if i == 0 :
+            min = PointDist(P, arr[i][0])
+            minP = i
+            First = True
+        tmpD = PointDist(P, arr[i][0])
+        if tmpD < min :
+            min = tmpD
+            minP = i
+            First = True
+        tmpD = PointDist(P, arr[i][-1])
+        if tmpD < min :
+            min = tmpD
+            minP = i
+            First = False
+    print(min)
+    if First == True :
+        return arr[minP][0], min
+    else :
+        return arr[minP][1], min
+
+
+
+#F2, min = ClosestPnt(line1[0][0], line2)
+#for i in line2 :
+#    try :
+#        if line2.index(F2) == True :
+#            F2ind = line2.index()
+#
+#if (line2[F2ind][0] != line1[0][0]) :
+#    labelLoc = distantPoint(F2, F2, line1[0], min / 2)
+#    plt.plot(P2, line1[0][0], color = '#6c9f92')
+#
+#if (line2[F2ind][1] != line1[0][1]) :
+#    plt.plot(line2[F2ind][1], line1[0][1])
+
+
+
+
+
+
+
+
+
 plt.show()
