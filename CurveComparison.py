@@ -749,6 +749,9 @@ for i in range(len(points2) - 1) :
 
 #find closest point from specified objects
 def ClosestPnt(P, arr):
+    min = -1
+    First = True
+    minP = 0
     for i in range(len(arr) - 1) :
         if i == 0 :
             min = PointDist(P, arr[i][0])
@@ -764,28 +767,135 @@ def ClosestPnt(P, arr):
             min = tmpD
             minP = i
             First = False
-    print(min)
-    if First == True :
-        return arr[minP][0], min
-    else :
-        return arr[minP][1], min
+    return arr[minP][0], min
 
 
 
-#F2, min = ClosestPnt(line1[0][0], line2)
-#for i in line2 :
-#    try :
-#        if line2.index(F2) == True :
-#            F2ind = line2.index()
-#
-#if (line2[F2ind][0] != line1[0][0]) :
-#    labelLoc = distantPoint(F2, F2, line1[0], min / 2)
-#    plt.plot(P2, line1[0][0], color = '#6c9f92')
-#
-#if (line2[F2ind][1] != line1[0][1]) :
-#    plt.plot(line2[F2ind][1], line1[0][1])
+F2, min = ClosestPnt(line1[0][0], line2)
 
 
+#color = '#6c9f92'
+
+
+visitedPnts = []
+
+def DiffAll(P1, typeArr, visitedPnts) :
+    P21, min21 = ClosestPnt(P1, line2)
+    P22, min22 = ClosestPnt(P1, Bezier2)
+    if (min21 < min22) :
+        P2 = P21
+    else:
+        P2 = P22
+
+    if min == -1 :
+        return
+
+    for i in range(len(line1)) :
+        P1ind = -1
+        lineSt1 = -1
+        if P1 == line1[i][0] :
+            P1ind = i
+            lineSt1 = 0
+        elif P1 == line1[i][1] :
+            P1ind = i
+            lineSt1 = 1
+        else:
+            continue
+        a1 = (line1[i][0], line1[i][1])
+
+        lineSt2 = -1
+        P2ind = -1
+        for j in range(len(line2)):
+            if P2 == line2[j][0] :
+                lineSt2 = 0
+            elif P2 == line2[j][1] :
+                lineSt2 = 1
+            else:
+                continue
+            a2 = (line2[j][0], line2[j][1])
+            angle = np.arctan((a2 - a1) / (1 + abs(a1 * a2)))
+            if abs(angle) > 5 :
+                continue
+            if (lineSt1 != -1 and lineSt2 != -1) :
+                endDist = PointDist(line1[i][(lineSt1 + 1) % 2], line2[j][(lineSt2 + 1) % 2])
+                if minEndDist == -1 :
+                    minEndDist = endDist
+                    P2Ind = j
+                if endDist < minEndDist :
+                    minEndDist = endDist
+                    P2ind = j
+
+        if (P2ind == -1) :
+            plt.plot(line1[i][0], line1[i][1], color = '#055583')
+
+        if (P1ind != -1 and P2ind != -1) :
+            dist1 = PointDist(line1[i][lineSt1], line2[P2Ind][lineSt2])
+            dist2 = PointDist(line1[i][(lineSt1 + 1) % 2], line2[P2Ind][(lineSt2 + 1) % 2])
+            plt.plot(line1[i][lineSt1], line2[P2Ind][lineSt2], color = '#6c9f92')
+            plt.plot(line1[i][(lineSt1 + 1) % 2], line2[P2Ind][(lineSt2 + 1) % 2], color = '#6c9f92')
+
+if (P1ind == -1 and P2ind != -1) :
+    plt.plot(line2[i][0], line2[i][1], color = '#bc0e13')
+if (P1ind != -1 and P2ind == -1) :
+    plt.plot(line1[i][0], line1[i][1], color = '#055583')
+
+if (P1ind != -1 and P2ind != -1) :
+    if lineStart1 == True:
+        if (lineStart2 == True and abs(angle) < 5 and PointDist() :
+            dist1 = PointDist(line)
+
+
+#Search for distance between point and Bezier curve
+def BezierMaxDist(Bx, By, P) :
+    param = 0
+    #get distance values from points on bezier that differs from each other by 0.1 parameter value
+    for i in range (11) :
+        param = param + i * 0.1
+        x = Bx.subs(t, param)
+        y = By.subs(t, param)
+        dist = PointDist((x, y), P)
+        if i == 0 :
+            min = PointDist((x, y), P)
+            minParam = param
+        elif dist < min :
+            min = dist
+            minParam = param
+    #check if in segments between previously determined points there is not point with smaller distance to the given point
+    while (param >= minParam - 0.1 and param <= minParam + 0.1) :
+        x = Bx.subs(t, param + 0.1)
+        y = By.subs(t, param + 0.1)
+        dist1 = PointDist((x, y), P)
+        x = Bx.subs(t, param - 0.1)
+        y = By.subs(t, param - 0.1)
+        dist2 = PointDist((x, y), P)
+        if (dist1 < min and dist1 < dist2) :
+            param += 0.1
+            min = dist1
+            continue
+        elif (dist2 < min and dist2 < dist1) :
+            param -= 0.1
+            min = dist2
+            continue
+        else:
+            x = Bx.subs(t, param)
+            y = By.subs(t, param)
+            plt.plot((x, y), P, color = '#6c9f92')
+            return min
+
+#calculate difference value using square method
+def BezierDiff(Bx1, By1, Bx2, By2) :
+    param = 0
+    diff = 0
+    #get distance values from points on beziers that grows by 0.1 parameter value
+    for i in range (11) :
+        param = param + i * 0.1
+        x1 = Bx1.subs(t, param)
+        y1 = By1.subs(t, param)
+        x2 = Bx2.subs(t, param)
+        y2 = By2.subs(t, param)
+        dist = PointDist((x1, y1), (x2, y2))
+        diff += dist**2
+    return diff
 
 
 
