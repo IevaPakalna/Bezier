@@ -25,9 +25,10 @@ ax.grid(which = 'major', alpha = 0.5)
 ax.grid(which = 'minor', alpha = 0.2)
 
 #Crete Composite Bezier from given points
-def CompositeBezier(Points, nr, cnt, CP):
+def CompositeBezier(Points, nr):
     P = PMtrx(len(Points), Points)
     C = [[0],[1],[2],[3]]
+    CP = []
     Bezier = []
     t = Symbol('t')
     x = Symbol('x')
@@ -73,12 +74,8 @@ def CompositeBezier(Points, nr, cnt, CP):
 
     C[0] = (P[0])
     C[3] = (P[1])
-    CP.append([])
-    CPlen = len(CP) - 1
-    CP[CPlen].append(nr)
-    CP[CPlen].append(cnt)
-    CP[CPlen].append(C)
-    Bx, By = BezierFormulaComp(C, nr)
+    CP.append([C[0], C[1], C[2], C[3]])
+    Bx, By = BezierFormulaComp(C)
     Bezier.append([Bx, By])
     for i in range(1, len(P)): #Calculate controlpoints for P[i], P[i + 1] segment
         dtmp = PointDist(P[i], P[i + 1]) / 3
@@ -87,12 +84,8 @@ def CompositeBezier(Points, nr, cnt, CP):
         C[0] = P[i]
         C[3] = P[i + 1]
         C[1] = DistantPoint(P[i], P[i - 1], P[i + 1], d)
-        CP.append([])
-        CPlen = len(CP) - 1
-        CP[CPlen].append(nr)
-        CP[CPlen].append(cnt)
-        CP[CPlen].append(C)
-        Bx, By = BezierFormulaComp(C, nr)
+        CP.append([C[0], C[1], C[2], C[3]])
+        Bx, By = BezierFormulaComp(C)
         Bezier.append([Bx, By])
         if i == len(P) - 3:
             dtmp = PointDist(P[-1], P[-2]) / 3
@@ -134,12 +127,8 @@ def CompositeBezier(Points, nr, cnt, CP):
             C[2] = C2
             C[0] = (P[-1])
             C[3] = (P[-2])
-            CP.append([])
-            CPlen = len(CP) - 1
-            CP[CPlen].append(nr)
-            CP[CPlen].append(cnt)
-            CP[CPlen].append(C)
-            Bx, By = BezierFormulaComp(C, nr)
+            CP.append([C[0], C[1], C[2], C[3]])
+            Bx, By = BezierFormulaComp(C)
             Bezier.append([Bx, By])
             break
     return Bezier, CP
@@ -160,7 +149,7 @@ def PointProjecOnLine(P, P1, P2):
     Pp.append(y)
     return Pp
 
-def BezierFormulaComp(C, nr):
+def BezierFormulaComp(C):
     t = Symbol('t')
     Bx = 0
     By = 0
@@ -171,22 +160,24 @@ def BezierFormulaComp(C, nr):
         Bytmp = BinC*(1 - t)**(4 - i - 1)*t**(i)*(C[i][1])  #Create Bx(t) formula
         By = By + Bytmp
 
-    t1 = np.linspace(0, 1, 50)
-    Bx1 = 0
-    By1 = 0
-    for i in range(4):
-        BinC = BinCoef(3, i)
-        Bxtmp = ((BinC))*(1 - t1)**(4 - i - 1)*t1**(i)*(C[i][0])    #Create Bx(t) formula
-        Bx1 = (Bx1) + Bxtmp
-        Bytmp = ((BinC))*(1 - t1)**(4 - i - 1)*t1**(i)*(C[i][1])  #Create Bx(t) formula
-        By1 = (By1) + Bytmp
-    if nr == 1:
-        plt.plot(Bx1, By1, color = '#055583', alpha = 0.65)
-    else:
-        plt.plot(Bx1, By1, color = '#bc0e13', alpha = 0.5)
 #        Bx = f"{Bx} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][0]}) " #Create Bx(t) formula as a string
 #        By = f"{By} + ({BinC})(1 - t)^{n - i}*t^{i - 1}({P[i - 1][1]}) " #Create Bx(t) formula as a string
     return Bx, By
+
+def PlotBezier(C, clr, transp, lstyle) :
+    for i in range(len(C)) :
+        t1 = np.linspace(0, 1, 50)
+        Bx1 = 0
+        By1 = 0
+        for j in range(4) :
+            BinC = BinCoef(3, j)
+            Bxtmp = BinC * (1 - t1)**(4 - j - 1) * t1**(j) * (C[i][j][0])    #Create Bx(t) formula
+            Bx1 = (Bx1) + Bxtmp
+            Bytmp = BinC * (1 - t1)**(4 - j - 1) * t1**(j) * (C[i][j][1])  #Create Bx(t) formula
+            By1 = (By1) + Bytmp
+        plt.plot(Bx1, By1, color = clr, alpha = transp, linestyle = lstyle)
+    return
+
 
 def LineIntersect(P11, P12, P21, P22):
     y1 = - 1
@@ -427,12 +418,11 @@ output1 = [entity for entity in dxf1.entities]
 Color1 = [entity.color for entity in output1]
 Linetype1 = [entity.linetype for entity in output1 if entity.dxftype != 'POINT']
 
-CP = []
+CP1 = []
 
 points1 = []
 line1 = []
 Bezier1 = []
-cnt = 0
 
 #get parameters of objects
 for entity in output1:
@@ -497,9 +487,9 @@ for entity in output1:
         PolylineBulge1 = entity.bulge
         PolylineVertexCount1 = entity.__len__()
         PointCnt1 = PolylineVertexCount1
-        Beziertmp, C = CompositeBezier(PolylinePoints1, 1, cnt, CP)
+        Beziertmp, CP = CompositeBezier(PolylinePoints1, 1)
         Bezier1.append(Beziertmp)
-        ++cnt
+        CP1.append(CP)
 
     #LWPolyline
     if entity.dxftype == 'LWPOLYLINE':
@@ -548,10 +538,10 @@ output2 = [entity for entity in dxf2.entities]
 Color2 = [entity.color for entity in output2]
 Linetype2 = [entity.linetype for entity in output2 if entity.dxftype != 'POINT']
 
+CP2 = []
 points2 = []
 line2 = []
 Bezier2 = []
-cnt = 0
 #get parameters of objects
 for entity in output2:
     #Point
@@ -618,9 +608,9 @@ for entity in output2:
         #Bx2, By2 = GetBezier(5, min(8, PointCnt2), PolylinePoints2)
 #        print(latex(Bx))
 #        print(latex(By))
-        Beziertmp, CP = (CompositeBezier(PolylinePoints2, 2, cnt, CP))
+        Beziertmp, CP = CompositeBezier(PolylinePoints2, 2)
         Bezier2.append(Beziertmp)
-        ++cnt
+        CP2.append(CP)
 
     #LWPolyline
     if entity.dxftype == 'LWPOLYLINE':
@@ -652,6 +642,10 @@ for entity in output2:
             print(SplineIsClosed2)
 
 
+for i in CP1 :
+    PlotBezier(i, '#055583', 0.65, 'solid')
+for i in CP2 :
+    PlotBezier(i, '#bc0e13', 0.5, 'solid')
 
 #We have got data from both given files
 
@@ -758,6 +752,8 @@ for i in range(len(points2) - 1) :
     if transf == True :
         break
 
+
+
 #Comparison of objects
 #we will go through all objects in both files by picking the first object in first files
 #then in second file we will find the most similar one (by type and coordinates)
@@ -816,7 +812,10 @@ def ClosestPntBezier(P, arr):
 
 #color = '#6c9f92' (color for largest distane lines)
 
-def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2) :
+def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
+    if P1 in visited :
+        if visited[P1] == 2 :
+            return visited
     visited[P1] = 1
     P21, min21 = ClosestPntLine(P1, line2)
     P22, min22 = ClosestPntBezier(P1, Bezier2)
@@ -840,7 +839,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2) :
             lineSt1 = 1
         else:
             continue
-        visited[P1] = 1
+
         a1 = LineSlope(line1[i][0], line1[i][1])
 
         lineSt2 = -1
@@ -867,18 +866,20 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2) :
                     P2ind = j
 
         if (P2ind == -1) :
-            plt.plot(line1[i][0], line1[i][1], color = '#055583')
+            print(line1[i][0], line1[i][1])
+            plt.plot([line1[i][0][0], line1[i][1][0]], [line1[i][0][1], line1[i][1][1]], color = '#055583', linestyle = 'dotted')
+            visited[(line1[i][0], line1[i][1])] = 2
             if not line1[i][(lineSt1 + 1) % 2] in visited :
-                visited = DiffAll(line1[i][(lineSt1 + 1) % 2], visited, line1, line2, Bezier1, Bezier2)
+                visited = DiffAll(line1[i][(lineSt1 + 1) % 2], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
         if (P1ind != -1 and P2ind != -1) :
             dist1 = PointDist(line1[i][lineSt1], line2[P2Ind][lineSt2])
             dist2 = PointDist(line1[i][(lineSt1 + 1) % 2], line2[P2Ind][(lineSt2 + 1) % 2])
-            plt.plot(line1[i][lineSt1], line2[P2Ind][lineSt2], color = '#6c9f92')
-            plt.plot(line1[i][(lineSt1 + 1) % 2], line2[P2Ind][(lineSt2 + 1) % 2], color = '#6c9f92')
+            plt.plot([line1[i][lineSt1][0], line2[P2Ind][lineSt2][0]], [line1[i][lineSt1][1], line2[P2Ind][lineSt2][1]], color = '#6c9f92')
+            plt.plot([line1[i][(lineSt1 + 1) % 2][0],line2[P2Ind][(lineSt2 + 1) % 2][0]], [line1[i][(lineSt1 + 1) % 2][1], line2[P2Ind][(lineSt2 + 1) % 2][1]], color = '#6c9f92')
             if  not line1[i][(lineSt1 + 1) % 2] in visited :
-                visited = DiffAll(line1[i][(lineSt1 + 1) % 2], visited, line1, line2, Bezier1, Bezier2)
+                visited = DiffAll(line1[i][(lineSt1 + 1) % 2], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
             if not line2[P2Ind][(lineSt2 + 1) % 2] in visited :
-                visited = DiffAll(line2[P2Ind][(lineSt2 + 1) % 2], visited, line1, line2, Bezier1, Bezier2)
+                visited = DiffAll(line2[P2Ind][(lineSt2 + 1) % 2], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
 
 
     for i in range(len(Bezier1)) :
@@ -918,20 +919,18 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2) :
                     P2ind = j
 
         if (P2ind == -1) :
+            PlotBezier(CP1[i], '#055583', 1, 'dotted')
             t = Symbol('t')
-            for k in Bezier1[i] :
-                ttmp = np.linspace(0, 1, 50)
-                plt.plot(k[0].subs(t, ttmp), k[1].subs(t, ttmp), color = '#055583')
             if not (Bezier1[i][-(BezierSt1 + 1) % 2][0].subs(t, (BezierSt1 + 1) % 2), Bezier1[i][-(BezierSt1 + 1) % 2][1].subs(t, (BezierSt1 + 1) % 2)) in visited :
-                visited = DiffAll(((Bezier1[i][-(BezierSt1 + 1) % 2][0].subs(t, (BezierSt1 + 1) % 2)), Bezier1[i][-(BezierSt1 + 1) % 2][1].subs(t, (BezierSt1 + 1) % 2)), visited)
+                visited = DiffAll(((Bezier1[i][-(BezierSt1 + 1) % 2][0].subs(t, (BezierSt1 + 1) % 2)), Bezier1[i][-(BezierSt1 + 1) % 2][1].subs(t, (BezierSt1 + 1) % 2)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
 
         if (P1ind != -1 and P2ind != -1) :
             len1 = 0
             for k in range(len(Bezier1[i])) :
-                len1 += CubicBezierLen(C[1][i])
+                len1 += CubicBezierLen(CP1[i])
             len2 = 0
             for k in range(len(Bezier2[P2ind])) :
-                len2 += CubicBezierLen(C[2][P2ind])
+                len2 += CubicBezierLen(CP2[P2ind])
 
             int1 = len1 / 100
             int2 = len2 / 100
@@ -941,29 +940,31 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2) :
 #####Šis also jāsalabo!!!!!
             MaxBezierDist(Bezier1[i], Bezier2[P2ind])
             if not ((Bezier1[i][0].subs(t, (BezierSt1 + 1) % 2)), Bezier1[i][1].subs(t, (BezierSt1 + 1) % 2)) in visited :
-                visited = DiffAll((Bezier1[i][0].subs(t, (BezierSt1 + 1) % 2)), visited)
+                visited = DiffAll((Bezier1[i][0].subs(t, (BezierSt1 + 1) % 2)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
             if not ((Bezier2[P2ind][0].subs(t, (BezierSt2 + 1) % 2)), Bezier2[P2Ind][1].subs(t, (BezierSt2 + 1) % 2)) in visited :
-                visited = DiffAll((Bezier2[P2Ind][0].subs(t, (BezierSt2 + 1) % 2), Bezier2[P2Ind][1].subs(t, (BezierSt2 + 1) % 2) ), visited)
+                visited = DiffAll((Bezier2[P2Ind][0].subs(t, (BezierSt2 + 1) % 2), Bezier2[P2Ind][1].subs(t, (BezierSt2 + 1) % 2) ), visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
 
         for i in line2 :
-            if P2 == line2[i][0] :
-                plt.plot(line2[i][0], line2[i][1], color = 'bc0e13')
-                if not line2[i][1] in visited :
-                    visited = DiffAll(line2[i][1], visited)
-            if P2 == line2[i][1] :
-                plt.plot(line2[i][0], line2[i][1], color = 'bc0e13')
-                if not line2[i][0] in visited :
-                    visited = DiffAll(line2[i][0], visited)
+            if P2 == i[0] :
+                plt.plot([i[0][0], i[1][0]], [i[0][1],i[1][1]], color = '#bc0e13')
+                if not i[1] in visited :
+                    visited = DiffAll(i[1], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
+            if P2 == i[1] :
+                plt.plot([i[0][0], i[1][0]], [i[0][1], i[1][1]], color = '#bc0e13')
+                if not i[0] in visited :
+                    visited = DiffAll(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
 
+        k = 0
         for i in Bezier2 :
-            if P1 == (Bezier2[i][0].subs(t, 0), Bezier2[i][1].subs(t, 0)) :
-                plt.plot((Bezier2[i][0].subs(t, 0), Bezier2[i][1].subs(t, 0)), (Bezier2[i][0].subs(t, 1), Bezier2[i][1].subs(t, 1)), color = '#bc0e13')
-                if not (Bezier2[i][0].subs(t, 1), Bezier2[i][1].subs(t, 1)) in visited :
-                    visited = DiffAll((Bezier2[i][0].subs(t, 1), Bezier2[i][1].subs(t, 1)), visited)
-            if P1 == (Bezier2[i][0].subs(t, 1), Bezier2[i][1].subs(t, 1)) :
-                plt.plot((Bezier2[i][0].subs(t, 0), Bezier2[i][1].subs(t, 0)), (Bezier2[i][0].subs(t, 1), Bezier2[i][1].subs(t, 1)), color = '#bc0e13')
-                if not (Bezier2[i][0].subs(t, 0), Bezier2[i][1].subs(t, 0)) in visited :
-                    visited = DiffAll((Bezier2[i][0].subs(t, 0), Bezier2[i][1].subs(t, 0)), visited)
+            if P1 == (i[0][0].subs(t, 0), i[0][1].subs(t, 0)) :
+                PlotBezier(CP2[k], '#bc0e13', 1, 'dotted')
+                if not (i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)) in visited :
+                    visited = DiffAll((i[1][0].subs(t, 1), i[1][1].subs(t, 1)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
+            if P1 == (i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)) :
+                PlotBezier(CP2[k], '#bc0e13', 1, 'dotted')
+                if not (i[0][0].subs(t, 0), i[0][1].subs(t, 0)) in visited :
+                    visited = DiffAll((i[0][0].subs(t, 0), i[0][1].subs(t, 0)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
+            ++k
 
     visited[P1] = 2
     return visited
@@ -1033,7 +1034,9 @@ def MaxBezierDist(B1, B2):
                 P2[0] = x2
                 P2[1] = y2
                 max = dist
-    plt.plot(P1, P2, color = '#6c9f92')
+    if max <= 1.5 :
+        return
+    plt.plot([P1[0], P2[0]], [P1[1], P2[1]], color = '#667281')
     return
 #Search for distance between point and Bezier curve
 def BezierMinDist(Bx, By, P) :
@@ -1073,15 +1076,15 @@ def BezierMinDist(Bx, By, P) :
             return min
 
 #calculate difference value using square method
-def BezierDiff(B1, int1, lineSt1, B2, int2, lineSt2, C1, C2) :
+def BezierDiff(B1, int1, lineSt1, B2, int2, lineSt2, CP1, CP2) :
     dist1 = 0
     dist2 = 0
     value = 0
     nr1 = - lineSt1
     nr2 = - lineSt2
     for i in range(101) :
-        P1, nr1 = DistantPointOnBezier(dist1, nr1, B1, lineSt1, C1, 1)
-        P2, nr2 = DistantPointOnBezier(dist2, nr2, B2, lineSt2, C2, 2)
+        P1, nr1 = DistantPointOnBezier(dist1, nr1, B1, lineSt1, CP1, 1)
+        P2, nr2 = DistantPointOnBezier(dist2, nr2, B2, lineSt2, CP2, 2)
         value += DistantPoint
         dist1 += int1
         dist2 += int2
@@ -1122,16 +1125,17 @@ def DistantPointOnBezier(dist, nr, B, lineSt, C, fnr) :
 visited = {}
 for i in line1 :
     if not i[0] in visited :
-        visited = DiffAll(i[0], visited, line1, line2, Bezier1, Bezier2)
+        visited = DiffAll(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
 for i in line2 :
     if not i[0] in visited :
-        visited = DiffAll(i[0], visited, line1, line2, Bezier1, Bezier2)
+        visited = DiffAll(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
+t = Symbol('t')
 for i in Bezier1 :
-    if not i[0].subs(t, 0) in visited :
-        visited = DiffAll(i[0].subs(t, 0), visited, line1, line2, Bezier1, Bezier2)
+    if not (i[0][0].subs(t, 0), i[0][1].subs(t, 0)) in visited :
+        visited = DiffAll((i[0][0].subs(t, 0), i[0][1].subs(t, 0)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
 for i in Bezier2 :
-    if not i[0].subs(t, 0) in visited :
-        visited = DiffAll(i[0].subs(t, 0), visited, line1, line2, Bezier1, Bezier2)
+    if not (i[0][0].subs(t, 0), i[0][1].subs(t, 0)) in visited :
+        visited = DiffAll((i[0][0].subs(t, 0), i[0][1].subs(t, 0)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
 
 
 plt.show()
