@@ -766,47 +766,49 @@ for i in range(len(points2) - 1) :
 #for second type of comparison we will compare respective Bezier curves by getting distance between points with equal parameter value
 
 
-#find closest point from specified objects
+#find closest point in lines array
 def ClosestPntLine(P, arr):
     min = -1
-    minP = 0
+    minPind = 0
     for i in range(len(arr) - 1) :
         if i == 0 :
             min = PointDist(P, arr[i][0])
-            minP = i
+            minPind = i
             lineSt = 0
         tmpD = PointDist(P, arr[i][0])
         if tmpD < min :
             min = tmpD
-            minP = i
+            minPind = i
             lineSt = 0
         tmpD = PointDist(P, arr[i][1])
         if tmpD < min :
             min = tmpD
-            minP = i
+            minPind = i
             lineSt = 1
-    return arr[minP][lineSt], min
+    return arr[minPind][lineSt], min
 
+#find closest point in Bezier curves array
 def ClosestPntBezier(P, arr):
     min = -1
-    minP = 0
+    minPind = 0
     t = Symbol('t')
-    for i in range(len(arr) - 1) : #as the Bezier curve is made from multiple cubic Bezier curves, we have to compare only the start point of first and end point of last cubic curve that belongs to specific composite Bezier
+    for i in range(len(arr) - 1) :
+        #as the Bezier curve is made from multiple cubic Bezier curves, we have to compare only the start point of first and end point of last cubic curve that belongs to specific composite Bezier
         if i == 0 :
             min = PointDist(P, (arr[i][0][0].subs(t, 0), arr[i][0][1].subs(t, 0)))
-            minP = i
+            minPind = i
             lineSt = 0
         tmpD = PointDist(P, (arr[i][0][0].subs(t,0), arr[i][0][1].subs(t,0)))
         if tmpD < min :
             min = tmpD
-            minP = i
+            minPind = i
             lineSt = 0
         tmpD = PointDist(P, (arr[i][-1][0].subs(t, 1), arr[i][-1][1].subs(t, 1)))
         if tmpD < min :
             min = tmpD
-            minP = i
+            minPind = i
             lineSt = 1
-    return (arr[minP][-lineSt][0].subs(t, lineSt), arr[minP][-lineSt][1].subs(t, lineSt)), min
+    return (arr[minPind][-lineSt][0].subs(t, lineSt), arr[minPind][-lineSt][1].subs(t, lineSt)), min
 
 
 #color = '#6c9f92' (color for largest distane lines)
@@ -969,7 +971,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
                 PlotBezier(CP2[k], '#bc0e13', 1, 'dotted')
                 if not (i[0][0].subs(t, 0), i[0][1].subs(t, 0)) in visited :
                     visited = DiffAll((i[0][0].subs(t, 0), i[0][1].subs(t, 0)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
-            ++k
+            k += 1
 
     visited[P1] = 2
     return visited
@@ -1028,6 +1030,7 @@ def MaxBezierDist(B1, B2) :
         return
     plt.plot([P1[0], P2[0]], [P1[1], P2[1]], color = '#667281')
     return
+
 #Search for distance between point and Bezier curve
 def BezierMinDist(Bx, By, P) :
     print(P)
@@ -1082,20 +1085,29 @@ def BezierMinDist(Bx, By, P) :
             return min, minP
     return min, minP
 
+#Min distance from given point to Bezier curve
+#given: cnt - nr of Bezier curve segment
+#       B - Bezier curve on which we need to find point on
+#       P - given point from which the closest line will be calculated
+#       minDist - that has been found already
+#       len - the length of B array
+#       minPtmp - just some point, that we dont need to create every time the function is called
+#       minP - coordinates of the closest point on Bezier curve to P
 def MinDistTanBezier(cnt, B, P, minDist, len, minPtmp, minP) :
     if cnt > len - 1 :
         return len - 1, minP, minDist
 
-        dist, minPtmp = BezierMinDist(B[cnt][0], B[cnt][1], P)
-        if minDist >= dist :
-            minDist = dist
-            minP = minPtmp
-            cnt += 1
-            return MinDistTanBezier(cnt, B, P, minDist, len)
-        elif dist > minDist :
-            cnt -= 1
-            return cnt, minP, minDist
+    dist, minPtmp = BezierMinDist(B[cnt][0], B[cnt][1], P)
+    if minDist >= dist :
+        minDist = dist
+        minP = minPtmp
+        cnt += 1
+        return MinDistTanBezier(cnt, B, P, minDist, len)
+    elif dist > minDist :
+        cnt -= 1
+        return cnt, minP, minDist
     return cnt, minP, minDist
+
 #calculate difference value using square method
 def BezierDiff(B1, int1, lineSt1, B2, int2, lineSt2, CP1, CP2) :
     dist1 = 0
