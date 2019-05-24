@@ -480,7 +480,6 @@ for entity in output1:
     #Polyline
     if entity.dxftype == 'POLYLINE':
         PolylinePoints1 = entity.points
-        PointCnt1 = PolylineVertexCount1
         Beziertmp, CP = CompositeBezier(PolylinePoints1, 1)
         Bezier1.append(Beziertmp)
         CP1.append(CP)
@@ -578,7 +577,6 @@ for entity in output2:
     #Polyline
     if entity.dxftype == 'POLYLINE':
         PolylinePoints2 = entity.points
-        PointCnt2 = PolylineVertexCount2
         Beziertmp, CP = CompositeBezier(PolylinePoints2, 2)
         Bezier2.append(Beziertmp)
         CP2.append(CP)
@@ -832,33 +830,43 @@ def DistantPointOnBezier(dist, nr, B, lineSt, C) :
     xtmp = B[nr][0].subs(t, lineSt)
     ytmp = B[nr][1].subs(t, lineSt)
     param = lineSt
-    cnt = 0.1
-    m = 0.1
+    cnt = 1
+    m = 0.5
     disttmp = 0
     dist1 = 0
     lenB = len(B)
     while (nr >= 0) and (nr <= lenB - 1) :
+        print("gggggggggggggggggggaaassfdfsdfsfa")
+        print(param)
         while (param >= 0 and param <= 1) :
+            print("nr :    ", nr)
             param = abs(round((lineSt - cnt), 5))
-            if (param <= 0 or param >= 1) :
+            print(param, "aaa", cnt)
+            if (param < 0 or param > 1) :
+                if param < 0 :
+                    param = 0
+                else :
+                    param = 1
                 break;
             x2tmp = B[nr][0].subs(t, param)
             y2tmp = B[nr][1].subs(t, param)
-            plt.plot(x2tmp, y2tmp, 'o')
-            cnt = round((cnt + m), 5)
             Pdist = PointDist((xtmp, ytmp), (x2tmp, y2tmp))
             disttmp += Pdist
-            if (disttmp <= dist + 0.1 and disttmp >= dist - 0.1) :
+            print(disttmp, dist, "**************")
+            if (disttmp <= dist + 0.05 and disttmp >= dist - 0.05) :
                 return x2tmp, y2tmp, nr
             elif m == 0 :
                 break
-            elif disttmp > dist + 0.1 :
+            elif disttmp > dist + 0.05 :
                 cnt = round((cnt - m), 5)
-                m = round(m * 0.1, 5)
+                m = round(m * 0.5, 5)
                 disttmp -= Pdist
                 continue
             xtmp = x2tmp
             ytmp = y2tmp
+            if (param == 0 or param == 1) :
+                break
+            cnt = round((cnt + m), 5)
         dist1 = dist1 + CubicBezierLen(C[nr])
         disttmp = dist1
         if (nr == lenB - 1 and lineSt == 0) :
@@ -868,15 +876,17 @@ def DistantPointOnBezier(dist, nr, B, lineSt, C) :
         if lineSt == 0 :
             nr += 1
             param = lineSt
-            m = 0.1
+            m = 0.5
+            cnt = 1
         else:
             nr -= 1
             param = lineSt
-            m = 0.1
+            m = 0.5
+            cnt = 1
 
     x2tmp = B[nr][0].subs(t, param)
     y2tmp = B[nr][1].subs(t, param)
-    print(param, x2tmp, y2tmp)
+    print(param, x2tmp, y2tmp, nr)
     return x2tmp, y2tmp, nr
 
 #calculate difference value using square method
