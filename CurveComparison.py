@@ -13,8 +13,8 @@ import matplotlib.axes as axes
 
 #Filenames should be written in the following two lines, as shown in example:
 #   dxf1(2) = dxfgrabber.readfile("filename")
-dxf1 = dxfgrabber.readfile("ieva_likne1_002.dxf")
-dxf2 = dxfgrabber.readfile("ieva_likne1_1_002.dxf")
+dxf1 = dxfgrabber.readfile("ieva_likne2_1_002.dxf")
+dxf2 = dxfgrabber.readfile("ieva_likne2_002.dxf")
 
 
 firstFileCol = '#055583'
@@ -28,8 +28,8 @@ plt.rcParams['xtick.bottom'] = plt.rcParams['xtick.labelbottom'] = False
 plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
 fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1)
-major_ticks = np.arange(-10000, 10000, 100)
-minor_ticks = np.arange(-10000, 10000, 10)
+major_ticks = np.arange(-1000, 1000, 100)
+minor_ticks = np.arange(-1000, 1000, 10)
 ax.set_xticks(major_ticks)
 ax.set_xticks(minor_ticks, minor = True)
 ax.set_yticks(major_ticks)
@@ -557,9 +557,9 @@ for entity in output2:
         splineCP2.append(splineControlPoints2)
 
 for i in CP1 :
-    PlotBezier(i, '#055583', 0.65, 'solid')
+    PlotBezier(i, '#055583', 0.2, 'solid')
 for i in CP2 :
-    PlotBezier(i, '#bc0e13', 0.5, 'solid')
+    PlotBezier(i, '#bc0e13', 0.2, 'solid')
 #We have got data from both given files
 #File #1
 #for i in points1:
@@ -937,17 +937,129 @@ def LeastSquare(B1, int1, lineSt1, B2, int2, lineSt2, CP1, CP2) :
     t = Symbol('t')
     a = B1[0][0].subs(t, 0)
     b = B1[0][1].subs(t, 0)
-    ax.annotate(max, xy = (a, b), xytext = (a, b))
+    ax.annotate(value, xy = (a, b), xytext = (a, b))
     return value
 
+
+def MaxBezierDist(B1, B2) :
+    t = Symbol('t')
+    lenB1 = len(B1)
+    lenB2 = len(B2)
+    max = 0
+    P = []
+    P.append([])
+    P.append([])
+    P1 = []
+    P1.append([])
+    P1.append([])
+    P2 = []
+    P2.append([])
+    P2.append([])
+    P11 = []
+    P11.append([])
+    P11.append([])
+    P22 = []
+    P22.append([])
+    P22.append([])
+    for i in range(lenB2) :
+        cnt = 0
+        param = 0
+        while param <= 1 :
+            cnt += 0.1
+            x2 = B2[i][0].subs(t, param)
+            y2 = B2[i][1].subs(t, param)
+            min = 10000
+            for j in range(lenB1) :
+                dist, P = BezierMinDist(B1[j][0], B1[j][1], (x2, y2))
+                if dist < min :
+                    P1[0] = P[0]
+                    P1[1] = P[1]
+                    P2[0] = x2
+                    P2[1] = y2
+                    min = dist
+            if min >= max :
+                max = min
+                P11[0] = P1[0]
+                P11[1] = P1[1]
+                P22[0] = P2[0]
+                P22[1] = P2[1]
+
+            param += cnt
+        #print(P1, P2)
+        #plt.plot([P1[0], P2[0]], [P1[1], P2[1]])
+    #plt.plot([P1[0], P2[0]], [P1[1], P2[1]], color = '#667281')
+    a = ((P11[0] + P22[0]) / 2)
+    b = ((P11[1] + P22[1]) / 2)
+    ax.annotate(round(max / 10, 2), xy = (a, b), xytext = (a, b), alpha = 0.5, size = 'small')
+    plt.plot([P11[0], P22[0]], [P11[1], P22[1]], color = 'black', alpha = 0.4)
+    return max
+
+#Search for distance between point and Bezier curve
+def BezierMinDist(Bx, By, P) :
+    t = Symbol('t')
+    param = 0
+    #get distance values from points on bezier that differs from each other by 0.1 parameter value
+    for i in range(11) :
+        param = 0.1 * i
+        x = Bx.subs(t, param)
+        y = By.subs(t, param)
+        dist = PointDist((x, y), P)
+        if i == 0 :
+            min = PointDist((x, y), P)
+            minParam = round(param, 5)
+        elif dist < min :
+            min = dist
+            minParam = round(param, 5)
+    #check if in segments between previously determined points there is not point with smaller distance to the given point
+    param = minParam
+    dist1 = 0
+    dist2 = 0
+    x = Bx.subs(t, param)
+    y = By.subs(t, param)
+    minP = []
+    minP.append(x)
+    minP.append(y)
+    while (param >= minParam - 0.1 and param <= minParam + 0.1 and param <= 1 and param >= 0) :
+        if param <= 0.99:
+            x1 = Bx.subs(t, param + 0.01)
+            y1 = By.subs(t, param + 0.01)
+            dist1 = PointDist((x1, y1), P)
+        else :
+            dist1 = 10000
+        if param >= 0.01 :
+            x2 = Bx.subs(t, param - 0.01)
+            y2 = By.subs(t, param - 0.01)
+            dist2 = PointDist((x2, y2), P)
+        else :
+            dist2 = 10000
+        if (dist1 < min and dist1 < dist2) :
+            param += 0.01
+            min = dist1
+            minP[0] = x1
+            minP[1] = y1
+            continue
+        elif (dist2 < min and dist2 < dist1) :
+            param -= 0.01
+            min = dist2
+            minP[0] = x2
+            minP[1] = y2
+            continue
+        if (param < 0.01 and param > 0.99) :
+            return min, minP
+        else:
+            return min, minP
+
+    #This point technically should never been met
+    return min, minP
 
 def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
     DrawnLines2Ind = {}
     #Check if given point isn`t already visited
+
     if P1 in visited :
         if visited[P1] == 2 :
             return visited
-    print(P1)
+
     #Get coordinates of the closest point in second file
     if len(line2) > 0 :
         P21, min21 = ClosestPntLine(P1, line2, visited)
@@ -987,6 +1099,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
                 if not line1[i][1] in visited :
                     P1Ind = i
                     lineSt1 = 0
+                    visited[line1[i][1]] = 1
                 elif visited[line1[i][1]] == 1 :
                     P1Ind = i
                     lineSt1 = 0
@@ -998,23 +1111,23 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
                     P1Ind = i
                     lineSt1 = 0
         elif P1 == line1[i][1] :
-            if not line1[i][0] in visited :
-                if not line1[i][1] in visited :
+            if not line1[i][1] in visited :
+                if not line1[i][0] in visited :
                     P1Ind = i
                     lineSt1 = 1
-                elif visited[line1[i][1]] == 1 :
+                elif visited[line1[i][0]] == 1 :
                     P1Ind = i
                     lineSt1 = 1
             elif visited[line1[i][0]] == 1 :
-                if not line1[i][1] in visited :
+                if not line1[i][0] in visited :
                     P1Ind = i
                     lineSt1 = 1
-                elif visited[line1[i][1]] == 1 :
+                elif visited[line1[i][0]] == 1 :
                     P1Ind = i
                     lineSt1 = 1
         else:
             continue
-
+        print(line1[P1Ind])
         a1 = LineSlope(line1[P1Ind][0], line1[P1Ind][1])
         lineSt2 = -1
         P2Ind = -1
@@ -1047,6 +1160,8 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
                         lineSt2tmp = 1
             else:
                 continue
+            print("((((((((((()))))))))))")
+            print(line2[j])
 
             a2 = LineSlope(line2[j][0], line2[j][1])
             angle = np.arctan((a2 - a1) / (1 + abs(a1 * a2)))
@@ -1061,6 +1176,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
                     if not line2[j][lineSt2tmp - 1] in visited :
                         visited[line2[j][lineSt2tmp - 1]] = 1
                 continue
+
             #if lines do exist, then choose the closest one from second file
             if (lineSt1 != -1 and lineSt2tmp != -1) :
                 endDist = PointDist(line1[P1Ind][(lineSt1 + 1) % 2], line2[j][(lineSt2tmp + 1) % 2])
@@ -1079,7 +1195,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
                     minEndDist = endDist
                     P2Ind = j
                     lineSt2 = lineSt2tmp
-                if endDist < minEndDist :
+                elif endDist < minEndDist :
                     if (i == lenLine1 - 1 and not P2Ind in DrawnLines2Ind and P2Ind != -1) :
 #                        plt.plot([line2[P2Ind][0][0], line2[P2Ind][1][0]], [line2[P2Ind][0][1], line2[P2Ind][1][1]], color = '#6c9f92', linestyle = 'dotted')
                         if uniqueObjectsLine2.get(P2Ind) == None :
@@ -1092,6 +1208,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
                     minEndDist = endDist
                     P2Ind = j
                     lineSt2 = lineSt2tmp
+        print("1. var : ", visited)
         #if there is no respective line in second file then 1. file line is found only in one file -> lets mark it differently
         if (P2Ind == -1 and P2Ind != -1):
 #            plt.plot([line1[P1Ind][0][0], line1[P1Ind][1][0]], [line1[P1Ind][0][1], line1[P1Ind][1][1]], color = '#055583', linestyle = 'dotted')
@@ -1104,6 +1221,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
             if line1[P1Ind][1] == P2 :
                 if not line1[P1Ind][0] in visited :
                     visited[line1[P1Ind][0]] = 1
+        print("2. var : ", visited)
         #if the corresponding line in second file is found, then connect respective endpoints and get the max distance between the lines, which also is the respective endpoint distance
         if (P2Ind != -1 and P1Ind != -1):
             if not line1[P1Ind][(lineSt1 + 1) % 2] in visited :
@@ -1122,7 +1240,9 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
 #            plt.plot([line1[P1Ind][(lineSt1 + 1) % 2][0], line2[P2Ind][(lineSt2 + 1) % 2][0]], [line1[P1Ind][(lineSt1 + 1) % 2][1], line2[P2Ind][(lineSt2 + 1) % 2][1]], color = '#6c9f92')
 
             #equal objects will be drawn from file 1
+            print("3. var : ", visited)
             if max <= 0.1 :
+                print(line1[P1Ind])
                 if equalObjectsLine.get(P1Ind) == None :
                     length = PointDist(line1[P1Ind][lineSt1], line1[P1Ind][(lineSt1 + 1) % 2])
                     equalObjectsLine[P1Ind] = length
@@ -1134,7 +1254,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
             if ObjectsLine2.get(P2Ind) == None :
                 length = PointDist(line2[P2Ind][lineSt2], line2[P2Ind][(lineSt2 + 1) % 2])
                 ObjectsLine2[P2Ind] = length
-
+        print("4. var : ", visited)
 
     DrawnLines2Ind.clear()
 
@@ -1187,7 +1307,6 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
                     if uniqueObjectsBezier2.get(i) == None :
                         length = CompositeBezierLen(CP2[i])
                         uniqueObjectsBezier2[i] = length
-
                 if (minEndDist == -1 and endDist < 25):
                     minEndDist = endDist
                     P2Ind = j
@@ -1248,6 +1367,8 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2) :
 #            BezierDiff(Bezier1[i], int1, lineSt1, Bezier2[P2Ind], int2, lineSt2, CP1, CP2)
     visited[P2] = 1
     visited[P1] = 2
+    print(P1)
+    print("5. var : ", visited)
     return visited
 
 def CompositeBezierLen(CP) :
@@ -1257,99 +1378,7 @@ def CompositeBezierLen(CP) :
         length += CubicBezierLen(CP[i])
     return length
 
-def MaxBezierDist(B1, B2) :
-    t = Symbol('t')
-    lenB1 = len(B1)
-    lenB2 = len(B2)
-    max = 0
-    P = []
-    P.append([])
-    P.append([])
-    P1 = []
-    P1.append([])
-    P1.append([])
-    P2 = []
-    P2.append([])
-    P2.append([])
-    for i in range(lenB2) :
-        cnt = 0
-        param = 0
-        while param <= 1 :
-            param += cnt
-            cnt += 0.1
-            x2 = B2[i][0].subs(t, param)
-            y2 = B2[i][1].subs(t, param)
-            for j in range(lenB1) :
-                dist, P = BezierMinDist(B1[j][0], B1[j][1], (x2, y2))
-                if dist > max :
-                    P1[0] = P[0]
-                    P1[1] = P[1]
-                    P2[0] = x2
-                    P2[1] = y2
-                    max = dist
-            plt.plot([P1[0], P2[0]], [P1[1], P2[1]])
-    #plt.plot([P1[0], P2[0]], [P1[1], P2[1]], color = '#667281')
-    a = ((P1[0] + P2[0]) / 2)
-    b = ((P1[1] + P2[1]) / 2)
-    ax.annotate(max / 10, xy = (a, b), xytext = (a, b))
-    return max
 
-#Search for distance between point and Bezier curve
-def BezierMinDist(Bx, By, P) :
-    t = Symbol('t')
-    param = 0
-    #plt.plot(P[0], P[1], 'ro')
-    #get distance values from points on bezier that differs from each other by 0.1 parameter value
-    for i in range(11) :
-        param = 0.1 * i
-        x = Bx.subs(t, param)
-        y = By.subs(t, param)
-        dist = PointDist((x, y), P)
-        if i == 0 :
-            min = PointDist((x, y), P)
-            minParam = round(param, 5)
-        elif dist < min :
-            min = dist
-            minParam = round(param, 5)
-    #check if in segments between previously determined points there is not point with smaller distance to the given point
-    param = minParam
-    dist1 = 0
-    dist2 = 0
-    x = Bx.subs(t, param)
-    y = By.subs(t, param)
-    #print("min param", minParam)
-    #plt.plot(x, y, 'bo')
-    #plt.plot([x, P[0]], [y, P[1]])
-    minP = []
-    minP.append(x)
-    minP.append(y)
-    while (param >= minParam - 0.1 and param <= minParam + 0.1 and param <= 1 and param >= 0) :
-        if (param < 0.01 and param > 0.99) :
-            return min, minP
-        if (param <= 0.99 and param >= 0.01):
-            x1 = Bx.subs(t, param + 0.01)
-            y1 = By.subs(t, param + 0.01)
-            dist1 = PointDist((x1, y1), P)
-            x2 = Bx.subs(t, param - 0.01)
-            y2 = By.subs(t, param - 0.01)
-            dist2 = PointDist((x2, y2), P)
-        if (dist1 < min and dist1 < dist2) :
-            param += 0.01
-            min = dist1
-            minP[0] = x1
-            minP[1] = y1
-            continue
-        elif (dist2 < min and dist2 < dist1) :
-            param -= 0.01
-            min = dist2
-            minP[0] = x2
-            minP[1] = y2
-            continue
-        else:
-            return min, minP
-    #plt.plot(minP[0], minP[1], 'ro')
-    plt.plot([minP[0], P[0]], [minP[1], P[1]], color = '#667281')
-    return min, minP
 
 #Min distance from given point to Bezier curve
 #given: cnt - nr of Bezier curve segment
@@ -1372,13 +1401,16 @@ def MinDistTanBezier(cnt, B, P, minDist, len, minPtmp, minP) :
         cnt -= 1
         return cnt, minP, minDist
     return cnt, minP, minDist
-print(line1)
+
 visited = {}
+print("line1")
 for i in line1 :
-    print(visited)
-    print(i[0])
     if not i[0] in visited :
         visited = DiffAll(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
+    elif not visited[i[0]] == 1 :
+        visited = DiffAll(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
+print(visited)
+print("line2")
 for i in line2 :
     if not i[0] in visited and not i[1] in visited :
         visited = OneFileObject(i[0], line2, Bezier2, CP2, visited, 2)
@@ -1401,7 +1433,7 @@ for i in line1 :
     if i[1] in visited :
         if visited[i[1]] == 1 :
             visited = CheckWhereVisited1(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
-
+print(visited)
 visited.clear()
 def ClosestCircle(CP, r, circle2) :
     for i in circle :
@@ -1447,6 +1479,9 @@ print(uniqueObjectsBezier1)
 
 print("Unique Bezier2")
 print(uniqueObjectsBezier2)
+
+
+
 
 nreqf = 0.0
 nr1f = 1.0
@@ -1521,9 +1556,9 @@ for i in range(lenBezier1) :
         pos = int(round(len(Bezier1[i]) / 3))
         a = Bezier1[i][pos][0].subs(t, 0)
         b = Bezier1[i][pos][1].subs(t, 0)
-        ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
+        ax.annotate(round(nreqf, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
             color = '#3d4042', ha = 'center', va = 'center', weight = 'bold')
-        print(round(nr1f, 2), ' - ', equalObjectsBezier[i] / 10)
+        print(round(nreqf, 2), ' - ', equalObjectsBezier[i] / 10)
     if i in ObjectsBezier1 :
         PlotBezier(CP1[i], firstFileCol, 0.65, 'solid')
         nr1f += 0.01
