@@ -13,8 +13,8 @@ import matplotlib.axes as axes
 
 #Filenames should be written in the following two lines, as shown in example:
 #   dxf1(2) = dxfgrabber.readfile("filename")
-dxf1 = dxfgrabber.readfile("ieva_Punkts6_002.dxf")
-dxf2 = dxfgrabber.readfile("ieva_Punkts6_1_002.dxf")
+dxf1 = dxfgrabber.readfile("Parastie_platgurnu_m3_p2_002.dxf")
+dxf2 = dxfgrabber.readfile("parastie_platgurnu_m2_p2_002.dxf")
 
 
 firstFileCol = '#055583'
@@ -1094,9 +1094,10 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
         P2 = P22
     print(P2)
     #if the point is too far, then probably that is not the respective point
-    if PointDist(P1, P2) > 15 :
+    if PointDist(P1, P2) > 25 :
         visited = OneFileObject(P1, line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
         return visited
+    print("1.")
     #Find all lines with one of the enpoints matching the given point
     lenLine1 = len(line1)
     lenLine2 = len(line2)
@@ -1146,6 +1147,10 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
                     lineSt1 = 1
         else:
             continue
+        #This is the case wher the other line end has been "fulli visited" or visited[] = 2
+        if P1Ind == -1 :
+            continue
+        print("P1Ind: ", P1Ind)
         a1 = LineSlope(line1[P1Ind][0], line1[P1Ind][1])
         lineSt2 = -1
         P2Ind = -1
@@ -1185,9 +1190,11 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
                         lineSt2tmp = 1
             else:
                 continue
-
+            print("P2ind: ", j)
+            print(line1[P1Ind], line2[P2Ind])
             a2 = LineSlope(line2[j][0], line2[j][1])
             angle = np.degrees(np.arctan((a2 - a1) / (1 + abs(a1 * a2))))
+            print("angle: ", angle)
             #if the angle between these two lines is bigger than 5, then we eill assume that it is not the searched for line
             if abs(angle) > 5 :
                 if (i == lenLine1 - 1 and not j in ObjectsLine2 and not j in equalObjectsLine2) :
@@ -1195,25 +1202,26 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
                     if uniqueObjectsLine2.get(j) == None and ObjectsLine2.get(j) == None:
                         length = PointDist(line2[j][0], line2[j][1])
                         uniqueObjectsLine2[j] = length
-                    visited[line2[j][lineSt2tmp]] = 2
+                    visited[line2[j][lineSt2tmp]] = 1
                     if not line2[j][lineSt2tmp - 1] in visited :
                         visited[line2[j][lineSt2tmp - 1]] = 1
                 continue
+            print("line starts: ", lineSt1, lineSt2tmp)
             #if lines do exist, then choose the closest one from second file
             if (lineSt1 != -1 and lineSt2tmp != -1) :
                 endDist = PointDist(line1[P1Ind][(lineSt1 + 1) % 2], line2[j][(lineSt2tmp + 1) % 2])
                 #if the endpoint distance is larger than 25 then its probably not the respective line
-                if (endDist >= 5 and not j in ObjectsLine2 and not j in equalObjectsLine2 and i == lenLine1 - 1) :
+                if (endDist >= 25 and not j in ObjectsLine2 and not j in equalObjectsLine2 and i == lenLine1 - 1) :
 #                    plt.plot([line2[j][0][0], line2[j][1][0]], [line2[j][0][1], line2[j][1][1]], color = '#6c9f92', linestyle = 'dotted')
                     if uniqueObjectsLine2.get(j) == None and ObjectsLine2.get(j) == None:
                         length = PointDist(line2[j][0], line2[j][1])
                         uniqueObjectsLine2[j] = length
-                    visited[line2[j][lineSt2tmp]] = 2
+                    visited[line2[j][lineSt2tmp]] = 1
                     if not line2[j][lineSt2tmp - 1] in visited :
                         visited[line2[j][lineSt2tmp - 1]] = 1
                     continue
 
-                if (minEndDist == -1 and endDist < 5):
+                if (minEndDist == -1 and endDist < 25):
                     minEndDist = endDist
                     P2Ind = j
                     lineSt2 = lineSt2tmp
@@ -1223,7 +1231,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
                         if uniqueObjectsLine2.get(P2Ind) == None and ObjectsLine2.get(P2Ind):
                             length = PointDist(line2[P2Ind][0], line2[P2Ind][1])
                             uniqueObjectsLine2[P2Ind] = length
-                        visited[line2[P2Ind][lineSt2]] = 2
+                        visited[line2[P2Ind][lineSt2]] = 1
                         if not line2[P2Ind][lineSt2 - 1] in visited :
                             visited[line2[P2Ind][lineSt2 - 1]] = 1
 
@@ -1275,6 +1283,8 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
                 max = dist1
             else :
                 max = dist2
+            print(line1[P1Ind])
+            print(line2[P2Ind], max)
 #            plt.plot([line1[P1Ind][lineSt1][0], line2[P2Ind][lineSt2][0]], [line1[P1Ind][lineSt1][1], line2[P2Ind][lineSt2][1]], color = '#6c9f92')
 #            plt.plot([line1[P1Ind][(lineSt1 + 1) % 2][0], line2[P2Ind][(lineSt2 + 1) % 2][0]], [line1[P1Ind][(lineSt1 + 1) % 2][1], line2[P2Ind][(lineSt2 + 1) % 2][1]], color = '#6c9f92')
             #equal objects will be drawn from file 1
@@ -1327,8 +1337,8 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
             if abs(angle) > 5 :
                 if (i == lenLine1 - 1 and not j in ObjectsBezier2 and not j in equalObjectsBezier2) :
 #                    PlotBezier(CP2[j], '#6c9f92', 1, 'dotted')
-                    visited[(Bezier2[j][-lineSt2tmp][0].subs(t, lineSt2tmp), Bezier2[j][-lineSt2tmp][1].subs(t, lineSt2tmp))] = 2
-                    if not (Bezier2[j][- abs(-lineSt2tmp + 1)][0].subs(t, abs(lineSt2tmp - 1)), Bezier2[j][- abs(-lineSt2tmp + 1)][1].subs(t, abs(lineSt2tmp - 1))) :
+                    visited[(Bezier2[j][-lineSt2tmp][0].subs(t, lineSt2tmp), Bezier2[j][-lineSt2tmp][1].subs(t, lineSt2tmp))] = 1
+                    if not (Bezier2[j][- abs(-lineSt2tmp + 1)][0].subs(t, abs(lineSt2tmp - 1)), Bezier2[j][- abs(-lineSt2tmp + 1)][1].subs(t, abs(lineSt2tmp - 1))) in visited:
                         visited[Bezier2[j][- abs(-lineSt2tmp + 1)][0].subs(t, abs(lineSt2tmp - 1)), Bezier2[j][- abs(-lineSt2tmp + 1)][1].subs(t, abs(lineSt2tmp))] = 1
                     if uniqueObjectsBezier2.get(j) == None and ObjectsBezier2.get(j) == None:
                         length = CompositeBezierLen(CP2[j])
@@ -1338,7 +1348,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
                 endDist = PointDist((Bezier1[i][-(lineSt1 + 1) % 2][0].subs(t, (lineSt1 + 1) % 2), Bezier1[i][-(lineSt1 + 1) % 2][1].subs(t, (lineSt1 + 1) % 2)), (Bezier2[j][-(lineSt2tmp + 1) % 2][0].subs(t, (lineSt2tmp + 1) % 2),Bezier2[j][-(lineSt2tmp + 1) % 2][1].subs(t, (lineSt2tmp + 1) % 2)))
                 if (i == lenLine1 - 1 and not j in ObjectsBezier2 and not j in equalObjectsBezier2 and endDist >= 25) :
 #                    PlotBezier(CP2[j], '#6c9f92', 1, 'dotted')
-                    visited[(Bezier2[j][-lineSt2tmp][0].subs(t, lineSt2tmp), Bezier2[j][-lineSt2tmp][1].subs(t, lineSt2tmp))] = 2
+                    visited[(Bezier2[j][-lineSt2tmp][0].subs(t, lineSt2tmp), Bezier2[j][-lineSt2tmp][1].subs(t, lineSt2tmp))] = 1
 
                     if not (Bezier1[i][-(lineSt1 + 1) % 2][0].subs(t, (lineSt1 + 1) % 2), Bezier1[i][-(lineSt1 + 1) % 2][1].subs(t, (lineSt1 + 1) % 2)) in visited :
                         visited[(Bezier1[i][-(lineSt1 + 1) % 2][0].subs(t, (lineSt1 + 1) % 2), Bezier1[i][-(lineSt1 + 1) % 2][1].subs(t, (lineSt1 + 1) % 2))] = 1
@@ -1352,7 +1362,7 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
                 if endDist < minEndDist :
                     if (i == lenLine1 - 1 and not P2Ind in ObjectsBezier2 and not P2Ind in equalObjectsBezier2) :
 #                        PlotBezier(CP2[P2Ind], '#6c9f92', 1, 'dotted', linewidth = 4)
-                        visited[(Bezier2[P2Ind][-lineSt2][0].subs(t, lineSt2), Bezier2[P2Ind][-lineSt2][1].subs(t, lineSt2))] = 2
+                        visited[(Bezier2[P2Ind][-lineSt2][0].subs(t, lineSt2), Bezier2[P2Ind][-lineSt2][1].subs(t, lineSt2))] = 1
                         if not (Bezier2[P2Ind][-abs(-lineSt2 + 1)][0].subs(t, abs(lineSt2 - 1)), Bezier2[P2Ind][-abs(-lineSt2 + 1)][1].subs(t, abs(lineSt2 - 1))) :
                             visited[(Bezier2[P2Ind][-abs(-lineSt2 + 1)][0].subs(t, abs(lineSt2 - 1)), Bezier2[P2Ind][-abs(-lineSt2 + 1)][1].subs(t, abs(lineSt2 - 1)))] = 1
                         if uniqueObjectsBezier2.get(P2Ind) == None and ObjectsBezier2.get(P2Ind) == None :
@@ -1378,9 +1388,9 @@ def DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjects
             if not (Bezier2[P2Ind][-abs(-lineSt2 + 1)][0].subs(t, abs(lineSt2 - 1)), Bezier2[P2Ind][-abs(-lineSt2 + 1)][1].subs(t, abs(lineSt2 - 1))) :
                 visited[Bezier2[P2Ind][-abs(-lineSt2 + 1)][0].subs(t, abs(lineSt2 - 1)), Bezier2[P2Ind][-abs(-lineSt2 + 1)][1].subs(t, abs(lineSt2 - 1))] = 1
 
-            max = MaxBezierDist(Bezier1[i], Bezier2[i])
+            max = MaxBezierDist(Bezier1[i], Bezier2[P2Ind])
             #equal objects will be drawn from file 1
-            if max <= 1 :
+            if max <= 0.1 :
                 if equalObjectsBezier.get(P1Ind) == None :
                     length = CompositeBezierLen(CP1[P1Ind])
                     equalObjectsBezier[P1Ind] = length
@@ -1452,11 +1462,26 @@ for i in line1 :
         visited = DiffAll(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
     elif visited[i[0]] == 1 :
         visited = DiffAll(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
+    elif visited[i[1]] == 1:
+        visited = DiffAll(i[1], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
+
+for i in line1 :
+    if i[1] in visited :
+        if visited[i[1]] == 1:
+            visited = DiffAll(i[1], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
+
 
 t = Symbol('t')
 for i in Bezier1 :
     if not (i[0][0].subs(t, 0), i[0][1].subs(t, 0)) in visited :
         visited = DiffAll((i[0][0].subs(t, 0), i[0][1].subs(t, 0)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
+    elif visited[(i[0][0].subs(t, 0), i[0][1].subs(t, 0))] == 1 :
+        visited = DiffAll((i[0][0].subs(t, 0), i[0][1].subs(t, 0)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
+
+for i in Bezier1:
+    if (i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)) in visited :
+        if visited[(i[-1][0].subs(t, 1), i[-1][1].subs(t, 1))] == 1 :
+            visited = DiffAll((i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
 
 for i in range(lenLine1) :
     if not i in ObjectsLine1 and not i in equalObjectsLine:
