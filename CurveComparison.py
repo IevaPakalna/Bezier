@@ -9,12 +9,24 @@ from sympy.solvers import solve
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.axes as axes
+import subprocess
+
+subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", "test2.svg", "-E", "test2.eps","--export-ignore-filters", "--export-ps-level=3"])
+subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-mm, -polyaslines", "-dt", "test2.eps", "test2.dxf"])
+#subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "test2.eps", "dxf:", "test2.dxf"])
+#subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "--export-type = 'dxf'", "\svgFiles\test1.svg"])
+
+#Examples
+#Simple export of a PNG: inkscape --export-type="png" my_file.svg
+#This will produce a PNG with a name my_file.png
+
+
 
 
 #Filenames should be written in the following two lines, as shown in example:
 #   dxf1(2) = dxfgrabber.readfile("filename")
 dxf1 = dxfgrabber.readfile("Parastie_platgurnu_m3_p2_002.dxf")
-dxf2 = dxfgrabber.readfile("parastie_platgurnu_m2_p2_002.dxf")
+dxf2 = dxfgrabber.readfile("test2.dxf")
 
 
 firstFileCol = '#055583'
@@ -41,6 +53,7 @@ ax.get_xaxis().set_major_formatter(
     mpl.ticker.FuncFormatter(MyForm))
 ax.get_yaxis().set_major_formatter(
     mpl.ticker.FuncFormatter(MyForm))
+
 
 #Crete Composite Bezier from given points
 def CompositeBezier(Points, nr):
@@ -400,6 +413,12 @@ def pointTransform(P, Vx, Vy, rP, alpha) :
         P[i][0] = tmpx
         P[i][1] = tmpy
     return P
+
+
+
+
+
+
 
 #type of objects in file
 type1 = [entity.dxftype for entity in dxf1.entities]
