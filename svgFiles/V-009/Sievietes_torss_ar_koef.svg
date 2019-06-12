@@ -1,0 +1,436 @@
+﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg x="9cm" y="-1cm" width="65cm" height="59cm" overflow="inherit" viewBox="9, -1, 65, 59" preserveAspectRatio="xMidYMid" font-size="0" xml:space="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" version="1.1">
+  <g id="wPc" xml:space="default">
+    <g id="wPc:M1_grp" xml:space="default">
+      <circle cx="10" cy="10" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M1" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.2" y="10.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M1</text>
+    </g>
+    <g id="wPc:V1_grp" xml:space="default">
+      <circle cx="10" cy="53" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:V1" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.2" y="53.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:V1</text>
+    </g>
+    <line x1="10" y1="10" x2="10" y2="53" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:M1V1" xml:space="default" fill="Transparent" />
+    <g id="wPc:B1_grp" xml:space="default">
+      <circle cx="10" cy="34.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:B1" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.2" y="34.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:B1</text>
+    </g>
+    <g id="wPc:M2_grp" xml:space="default">
+      <circle cx="10" cy="22.25" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M2" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.2" y="22.45" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M2</text>
+    </g>
+    <g id="wPc:V2_grp" xml:space="default">
+      <circle cx="11.5" cy="53" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:V2" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="11.7" y="53.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:V2</text>
+    </g>
+    <line x1="10" y1="22.25" x2="11.5" y2="53" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l22" xml:space="default" fill="Transparent" />
+    <g id="wPc:M3_grp" xml:space="default">
+      <circle cx="10" cy="10" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M3" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.2" y="10.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M3</text>
+    </g>
+    <g id="wPc:M6_grp" xml:space="default">
+      <circle cx="30.3" cy="22.25" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M6" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="30.5" y="22.45" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M6</text>
+    </g>
+    <g id="wPc:M5_grp" xml:space="default">
+      <circle cx="10" cy="22.25" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M5" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.2" y="22.45" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M5</text>
+    </g>
+    <line x1="10" y1="22.25" x2="30.3" y2="22.25" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l1" xml:space="default" fill="Transparent" />
+    <g id="wPc:M7_grp" xml:space="default">
+      <circle cx="30.3" cy="10" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M7" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="30.5" y="10.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M7</text>
+    </g>
+    <line x1="10" y1="10" x2="30.3" y2="10" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l2" xml:space="default" fill="Transparent" />
+    <line x1="10" y1="34.5" x2="70.3756" y2="34.5" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l3" xml:space="default" fill="Transparent" />
+    <line x1="10" y1="53" x2="70.3756" y2="53" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l4" xml:space="default" fill="Transparent" />
+    <g id="wPc:B2_grp" xml:space="default">
+      <circle cx="30.3" cy="34.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:B2" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="30.5" y="34.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:B2</text>
+    </g>
+    <line x1="30.3" y1="10" x2="30.3" y2="34.5" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:M7B2" xml:space="default" fill="Transparent" />
+    <g id="wPc:B3_grp" xml:space="default">
+      <circle cx="30.3" cy="34.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:B3" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="30.5" y="34.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:B3</text>
+    </g>
+    <line x1="30.3" y1="10" x2="30.3" y2="34.5" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:M7B3" xml:space="default" fill="Transparent" />
+    <g id="wPc:B4_grp" xml:space="default">
+      <circle cx="45.8446" cy="34.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:B4" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="46.0446" y="34.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:B4</text>
+    </g>
+    <g id="wPc:l5_V1_grp" xml:space="default">
+      <circle cx="10" cy="56.55" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:l5_V1" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.2" y="56.75" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:l5_V1</text>
+    </g>
+    <line x1="10" y1="56.55" x2="70.3756" y2="56.55" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l5" xml:space="default" fill="Transparent" />
+    <line x1="45.8446" y1="0.45" x2="70.3756" y2="0.45" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l6" xml:space="default" fill="Transparent" />
+    <g id="wPc:P1_grp" xml:space="default">
+      <circle cx="45.8446" cy="0.45" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P1" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="46.0446" y="0.65" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P1</text>
+    </g>
+    <line x1="45.8446" y1="0.45" x2="45.8446" y2="34.5" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l7" xml:space="default" fill="Transparent" />
+    <line x1="45.8446" y1="34.05" x2="70.3756" y2="34.05" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l8" xml:space="default" fill="Transparent" />
+    <g id="wPc:B5_grp" xml:space="default">
+      <circle cx="45.8446" cy="34.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:B5" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="46.0446" y="34.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:B5</text>
+    </g>
+    <g id="wPc:P2_grp" xml:space="default">
+      <circle cx="45.8446" cy="25.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P2" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="46.0446" y="25.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P2</text>
+    </g>
+    <g id="wPc:P3_grp" xml:space="default">
+      <circle cx="66.9446" cy="25.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P3" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="67.1446" y="25.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P3</text>
+    </g>
+    <path d="M64.1177 14.95 A21.1 21.1 0 0 1 64.1177 36.05" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:q1" xml:space="default" fill="Transparent" />
+    <g id="wPc:B6_grp" xml:space="default">
+      <circle cx="10.5976" cy="34.5008" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:B6" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.7976" y="34.7008" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:B6</text>
+    </g>
+    <g id="wPc:K1_grp" xml:space="default">
+      <circle cx="10" cy="34.05" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:K1" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.2" y="34.25" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:K1</text>
+    </g>
+    <g id="wPc:B7_grp" xml:space="default">
+      <circle cx="70.3756" cy="34.5008" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:B7" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="70.5756" y="34.7008" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:B7</text>
+    </g>
+    <g id="wPc:P4_grp" xml:space="default">
+      <circle cx="70.3756" cy="0.45" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P4" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="70.5756" y="0.65" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P4</text>
+    </g>
+    <g id="wPc:V3_grp" xml:space="default">
+      <circle cx="70.3756" cy="56.55" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:V3" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="70.5756" y="56.75" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:V3</text>
+    </g>
+    <line x1="70.3756" y1="0.45" x2="70.3756" y2="56.55" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l9" xml:space="default" fill="Transparent" />
+    <g id="wPc:K2_grp" xml:space="default">
+      <circle cx="70.3756" cy="34.05" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:K2" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="70.5756" y="34.25" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:K2</text>
+    </g>
+    <g id="wPc:K3_grp" xml:space="default">
+      <circle cx="58.3756" cy="34.05" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:K3" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="58.5756" y="34.25" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:K3</text>
+    </g>
+    <g id="wPc:P5_grp" xml:space="default">
+      <circle cx="56.3756" cy="0.45" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P5" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="56.5756" y="0.65" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P5</text>
+    </g>
+    <g id="wPc:V4_grp" xml:space="default">
+      <circle cx="59.7149" cy="56.55" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:V4" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="59.9149" y="56.75" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:V4</text>
+    </g>
+    <line x1="56.3756" y1="0.45" x2="58.3756" y2="34.05" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:P5K3" xml:space="default" fill="Transparent" />
+    <line x1="58.3756" y1="34.05" x2="59.7149" y2="56.55" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:K3V4" xml:space="default" fill="Transparent" />
+    <g id="wPc:P51_grp" xml:space="default">
+      <circle cx="56.3756" cy="0.45" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P51" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="56.5756" y="0.65" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P51</text>
+    </g>
+    <g id="wPc:K4_grp" xml:space="default">
+      <circle cx="58.3756" cy="34.05" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:K4" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="58.5756" y="34.25" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:K4</text>
+    </g>
+    <g id="wPc:M8_grp" xml:space="default">
+      <circle cx="17.8667" cy="10" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M8" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="18.0667" y="10.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M8</text>
+    </g>
+    <g id="wPc:M9_grp" xml:space="default">
+      <circle cx="17.8667" cy="7.3778" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M9" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="18.0667" y="7.5778" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M9</text>
+    </g>
+    <g id="wPc:M3H_grp" xml:space="default">
+      <circle cx="15.2444" cy="10" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M3H" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="15.4444" y="10.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M3H</text>
+    </g>
+    <g id="wPc:M9H_grp" xml:space="default">
+      <circle cx="17.8667" cy="7.6692" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M9H" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="18.0667" y="7.8692" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M9H</text>
+    </g>
+    <path d="M10 10 C17.8667 10 17.8667 7.6692 17.8667 7.3778" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:q2" xml:space="default" fill="Transparent" />
+    <path d="M70.3802 8.9884 A8.5667 8.5667 0 0 1 62.5089 0.45" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:q3" xml:space="default" fill="Transparent" />
+    <g id="wPc:P8_grp" xml:space="default">
+      <circle cx="62.5089" cy="0.45" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P8" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="62.7089" y="0.65" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P8</text>
+    </g>
+    <g id="wPc:P7_grp" xml:space="default">
+      <circle cx="70.3756" cy="8.9881" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P7" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="70.5756" y="9.1881" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P7</text>
+    </g>
+    <g id="wPc:M10_grp" xml:space="default">
+      <circle cx="17.8667" cy="10.3778" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M10" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="18.0667" y="10.5778" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M10</text>
+    </g>
+    <line x1="17.8667" y1="10.3778" x2="45.8446" y2="10.3778" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l91" xml:space="default" fill="Transparent" />
+    <path d="M33.8667 7.3778 A16 16 0 0 1 30.9731 16.555" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:q4" xml:space="default" fill="Transparent" />
+    <g id="wPc:M11_grp" xml:space="default">
+      <circle cx="33.5829" cy="10.3778" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M11" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="33.7829" y="10.5778" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M11</text>
+    </g>
+    <line x1="17.8667" y1="7.3778" x2="33.5829" y2="10.3778" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l10" xml:space="default" fill="Transparent" />
+    <g id="wPc:P9_grp" xml:space="default">
+      <circle cx="49.0089" cy="0.45" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P9" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="49.2089" y="0.65" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P9</text>
+    </g>
+    <g id="wPc:P10_grp" xml:space="default">
+      <circle cx="49.0089" cy="5.45" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P10" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="49.2089" y="5.65" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P10</text>
+    </g>
+    <line x1="62.5089" y1="0.45" x2="49.0089" y2="5.45" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l11" xml:space="default" fill="Transparent" />
+    <g id="wPc:P11_grp" xml:space="default">
+      <circle cx="39.2686" cy="10.7379" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P11" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="39.4686" y="10.9379" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P11</text>
+    </g>
+    <line x1="56.3756" y1="0.45" x2="59.7149" y2="56.55" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l12" xml:space="default" fill="Transparent" />
+    <g id="wPc:P12_grp" xml:space="default">
+      <circle cx="56.5079" cy="2.6727" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P12" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="56.7079" y="2.8727" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P12</text>
+    </g>
+    <g id="wPc:M12_grp" xml:space="default">
+      <circle cx="24.3072" cy="8.5026" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M12" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="24.5072" y="8.7026" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M12</text>
+    </g>
+    <g id="wPc:V5_grp" xml:space="default">
+      <circle cx="21.1667" cy="53" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:V5" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="21.3667" y="53.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:V5</text>
+    </g>
+    <line x1="24.3072" y1="8.5026" x2="21.1667" y2="53" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l13" xml:space="default" fill="Transparent" />
+    <g id="wPc:M13_grp" xml:space="default">
+      <circle cx="26.2644" cy="8.9809" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M13" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="26.4644" y="9.1809" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M13</text>
+    </g>
+    <g id="wPc:M14_grp" xml:space="default">
+      <circle cx="23.7367" cy="16.586" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M14" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="23.9367" y="16.786" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M14</text>
+    </g>
+    <line x1="24.3072" y1="8.5026" x2="23.7367" y2="16.586" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:M12M14" xml:space="default" fill="Transparent" />
+    <g id="wPc:M15_grp" xml:space="default">
+      <circle cx="23.3369" cy="22.2506" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M15" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="23.5369" y="22.4506" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M15</text>
+    </g>
+    <line x1="24.3072" y1="8.5026" x2="23.3369" y2="22.2506" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l14" xml:space="default" fill="Transparent" />
+    <line x1="24.3072" y1="8.5026" x2="33.5829" y2="10.3778" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l15" xml:space="default" fill="Transparent" />
+    <g id="wPc:a1M12_grp" xml:space="default">
+      <circle cx="26.2838" cy="8.8932" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a1M12" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="26.4838" y="9.0932" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a1M12</text>
+    </g>
+    <g id="wPc:a1M11_grp" xml:space="default">
+      <circle cx="35.2081" cy="12.0028" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a1M11" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="35.4081" y="12.2028" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a1M11</text>
+    </g>
+    <line x1="26.2838" y1="8.8932" x2="23.3369" y2="22.2506" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a1l14" xml:space="default" fill="Transparent" />
+    <line x1="26.2838" y1="8.8932" x2="33.1901" y2="11.2877" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a1l15" xml:space="default" fill="Transparent" />
+    <g id="wPc:M16_grp" xml:space="default">
+      <circle cx="33.1901" cy="11.2877" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M16" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="33.3901" y="11.4877" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M16</text>
+    </g>
+    <path d="M10 9 C17.8667 9 17.8667 6.6692 17.8667 6.3778" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a1q2" xml:space="default" fill="Transparent" />
+    <g id="wPc:a1M1_grp" xml:space="default">
+      <circle cx="10" cy="9" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a1M1" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="10.2" y="9.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a1M1</text>
+    </g>
+    <line x1="17.8667" y1="6.3778" x2="33.5829" y2="10.3778" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l16" xml:space="default" fill="Transparent" />
+    <g id="wPc:M17_grp" xml:space="default">
+      <circle cx="24.2138" cy="7.9931" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M17" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="24.4138" y="8.1931" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M17</text>
+    </g>
+    <line x1="24.2138" y1="7.9931" x2="21.1667" y2="53" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l17" xml:space="default" fill="Transparent" />
+    <g id="wPc:M18_grp" xml:space="default">
+      <circle cx="23.632" cy="16.5865" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M18" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="23.832" y="16.7865" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M18</text>
+    </g>
+    <line x1="24.2138" y1="7.9931" x2="23.632" y2="16.5865" stroke="#000000" stroke-width="0.05" stroke-linecap="round" id="wPc:M17M18" xml:space="default" fill="Transparent" />
+    <line x1="17.8667" y1="6.3778" x2="24.2138" y2="7.9931" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a1M9M17" xml:space="default" fill="Transparent" />
+    <g id="wPc:M19_grp" xml:space="default">
+      <circle cx="24.1739" cy="8.5824" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M19" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="24.3739" y="8.7824" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M19</text>
+    </g>
+    <g id="wPc:M20_grp" xml:space="default">
+      <circle cx="26.1384" cy="8.9574" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M20" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="26.3384" y="9.1574" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M20</text>
+    </g>
+    <line x1="26.3203" y1="8.4037" x2="23.632" y2="16.5865" stroke="#000000" stroke-width="0.05" stroke-linecap="round" id="wPc:M21M18" xml:space="default" fill="Transparent" />
+    <line x1="26.3203" y1="8.4037" x2="33.1901" y2="11.2877" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:M21M16" xml:space="default" fill="Transparent" />
+    <line x1="30.3" y1="11.2877" x2="45.8446" y2="11.2877" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l18" xml:space="default" fill="Transparent" />
+    <line x1="30.3" y1="10.7377" x2="45.8446" y2="10.7377" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l19" xml:space="default" fill="Transparent" />
+    <g id="wPc:P13_grp" xml:space="default">
+      <circle cx="39.2688" cy="10.7377" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P13" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="39.4688" y="10.9377" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P13</text>
+    </g>
+    <line x1="33.1901" y1="11.2877" x2="39.2688" y2="10.7377" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:M16P13" xml:space="default" fill="Transparent" />
+    <g id="wPc:P14_grp" xml:space="default">
+      <circle cx="36.2295" cy="11.0126" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P14" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="36.4295" y="11.2126" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P14</text>
+    </g>
+    <g id="wPc:M22_grp" xml:space="default">
+      <circle cx="30.3" cy="31.2908" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M22" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="30.5" y="31.4908" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M22</text>
+    </g>
+    <g id="wPc:P14x_grp" xml:space="default">
+      <circle cx="45.8446" cy="31.2908" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P14x" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="46.0446" y="31.4908" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P14x</text>
+    </g>
+    <line x1="30.3" y1="31.2908" x2="45.8446" y2="31.2908" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l20" xml:space="default" fill="Transparent" />
+    <g id="wPc:a1P12_grp" xml:space="default">
+      <circle cx="44.4419" cy="5.8742" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a1P12" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="44.6419" y="6.0742" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a1P12</text>
+    </g>
+    <g id="wPc:a1K2_grp" xml:space="default">
+      <circle cx="69.733" cy="30.1758" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a1K2" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="69.933" y="30.3758" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a1K2</text>
+    </g>
+    <g id="wPc:a1P7_grp" xml:space="default">
+      <circle cx="61.6418" cy="6.456" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a1P7" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="61.8418" y="6.656" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a1P7</text>
+    </g>
+    <line x1="61.6418" y1="6.456" x2="69.733" y2="30.1758" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a1P7a1K2" xml:space="default" fill="Transparent" />
+    <line x1="39.2686" y1="10.7379" x2="44.4419" y2="5.8742" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:P11a1P12" xml:space="default" fill="Transparent" />
+    <line x1="44.4419" y1="5.8742" x2="58.3756" y2="34.05" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a1P12K3" xml:space="default" fill="Transparent" />
+    <g id="wPc:a1P11_grp" xml:space="default">
+      <circle cx="40.9721" cy="9.44" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a1P11" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="41.1721" y="9.64" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a1P11</text>
+    </g>
+    <line x1="40.9721" y1="9.44" x2="45.8446" y2="25.5" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:P11P2" xml:space="default" fill="Transparent" />
+    <g id="wPc:P15_grp" xml:space="default">
+      <circle cx="43.4084" cy="17.4701" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P15" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="43.6084" y="17.6701" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P15</text>
+    </g>
+    <g id="wPc:M23_grp" xml:space="default">
+      <circle cx="30.3" cy="24.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M23" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="30.5" y="24.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M23</text>
+    </g>
+    <line x1="33.1901" y1="11.2877" x2="30.3" y2="24.5" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:M16M23" xml:space="default" fill="Transparent" />
+    <g id="wPc:M24_grp" xml:space="default">
+      <circle cx="31.7451" cy="17.8939" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M24" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="31.9451" y="18.0939" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M24</text>
+    </g>
+    <g id="wPc:M25_grp" xml:space="default">
+      <circle cx="31.159" cy="17.7657" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M25" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="31.359" y="17.9657" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M25</text>
+    </g>
+    <g id="wPc:P16_grp" xml:space="default">
+      <circle cx="44.3653" cy="17.1798" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P16" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="44.5653" y="17.3798" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P16</text>
+    </g>
+    <g id="wPc:P17_grp" xml:space="default">
+      <circle cx="43.7877" cy="29.2339" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P17" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="43.9877" y="29.4339" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P17</text>
+    </g>
+    <g id="wPc:M26_grp" xml:space="default">
+      <circle cx="32.7105" cy="28.8803" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:M26" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="32.9105" y="29.0803" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:M26</text>
+    </g>
+    <g id="wPc:P18_grp" xml:space="default">
+      <circle cx="45.8446" cy="27.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P18" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="46.0446" y="27.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P18</text>
+    </g>
+    <g id="wPc:R20_grp" xml:space="default">
+      <circle cx="43.2342" cy="13.4517" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R20" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="43.4342" y="13.6517" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R20</text>
+    </g>
+    <g id="wPc:R11_grp" xml:space="default">
+      <circle cx="44.8584" cy="18.8051" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R11" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="45.0584" y="19.0051" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R11</text>
+    </g>
+    <g id="wPc:R21_grp" xml:space="default">
+      <circle cx="45.8446" cy="22.3399" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R21" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="46.0446" y="22.5399" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R21</text>
+    </g>
+    <g id="wPc:R12_grp" xml:space="default">
+      <circle cx="45.8446" cy="28.367" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R12" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="46.0446" y="28.567" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R12</text>
+    </g>
+    <g id="wPc:R13_grp" xml:space="default">
+      <circle cx="40.0953" cy="32.0353" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R13" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="40.2953" y="32.2353" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R13</text>
+    </g>
+    <g id="wPc:R23_grp" xml:space="default">
+      <circle cx="36.4029" cy="32.0353" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R23" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="36.6029" y="32.2353" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R23</text>
+    </g>
+    <g id="wPc:R22_grp" xml:space="default">
+      <circle cx="44.6105" cy="28.6093" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R22" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="44.8105" y="28.8093" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R22</text>
+    </g>
+    <g id="wPc:R14_grp" xml:space="default">
+      <circle cx="31.907" cy="28.1951" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R14" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="32.107" y="28.3951" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R14</text>
+    </g>
+    <g id="wPc:R24_grp" xml:space="default">
+      <circle cx="30.3" cy="26.6902" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R24" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="30.5" y="26.8902" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R24</text>
+    </g>
+    <g id="wPc:R25_grp" xml:space="default">
+      <circle cx="30.8727" cy="19.0745" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R25" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="31.0727" y="19.2745" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R25</text>
+    </g>
+    <g id="wPc:R15_grp" xml:space="default">
+      <circle cx="30.3" cy="21.7872" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R15" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="30.5" y="21.9872" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R15</text>
+    </g>
+    <g id="wPc:R16_grp" xml:space="default">
+      <circle cx="31.836" cy="14.6707" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R16" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="32.036" y="14.8707" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R16</text>
+    </g>
+    <g id="wPc:R26prim_grp" xml:space="default">
+      <circle cx="32.513" cy="12.9792" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R26prim" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="32.713" y="13.1792" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R26prim</text>
+    </g>
+    <g id="wPc:R10prim_grp" xml:space="default">
+      <circle cx="42.1032" cy="11.4458" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R10prim" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="42.3032" y="11.6458" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R10prim</text>
+    </g>
+    <g id="wPc:R10_grp" xml:space="default">
+      <circle cx="38.6792" cy="11.2925" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R10" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="38.8792" y="11.4925" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R10</text>
+    </g>
+    <g id="wPc:R26_grp" xml:space="default">
+      <circle cx="34.2417" cy="10.9365" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:R26" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="34.4417" y="11.1365" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:R26</text>
+    </g>
+    <g id="wPc:P18prim_grp" xml:space="default">
+      <circle cx="45.8446" cy="26.5" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P18prim" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="46.0446" y="26.7" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P18prim</text>
+    </g>
+    <g id="wPc:a2P11_grp" xml:space="default">
+      <circle cx="40.9721" cy="9.44" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a2P11" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="41.1721" y="9.64" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a2P11</text>
+    </g>
+    <path d="M40.9721 9.44 C42.1032 11.4458 43.2342 13.4517 44.3653 17.1798" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:bz1" xml:space="default" fill="Transparent" />
+    <path d="M44.3653 17.1798 C44.8584 18.8051 45.8446 22.3399 45.8446 26.5" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:bz2" xml:space="default" fill="Transparent" />
+    <path d="M45.8446 26.5 C45.8446 27.5 44.6105 28.6093 43.7877 29.2339" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:bz3" xml:space="default" fill="Transparent" />
+    <path d="M43.7877 29.2339 C40.0953 32.0353 36.4029 32.0353 32.7105 28.8803" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:bz4" xml:space="default" fill="Transparent" />
+    <path d="M32.7105 28.8803 C31.907 28.1951 30.3 26.6902 30.3 24.5" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:bz5" xml:space="default" fill="Transparent" />
+    <path d="M30.3 24.5 C30.3 21.7872 30.8727 19.0745 31.159 17.7657" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:bz6" xml:space="default" fill="Transparent" />
+    <path d="M31.159 17.7657 C31.836 14.6707 32.513 12.9792 33.1901 11.2877" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:bz7" xml:space="default" fill="Transparent" />
+    <line x1="50.0361" y1="29.6428" x2="41.1974" y2="24.9655" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:sPerpBz3" xml:space="default" fill="Transparent" />
+    <g id="wPc:perpPunkts_grp" xml:space="default">
+      <circle cx="45.61673" cy="27.30414" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:perpPunkts" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="45.81673" y="27.50414" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:perpPunkts</text>
+    </g>
+    <g id="wPc:rocApaksa_grp" xml:space="default">
+      <circle cx="43.7877" cy="29.2339" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:rocApaksa" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="43.9877" y="29.4339" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:rocApaksa</text>
+    </g>
+    <g id="wPc:P28_grp" xml:space="default">
+      <circle cx="68.8756" cy="0.45" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P28" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="69.0756" y="0.65" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P28</text>
+    </g>
+    <g id="wPc:a2P12_grp" xml:space="default">
+      <circle cx="55.1117" cy="2.7871" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a2P12" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="55.3117" y="2.9871" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a2P12</text>
+    </g>
+    <path d="M69.2516 8.4784 A8.5667 8.5667 0 0 1 61.0077 0.2992" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a2q3" xml:space="default" fill="Transparent" />
+    <g id="wPc:a2K2_grp" xml:space="default">
+      <circle cx="70.3637" cy="33.5153" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:a2K2" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="70.5637" y="33.7153" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:a2K2</text>
+    </g>
+    <line x1="61.0077" y1="0.2992" x2="55.1117" y2="2.7871" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a2P8a2P12" xml:space="default" fill="Transparent" />
+    <line x1="55.1117" y1="2.7871" x2="58.3756" y2="34.05" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a2P12K3" xml:space="default" fill="Transparent" />
+    <line x1="69.2516" y1="8.4784" x2="70.3637" y2="33.5153" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:a2P7a2K2" xml:space="default" fill="Transparent" />
+    <line x1="58.3756" y1="34.05" x2="70.3637" y2="33.5153" stroke="#008000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:K3a2K2" xml:space="default" fill="Transparent" />
+    <g id="wPc:V3prim_grp" xml:space="default">
+      <circle cx="71.3777" cy="56.55" r="0.1" stroke="#008000" fill-opacity="0.25" stroke-width="0.03" stroke-opacity="0.5" id="wPc:V3prim" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="71.5777" y="56.75" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:V3prim</text>
+    </g>
+    <line x1="68.8756" y1="0.45" x2="71.3777" y2="56.55" stroke="#0000FF" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:l20x" xml:space="default" fill="Transparent" />
+  </g>
+</svg>

@@ -1,0 +1,43 @@
+﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg x="-7cm" y="-7cm" width="18cm" height="17cm" overflow="inherit" viewBox="-7, -7, 18, 17" preserveAspectRatio="xMidYMid" font-size="0" xml:space="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" version="1.1">
+  <g id="wPc" xml:space="default">
+    <g id="##000021_grp" xml:space="default">
+      <circle cx="-6" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="##000021" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="-5.8" y="0.2" fill-opacity="0.5" font-size="0.3" font-weight="700">##000021</text>
+    </g>
+    <g id="##000022_grp" xml:space="default">
+      <circle cx="6" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="##000022" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="6.2" y="0.2" fill-opacity="0.5" font-size="0.3" font-weight="700">##000022</text>
+    </g>
+    <line x1="-6" y1="0" x2="6" y2="0" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:lX" xml:space="default" fill="Transparent" />
+    <g id="wPc:lY_##000021_grp" xml:space="default">
+      <circle cy="-6" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:lY_##000021" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="0.2" y="-5.8" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:lY_##000021</text>
+    </g>
+    <g id="wPc:lY_##000022_grp" xml:space="default">
+      <circle cy="6" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:lY_##000022" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="0.2" y="6.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:lY_##000022</text>
+    </g>
+    <line x1="0" y1="-6" x2="0" y2="6" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:lY" xml:space="default" fill="Transparent" />
+  </g>
+  <g id="pcNew" xml:space="default">
+    <g id="##000029_grp" xml:space="default">
+      <circle cx="-3" cy="3" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="##000029" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="-2.8" y="3.2" fill-opacity="0.5" font-size="0.3" font-weight="700">##000029</text>
+    </g>
+    <g id="##000030_grp" xml:space="default">
+      <circle cx="9" cy="3" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="##000030" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="9.2" y="3.2" fill-opacity="0.5" font-size="0.3" font-weight="700">##000030</text>
+    </g>
+    <g id="pcNew:lY_##000021_grp" xml:space="default">
+      <circle cx="3" cy="-3" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="pcNew:lY_##000021" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="3.2" y="-2.8" fill-opacity="0.5" font-size="0.3" font-weight="700">pcNew:lY_##000021</text>
+    </g>
+    <g id="pcNew:lY_##000022_grp" xml:space="default">
+      <circle cx="3" cy="9" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="pcNew:lY_##000022" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="3.2" y="9.2" fill-opacity="0.5" font-size="0.3" font-weight="700">pcNew:lY_##000022</text>
+    </g>
+    <line x1="-3" y1="3" x2="9" y2="3" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="pcNew:lX" xml:space="default" fill="Transparent" />
+    <line x1="3" y1="-3" x2="3" y2="9" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="pcNew:lY" xml:space="default" fill="Transparent" />
+  </g>
+</svg>

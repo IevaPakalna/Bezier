@@ -1,0 +1,21 @@
+﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg x="1cm" y="2cm" width="6cm" height="4cm" overflow="inherit" viewBox="1, 2, 6, 4" preserveAspectRatio="xMidYMid" font-size="0" xml:space="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" version="1.1">
+  <g id="wPc" xml:space="default">
+    <g id="wPc:p1_grp" xml:space="default">
+      <circle cx="2" cy="3" r="0.02" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:p1" xml:space="default" style="fill:#FFA500;" />
+      <text xml:space="default" x="2.2" y="3.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:p1</text>
+    </g>
+  </g>
+  <g id="piece1" xml:space="default">
+    <g id="piece1:p2_grp" xml:space="default">
+      <circle cx="5" cy="5" r="0.02" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="piece1:p2" xml:space="default" style="fill:#FFA500;" />
+      <text xml:space="default" x="5.2" y="5.2" fill-opacity="0.5" font-size="0.3" font-weight="700">piece1:p2</text>
+    </g>
+  </g>
+  <g id="piece2" xml:space="default">
+    <g id="piece2:p3_grp" xml:space="default">
+      <circle cx="3" cy="4" r="0.02" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="piece2:p3" xml:space="default" style="fill:#FFA500;" />
+      <text xml:space="default" x="3.2" y="4.2" fill-opacity="0.5" font-size="0.3" font-weight="700">piece2:p3</text>
+    </g>
+  </g>
+</svg>

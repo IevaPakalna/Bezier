@@ -1,0 +1,27 @@
+﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg x="-1cm" y="-1cm" width="6cm" height="5cm" overflow="inherit" viewBox="-1, -1, 6, 5" preserveAspectRatio="xMidYMid" font-size="0" xml:space="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" version="1.1">
+  <g id="wPc" xml:space="default">
+    <g id="wPc:Point1_grp" xml:space="default">
+      <circle r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:Point1" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="0.2" y="0.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:Point1</text>
+    </g>
+    <g id="wPc:Point2_grp" xml:space="default">
+      <circle cx="1.5" cy="3" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:Point2" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="1.7" y="3.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:Point2</text>
+    </g>
+    <g transform="rotate(423.4349, 0.2, 0.2)" id="wPc:myDispName1_grp" xml:space="default">
+      <text xml:space="default" x="0.2" y="0.2" stroke="#000000" fill-opacity="0.9" stroke-opacity="0" font-family="Times New Roman" font-size="0.2" style="fill:#000000;">Sample text</text>
+    </g>
+    <g transform="rotate(0, 1.9, 2.8)" id="wPc:myDispName2_grp" xml:space="default">
+      <text xml:space="default" x="1.9" y="2.8" stroke="#FF0000" fill-opacity="0.7" stroke-opacity="0" font-family="Impact" font-size="0.2" style="fill:#FF0000;">Something technical</text>
+    </g>
+    <line x1="0" y1="0" x2="1.5" y2="3" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:Straight1" xml:space="default" fill="Transparent" />
+    <g id="wPc:Point3_grp" xml:space="default">
+      <circle cx="0.7499776" cy="1.499955" r="0.02" stroke="#FF77F0" fill-opacity="0.7" stroke-width="0.05" stroke-opacity="0.8" id="wPc:Point3" xml:space="default" style="fill:#AD039A;" />
+      <text xml:space="default" x="0.9499776" y="1.699955" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:Point3</text>
+    </g>
+    <g transform="rotate(0, -0.2500224, 1.199955)" id="wPc:myDispName3_grp" xml:space="default">
+      <text xml:space="default" x="-0.2500224" y="1.199955" stroke="#FF8800" fill-opacity="0.7" stroke-opacity="0" font-family="Magneto" font-size="0.15" style="fill:#FF8800;">Is it artistic?</text>
+    </g>
+  </g>
+</svg>

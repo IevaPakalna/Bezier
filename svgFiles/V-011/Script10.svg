@@ -1,0 +1,29 @@
+﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg x="-5cm" y="-5cm" width="10cm" height="10cm" overflow="inherit" viewBox="-5, -5, 10, 10" preserveAspectRatio="xMidYMid" font-size="0" xml:space="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" version="1.1">
+  <g id="wPc" xml:space="default">
+    <g id="wPc:x_grp" xml:space="default">
+      <circle cx="-4" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:x" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="-3.8" y="0.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:x</text>
+    </g>
+    <line x1="-4" y1="0" x2="4" y2="0" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:xAxis" xml:space="default" fill="Transparent" />
+    <g id="wPc:y_grp" xml:space="default">
+      <circle cy="-4" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:y" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="0.2" y="-3.8" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:y</text>
+    </g>
+    <line x1="0" y1="-4" x2="0" y2="4" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:yAxis" xml:space="default" fill="Transparent" />
+    <g id="wPc:P_grp" xml:space="default">
+      <circle r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:P" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="0.2" y="0.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P</text>
+    </g>
+    <path d="M2 0 A2 2 0 0 1 0 2" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:Cir1" xml:space="default" fill="Transparent" />
+    <path d="M0 2 A2 2 0 1 1 2 0" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:Cir2" xml:space="default" fill="Transparent" />
+    <g id="wPc:Start_grp" xml:space="default">
+      <circle cx="2" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:Start" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="2.2" y="0.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:Start</text>
+    </g>
+    <g id="wPc:End_grp" xml:space="default">
+      <circle cy="2" r="0.01" stroke="#008000" fill-opacity="0.25" stroke-width="0.05" stroke-opacity="0.5" id="wPc:End" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="0.2" y="2.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:End</text>
+    </g>
+  </g>
+</svg>

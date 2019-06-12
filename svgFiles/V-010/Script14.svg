@@ -1,0 +1,20 @@
+﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg x="-1cm" y="6cm" width="18cm" height="12cm" overflow="inherit" viewBox="-1, 6, 18, 12" preserveAspectRatio="xMidYMid" font-size="0" xml:space="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" version="1.1">
+  <g id="wPc" xml:space="default">
+    <g id="wPc:CC_grp" xml:space="default">
+      <circle cy="7" r="0.1" stroke="#008000" fill-opacity="0.25" stroke-width="0.03" stroke-opacity="0.5" id="wPc:CC" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="0.2" y="7.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:CC</text>
+    </g>
+    <path d="M10 7 A10 10 0 0 1 0 17" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:q3" xml:space="default" fill="Transparent" />
+    <g id="wPc:SS_grp" xml:space="default">
+      <circle cx="5" cy="8" r="0.1" stroke="#008000" fill-opacity="0.25" stroke-width="0.03" stroke-opacity="0.5" id="wPc:SS" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="5.2" y="8.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:SS</text>
+    </g>
+    <line x1="12.7475" y1="9.5495" x2="6.8641" y2="8.3729" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:aa" xml:space="default" fill="Transparent" />
+    <g id="wPc:RR_grp" xml:space="default">
+      <circle cx="15" cy="12" r="0.1" stroke="#008000" fill-opacity="0.25" stroke-width="0.03" stroke-opacity="0.5" id="wPc:RR" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="15.2" y="12.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:RR</text>
+    </g>
+    <line x1="12.333" y1="11.1106" x2="6.6408" y2="9.2134" stroke="#FF0000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:bb" xml:space="default" fill="Transparent" />
+  </g>
+</svg>

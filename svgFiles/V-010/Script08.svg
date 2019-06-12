@@ -1,0 +1,22 @@
+﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg x="-2cm" y="-1cm" width="7cm" height="7cm" overflow="inherit" viewBox="-2, -1, 7, 7" preserveAspectRatio="xMidYMid" font-size="0" xml:space="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" version="1.1">
+  <g id="wPc" xml:space="default">
+    <path d="M0 4 C0 0 4 0 4 4" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:B1" xml:space="default" fill="Transparent" />
+    <line x1="-1" y1="2" x2="2.5" y2="2" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:S1" xml:space="default" fill="Transparent" />
+    <g id="wPc:P1_grp" xml:space="default">
+      <circle cx="0.4600997" cy="2.000519" r="0.1" stroke="#008000" fill-opacity="0.25" stroke-width="0.03" stroke-opacity="0.5" id="wPc:P1" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="0.6600997" y="2.200519" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P1</text>
+    </g>
+    <line x1="2" y1="0" x2="2" y2="5" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:S2" xml:space="default" fill="Transparent" />
+    <g id="wPc:P2_grp" xml:space="default">
+      <circle cy="4" r="0.1" stroke="#008000" fill-opacity="0.25" stroke-width="0.03" stroke-opacity="0.5" id="wPc:P2" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="0.2" y="4.2" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P2</text>
+    </g>
+    <line x1="2.9999" y1="0" x2="3.0001" y2="5" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:S3" xml:space="default" fill="Transparent" />
+    <g id="wPc:P3_grp" xml:space="default">
+      <circle cx="3.000537" cy="1.362268" r="0.1" stroke="#008000" fill-opacity="0.25" stroke-width="0.03" stroke-opacity="0.5" id="wPc:P3" xml:space="default" style="fill:#FFFF00;" />
+      <text xml:space="default" x="3.200537" y="1.562268" fill-opacity="0.5" font-size="0.3" font-weight="700">wPc:P3</text>
+    </g>
+    <line x1="2.2379" y1="2.9326" x2="-0.1861" y2="-0.2493" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:S_P" xml:space="default" fill="Transparent" />
+  </g>
+</svg>

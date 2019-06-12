@@ -1,0 +1,29 @@
+﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg x="-1cm" y="-1cm" width="6cm" height="6cm" overflow="inherit" viewBox="-1, -1, 6, 6" preserveAspectRatio="xMidYMid" font-size="0" xml:space="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" version="1.1">
+  <g id="wPc" xml:space="default">
+    <g id="wPc:HOR" xml:space="default">
+      <line x1="2.5" y1="0.3787" x2="4.6213" y2="2.5" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:HOR:l1h" xml:space="default" fill="Transparent" />
+      <line x1="1.7929" y1="1.0858" x2="3.9142" y2="3.2071" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:HOR:l2h" xml:space="default" fill="Transparent" />
+      <line x1="1.0858" y1="1.7929" x2="3.2071" y2="3.9142" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:HOR:l3h" xml:space="default" fill="Transparent" />
+      <line x1="0.3787" y1="2.5" x2="2.5" y2="4.6213" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:HOR:l4h" xml:space="default" fill="Transparent" />
+    </g>
+    <g id="wPc:VER" xml:space="default">
+      <line x1="4.6213" y1="2.5" x2="2.5" y2="4.6213" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:VER:l1h" xml:space="default" fill="Transparent" />
+      <line x1="3.9142" y1="1.7929" x2="1.7929" y2="3.9142" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:VER:l2h" xml:space="default" fill="Transparent" />
+      <line x1="3.2071" y1="1.0858" x2="1.0858" y2="3.2071" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:VER:l3h" xml:space="default" fill="Transparent" />
+      <line x1="2.5" y1="0.3787" x2="0.3787" y2="2.5" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:VER:l4h" xml:space="default" fill="Transparent" />
+    </g>
+  </g>
+  <g id="wPc:HOR#1" xml:space="default">
+    <line x1="2.5" y1="0.3787" x2="4.6213" y2="2.5" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:HOR:l1h#1" xml:space="default" fill="Transparent" />
+    <line x1="1.7929" y1="1.0858" x2="3.9142" y2="3.2071" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:HOR:l2h#1" xml:space="default" fill="Transparent" />
+    <line x1="1.0858" y1="1.7929" x2="3.2071" y2="3.9142" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:HOR:l3h#1" xml:space="default" fill="Transparent" />
+    <line x1="0.3787" y1="2.5" x2="2.5" y2="4.6213" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:HOR:l4h#1" xml:space="default" fill="Transparent" />
+  </g>
+  <g id="wPc:VER#1" xml:space="default">
+    <line x1="4.6213" y1="2.5" x2="2.5" y2="4.6213" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:VER:l1h#1" xml:space="default" fill="Transparent" />
+    <line x1="3.9142" y1="1.7929" x2="1.7929" y2="3.9142" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:VER:l2h#1" xml:space="default" fill="Transparent" />
+    <line x1="3.2071" y1="1.0858" x2="1.0858" y2="3.2071" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:VER:l3h#1" xml:space="default" fill="Transparent" />
+    <line x1="2.5" y1="0.3787" x2="0.3787" y2="2.5" stroke="#000000" stroke-width="0.05" stroke-linecap="round" stroke-opacity="0.5" id="wPc:VER:l4h#1" xml:space="default" fill="Transparent" />
+  </g>
+</svg>
