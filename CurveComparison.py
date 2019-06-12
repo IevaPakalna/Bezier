@@ -11,22 +11,19 @@ import matplotlib.pyplot as plt
 import matplotlib.axes as axes
 import subprocess
 
-subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", "test2.svg", "-E", "test2.eps","--export-ignore-filters", "--export-ps-level=3"])
-subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-mm, -polyaslines", "-dt", "test2.eps", "test2.dxf"])
-#subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "test2.eps", "dxf:", "test2.dxf"])
-#subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "--export-type = 'dxf'", "\svgFiles\test1.svg"])
 
-#Examples
-#Simple export of a PNG: inkscape --export-type="png" my_file.svg
-#This will produce a PNG with a name my_file.png
+fileName1 = 'Parastie_platgurnu_m3_p2_002.dxf'
+fileName2 = 'test3.svg'
 
 
+subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "file2.eps","--export-ignore-filters", "--export-ps-level=3"])
+subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-polyaslines", "-dt", "file2.eps", "file2.dxf"])
 
 
 #Filenames should be written in the following two lines, as shown in example:
 #   dxf1(2) = dxfgrabber.readfile("filename")
-dxf1 = dxfgrabber.readfile("Parastie_platgurnu_m3_p2_002.dxf")
-dxf2 = dxfgrabber.readfile("test2.dxf")
+dxf1 = dxfgrabber.readfile(fileName1)
+dxf2 = dxfgrabber.readfile('file2.dxf')
 
 
 firstFileCol = '#055583'
@@ -264,8 +261,16 @@ def DistantPoint(P, P1, P2, d):
     else:
         v1 = P2[0] - P[0]
         v2 = P2[1] - P[1]
-    u1 = float(v1 / np.sqrt(v1**2 + v2**2))
-    u2 = float(v2 / np.sqrt(v1**2 + v2**2))
+    sq = np.sqrt(round(v1**2 + v2**2, 5))
+    if v1 != 0 and sq != 0:
+        u1 = float(v1 / sq)
+    else :
+        u1 = 0
+    sq = np.sqrt(round(v1**2 + v2**2, 5))
+    if v2 != 0 and sq != 0 :
+        u2 = float(v2 / sq)
+    else :
+        u2 = 0
     nP = []
     nP.append(P[0] + d * u1)
     nP.append(P[1] + d * u2)
@@ -461,9 +466,9 @@ for entity in output1:
         x = [lineStart1[0], lineEnd1[0]]
         y = [lineStart1[1], lineEnd1[1]]
 
-        plt.plot(x, y, color = '#055583', alpha = 0.65)
-        plt.plot(lineStart1[0], lineStart1[1], 'o',color = '#bc0e13', alpha = 0.5)
-        plt.plot(lineEnd1[0], lineEnd1[1], 'o',color = '#bc0e13', alpha = 0.5)
+        plt.plot(x, y, color = '#055583', alpha = 0.2)
+        plt.plot(lineStart1[0], lineStart1[1], 'o',color = '#055583', alpha = 0.5)
+        plt.plot(lineEnd1[0], lineEnd1[1], 'o',color = '#055583', alpha = 0.5)
 
     #Circle
     if entity.dxftype == 'CIRCLE':
@@ -525,6 +530,7 @@ arc2 = []
 LWPolyline2 = []
 splineCP2 = []
 #get parameters of objects
+polyPoints = []
 for entity in output2:
     #Point
     if entity.dxftype == 'POINT':
@@ -542,13 +548,41 @@ for entity in output2:
     if entity.dxftype == 'LINE':
         lineStart2 = entity.start
         lineEnd2 = entity.end
+        if PointDist(lineStart2, lineEnd2) < 1 :
+            if len(polyPoints) == 0 :
+                polyPoints.append(lineStart2)
+                polyPoints.append(lineEnd2)
+            else :
+                if round(lineStart2[0], 5) == round(polyPoints[-1][0], 5) and round(lineStart2[1], 5) == round(polyPoints[-1][1], 5) :
+                    a1 = LineSlope(lineStart2, lineEnd2)
+                    a2 = LineSlope(polyPoints[-1], polyPoints[-2])
+                    angle = np.degrees(np.arctan((a2 - a1) / (1 + abs(a1 * a2))))
+                    if abs(angle) > 20 :
+                        Beziertmp, CP = CompositeBezier(polyPoints, 2)
+                        Bezier2.append(Beziertmp)
+                        CP2.append(CP)
+                        polyPoints.clear()
+                    else :
+                        polyPoints.append(lineEnd2)
+                else :
+                    Beziertmp, CP = CompositeBezier(polyPoints, 2)
+                    Bezier2.append(Beziertmp)
+                    CP2.append(CP)
+                    polyPoints.clear()
+            continue
+        if len(polyPoints) != 0 :
+            Beziertmp, CP = CompositeBezier(polyPoints, 2)
+            Bezier2.append(Beziertmp)
+            CP2.append(CP)
+            polyPoints.clear()
+
         try :
             line2.index([lineStart2, lineEnd2])
         except :
             line2.append([lineStart2, lineEnd2])
         x = [lineStart2[0], lineEnd2[0]]
         y = [lineStart2[1], lineEnd2[1]]
-        plt.plot(x, y, color = '#bc0e13', alpha = 0.5)
+        plt.plot(x, y, color = '#bc0e13', alpha = 0.2)
         plt.plot(lineStart2[0], lineStart2[1], 'o', color = '#bc0e13', alpha = 0.5)
         plt.plot(lineEnd2[0], lineEnd2[1], 'o', color = '#bc0e13', alpha = 0.5)
     #Circle
@@ -593,11 +627,11 @@ for i in CP2 :
     PlotBezier(i, '#bc0e13', 0.2, 'solid')
 
 for i in Bezier1 :
-    plt.plot(i[0][0].subs(t, 0), i[0][1].subs(t, 0), color = '#055583')
-    plt.plot(i[-1][0].subs(t, 1), i[-1][1].subs(t, 1), color = '#055583')
+    plt.plot(i[0][0].subs(t, 0), i[0][1].subs(t, 0), 'o', color = '#055583', alpha = 0.5)
+    plt.plot(i[-1][0].subs(t, 1), i[-1][1].subs(t, 1), 'o', color = '#055583', alpha = 0.5)
 for i in Bezier2 :
-    plt.plot(i[0][0].subs(t, 0), i[0][1].subs(t, 0), color = '#bc0e13')
-    plt.plot(i[-1][0].subs(t, 1), i[-1][1].subs(t, 1), color = '#bc0e13')
+    plt.plot(i[0][0].subs(t, 0), i[0][1].subs(t, 0), 'o', color = '#bc0e13', alpha = 0.5)
+    plt.plot(i[-1][0].subs(t, 1), i[-1][1].subs(t, 1), 'o', color = '#bc0e13', alpha = 0.5)
 
 #We have got data from both given files
 #File #1
