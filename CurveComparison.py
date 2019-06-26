@@ -13,20 +13,18 @@ import subprocess
 import os
 
 
-
 fileName1 = 'D:/prog/dxfFiles/Parastie_platgurnu_m3_p2_002.dxf'
 fileName2 = 'D:/prog/svgFiles/V-009/Sievietes_torss_ar_koef.svg'
 
+#subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "D:/prog/file2.eps","--export-ignore-filters", "--export-ps-level=3"])
+#subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-polyaslines", "D:/prog/file2.eps", "D:/prog/file2.dxf"])
 
-subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "D:/prog/file2.eps","--export-ignore-filters", "--export-ps-level=3"])
-subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-polyaslines", "-dt", "D:/prog/file2.eps", "D:/prog/file2.dxf"])
-
-fileName2 = 'D:/prog/file2.dxf'
+#fileName2 = 'D:/prog/file2.dxf'
 
 #Filenames should be written in the following two lines, as shown in example:
 #   dxf1(2) = dxfgrabber.readfile("filename")
 dxf1 = dxfgrabber.readfile(fileName1)
-dxf2 = dxfgrabber.readfile(fileName2)
+#dxf2 = dxfgrabber.readfile(fileName2)
 
 
 firstFileCol = '#055583'
@@ -178,7 +176,7 @@ class Calculations :
             tmpx = (P[i][0] - Vx)
             tmpy = (P[i][1] - Vy)
             tmpx = np.cos(alpha) * (tmpx - rP[0]) + np.sin(alpha) * (tmpy - rP[1]) + rP[0]
-            tmpy = np.cos(alpha) * (tmpx - rP[0]) + np.sin(alpha) * (tmpy - rP[1]) + rP[1]
+            tmpy = np.sin(alpha) * (tmpx - rP[0]) - np.cos(alpha) * (tmpy - rP[1]) + rP[1]
             P[i][0] = tmpx
             P[i][1] = tmpy
         return P
@@ -234,8 +232,8 @@ class CalculateBezier(Calculations) :
         CP.append([C[0], C[1], C[2], C[3]])
         Bx, By = CalculateBezier.BezierFormulaComp(C)
         Bezier.append([Bx, By])
-        for i in range(1, len(P)): #Calculate controlpoints for P[i], P[i + 1] segment
-            if len(P) > 3 :
+        for i in range(1, len(P) + 1): #Calculate controlpoints for P[i], P[i + 1] segment
+            if len(P) > 3 and i < len(P) - 2 :
                 dtmp = Calculations.PointDist(P[i], P[i + 1]) / 3
                 d = dtmp
                 C[1] = Calculations.DistantPoint(P[i + 1], P[i + 2], P[i], d)
@@ -245,7 +243,7 @@ class CalculateBezier(Calculations) :
                 CP.append([C[0], C[1], C[2], C[3]])
                 Bx, By = CalculateBezier.BezierFormulaComp(C)
                 Bezier.append([Bx, By])
-            if i == len(P) - 3:
+            if i == len(P) - 2:
                 dtmp = Calculations.PointDist(P[-1], P[-2]) / 3
                 d = dtmp
                 C[2] = Calculations.DistantPoint(P[-2], P[-3], P[-1], d)
@@ -527,179 +525,651 @@ class File1(CalculateBezier, Calculations) :
 
 class File2(CalculateBezier, Calculations) :
     def __init__(file2, filename) :
-        file2.file = dxfgrabber.readfile(filename)
+        file2.file = open(filename)
 
-    #Binary sort (for abscissa)
-    def SortInsertPos(P, points, l, r): #l - left side, r - right side of segment in array
-        if l == r :
-            if points[l][0] == P[0] :
-                if points[l][1] == P[1] :
-                    return -1
-                if points[l][1] < P[1] :
-                    return l + 1
-                return l
-            if points[l][0] < P[0] :
-                return l + 1
-            return l
-        med = l + (r - l) // 2
-        if points[med][0] > P[0] :
-            return File2.SortInsertPos(P, points, l, med)
-        if points[med][0] < P[0] :
-            return File2.SortInsertPos(P, points, med + 1, r)
-        if points[med][0] == P[0] :
-            if points[med][1] == P[1] :
-                return -1 #there already exists identical point, therefore we will not save it
-            if points[med][1] > P[1] :
-                return File2.SortInsertPos(P, points, l, med)
-            if points[med][1] < P[1] :
-                return File2.SortInsertPos(P, points, med + 1, r)
+#    #Binary sort (for abscissa)
+#    def SortInsertPos(P, points, l, r): #l - left side, r - right side of segment in array
+#            if points[l][0] == P[0] :
+#                if points[l][1] == P[1] :
+#                    return -1
+#                if points[l][1] < P[1] :
+#                    return l + 1
+#                return l
+#            if points[l][0] < P[0] :
+#                return l + 1
+#            return l
+#        med = l + (r - l) // 2
+#        if points[med][0] > P[0] :
+#            return File2.SortInsertPos(P, points, l, med)
+#        if points[med][0] < P[0] :
+#            return File2.SortInsertPos(P, points, med + 1, r)
+#        if points[med][0] == P[0] :
+#            if points[med][1] == P[1] :
+#                return -1 #there already exists identical point, therefore we will not save it
+#            if points[med][1] > P[1] :
+#                return File2.SortInsertPos(P, points, l, med)
+#            if points[med][1] < P[1] :
+#                return File2.SortInsertPos(P, points, med + 1, r)
+
+
+    def GetValue(text, pos, length) :
+        value = ''
+        for i in range(pos, length + 1) :
+            if text[i] == '\"' :
+                i += 1
+                while text[i] != '\"' :
+                    value += text[i]
+                    i += 1
+                value = float(value)
+                return value, i
+
+    def GetControlPoints(text, pos, length) :
+        CP = []
+        polyPoints = []
+        value = ''
+        while pos < length :
+            if text[pos] == 'M' :
+                pos += 1
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                P1x = value
+                value = ''
+
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                P1y = value
+                value = ''
+
+            if text[pos] == 'C' :
+
+                CP.append([])
+                CP[0].append(P1x)
+                CP[0].append(P1y)
+                pos += 1
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                CP.append([])
+                CP[1].append(value)
+                value = ''
+
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                CP[1].append(value)
+                value = ''
+
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                CP.append([])
+                CP[2].append(value)
+                value = ''
+
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                CP[2].append(value)
+                value = ''
+
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                CP.append([])
+                CP[3].append(value)
+                value = ''
+
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                value = float(value)
+                CP[3].append(value)
+                value = ''
+
+            #get parameters of an ellipse (first parameter is under 'M')
+            if text[pos] == 'A' :
+                pos += 1
+                #get horizontal axis
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                rx = value
+                value = ''
+                #get vertical axis
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                ry = value
+                value = ''
+                #get ellipse rotation angle
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                angle = value
+                value = ''
+                #get the properties if the large or small arc is used
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                largeArcFlag = value
+                value = ''
+                #get which of two possible ellipses is drawn
+                while text[pos] != ' ' and text[pos] != '\"' :
+                    value += text[pos]
+                    pos += 1
+                pos += 1
+                value = float(value)
+                sweepFlag = value
+                value = ''
+                #get the second point on ellipse between which the arc will be drawn
+                while text[pos] != ' ' and text[pos] != '\"' and text[pos] != '.':
+                    value += text[pos]
+                    pos += 1
+                if text[pos] == '.' :
+                    pos += 1
+                    valuetmp = '.'
+                    while text[pos] != ' ' and text[pos] != '\"' and text[pos] != '.':
+                        valuetmp += text[pos]
+                        pos += 1
+                value = float(value)
+                valuetmp = float(valuetmp)
+                P2x = value + valuetmp
+
+                pos += 1
+                value = ''
+                while text[pos] != ' ' and text[pos] != '\"' and text[pos] != '.' :
+                    value += text[pos]
+                    pos += 1
+                if text[pos] == '.' :
+                    pos += 1
+                    valuetmp = '.'
+                    while text[pos] != ' ' and text[pos] != '\"' and text[pos] != '.':
+                        valuetmp += text[pos]
+                        pos += 1
+
+                value = float(value)
+                valuetmp = float(valuetmp)
+                P2y = value + valuetmp
+                pos += 1
+                value = ''
+
+                #for now its given that every ellipse will be a circle
+
+                #let 'draw' radical axis, then calculate two possible central Points
+                #based on radius, and half of radical axis, and we will use Pithagorean theorem
+                midx = (P1x + P2x) / 2
+                midy = (P1y + P2y) / 2
+                dist = Calculations.PointDist((P1x, P1y), (midx, midy))
+
+                edge3 = np.sqrt(round((rx)**2 - (dist)**2, 5))
+                #get perpendicular formula which also will coincide with 3rd edge
+                PF = Calculations.PerpFormula((P1x, P1y), (midx, midy), (midx, midy))
+
+                x = Symbol('x')
+                tmpx = -1
+                tmpy = PF.subs(x, tmpx)
+
+                #get two possible circle centers
+                c1 = []
+                c2 = []
+                c1 = Calculations.DistantPoint((midx, midy), (midx, midy), (tmpx, tmpy), edge3)
+                c2 = Calculations.DistantPoint((midx, midy), (midx, midy), (tmpx, tmpy), - edge3)
+                c = []
+                if sweepFlag == 0 :
+                    if (c1[0] >= c2[0] and c1[1] >= c2[1]) or (c1[0] < c2[0] and c1[1] < c2[1]):
+                        c = c1
+                    else :
+                        c = c2
+                else :
+                    if (c1[0] <= c2[0] and c1[1] <= c2[1]) or (c1[0] <= c2[0] and c1[1] <= c2[1]):
+                        c = c1
+                    else :
+                        c = c2
+
+                #to know if the large or small arc is used, calculate the angle to given arc
+                a1 = Calculations.LineSlope(c, (P1x, P1y))
+                a2 = Calculations.LineSlope(c, (P2x, P2y))
+                alpha = np.degrees(np.arctan((a2-a1) / 1 + abs(a1 * a2)))
+
+                #get correct arc based on arc endpoints and angle between respective radius and x-axis
+                alpha1x = np.degrees(np.arctan((a1) / 1))
+                alpha1x = (alpha1x + 360) % 360
+                alpha2x = np.degrees(np.arctan((a2) / 1))
+                alpha2x = (alpha2x + 360) % 360
+
+                if alpha1x > alpha2x :
+                    alphatmp = alpha1x - alpha2x
+                    if alphatmp > 180 :
+                        alphamin = alpha1x
+                        alphamax = alpha2x
+                        Px = P1x
+                        Py = P1y
+                        Pxmax = P2x
+                        Pymax = P2y
+                    else :
+                        alphamin = alpha2x
+                        alphamax = alpha1x
+                        Px = P2x
+                        Py = P2y
+                        Pxmax = P1x
+                        Pymax = P1y
+                else :
+                    alphatmp = alpha2x - alpha1x
+                    if alphatmp > 180 :
+                        alphamin = alpha2x
+                        alphamax = alpha1x
+                        Px = P2x
+                        Py = P2y
+                        Pxmax = P1x
+                        Pymax = P1y
+                    else :
+                        alphamin = alpha1x
+                        alphamax = alpha2x
+                        Px = P1x
+                        Py = P1y
+                        Pxmax = P2x
+                        Pymax = P2y
+
+
+                if largeArcFlag == 0 :
+                    t = 0
+                    xprim = rx * np.cos(t) + c[0]
+                    yprim = rx * np.sin(t) + c[1]
+                    while not (xprim - 0.1 < Px and Px < xprim + 0.1) or not (yprim - 0.1 < Py and Py < yprim + 0.1) :
+                        t = (t + 0.01) % (2 * np.pi)
+                        xprim = rx * np.cos(t) + c[0]
+                        yprim = rx * np.sin(t) + c[1]
+
+                    t = (t + 0.01) % (2 * np.pi)
+                    while not (xprim - 0.1 < Pxmax and Pxmax < xprim + 0.1) or not (yprim - 0.1 < Pymax and Pymax < yprim + 0.1) :
+                        xprim = rx * np.cos(t) + c[0]
+                        yprim = rx * np.sin(t) + c[1]
+                        polyPoints.append((xprim, yprim))
+                        #plt.plot(xprim, yprim, 'o', color = '#8c5667')
+                        t = (t + 0.01) % (2 * np.pi)
+                else :
+                    t = 0
+                    xprim = rx * np.cos(t) + c[0]
+                    yprim = rx * np.sin(t) + c[1]
+                    while not (xprim - 0.1 < Pxmax and Pxmax < xprim + 0.1) or not (yprim - 0.1 < Pymax and Pymax < yprim + 0.1) :
+                        t = (t + 0.01) % (2 * np.pi)
+                        xprim = rx * np.cos(t) + c[0]
+                        yprim = rx * np.sin(t) + c[1]
+                    t = (t + 0.01) % (2 * np.pi)
+                    while not (xprim - 0.1 < Px and Px < xprim + 0.1) or not (yprim - 0.1 < Py and Py < yprim + 0.1) :
+                        xprim = rx * np.cos(t) + c[0]
+                        yprim = rx * np.sin(t) + c[1]
+                        polyPoints.append((xprim, yprim))
+                        #plt.plot(xprim, yprim, 'o', color = '#976aa5')
+                        t = (t + 0.01) % (2 * np.pi)
+            pos += 1
+            print("°°°°°°°°°°°°°°", CP)
+        print(CP)
+        return CP, polyPoints, pos
+
+
+    def WriteCircle(text, pos, length, points, polylinePoints) :
+        while pos < length :
+            attrib = ''
+            if text[pos] == '/' :
+                break
+            if text[pos] == ' ' :
+                pos += 1
+                while text[pos] != '=' :
+                    if text[pos] == '>' :
+                        break
+                    attrib += text[pos]
+                    pos += 1
+                pos -= 1
+                if attrib == 'cx' :
+                    cx, pos = File2.GetValue(text, pos, length)
+                    continue
+                if attrib == 'cy' :
+                    cy, pos = File2.GetValue(text, pos, length)
+                    continue
+                if attrib == 'r' :
+                    r, pos = File2.GetValue(text, pos, length)
+                    continue
+                if attrib == 'pathLength' :
+
+                    continue
+            pos += 1
+        if r <= 0.1 :
+            points.append((cx, cy))
+        else :
+            t = 0
+            while t <= 360 :
+                x = r * np.cos(t)
+                y = r * np.sin(t)
+                polylinePoints.append((x, y))
+                t += 20
+
+        return points, polylinePoints
+
+                #these we will add later
+                #clip-path, clip-rule, color, color-interpolation, color-rendering, cursor, display, fill, fill-opacity, fill-rule, filter, mask, opacity, pointer-events, shape-rendering, stroke, stroke-dasharray, stroke-dashoffset, stroke-linecap, stroke-linejoin, stroke-miterlimit, stroke-opacity, stroke-width, transform, vector-effect, visibility
+                #class, style, also xml prikoli
+
+    #for text ellement its different
+
+
+    def WriteText(text, pos, length, pointTags, group) :
+        tag = ''
+        while pos < length :
+            attrib = ''
+            if text[pos] == '/' :
+                break
+            if text[pos] == ' ' :
+                pos += 1
+                while text[pos] != '=' and pos < length :
+                    attrib += text[pos]
+                    pos += 1
+
+            if text[pos] == '>' :
+                pos += 1
+                while text[pos] != '<' and pos < length :
+                    tag += text[pos]
+                    pos += 1
+
+
+
+                if attrib == 'x' :
+                    x, pos = File2.GetValue(text, pos, length)
+                if attrib == 'y' :
+                    y, pos = File2.GetValue(text, pos, length)
+                if attrib == 'dx' :
+                    dx, pos = File2.GetValue(text, pos, length)
+                if attrib == 'dy' :
+                    dy, pos = File2.GetValue(text, pos, length)
+                if attrib == 'rotate' :
+                    alpha, pos = File2.GetValue(text, pos, length)
+    #            if attrib == 'lengthAdjust' :
+
+    #            if attrib == 'textLength' :
+
+            pos += 1
+
+        pointTags.append(tag)
+        return pointTags
+
+    def WriteEllipse(text, pos, length) :
+        while pos < length :
+            attrib = ''
+            if text[pos] == '/' :
+                break
+            if text[pos] != ' ' :
+                pos = pos + 1
+                while text[pos] != '=' and pos < length :
+                    if text[pos] == '>' :
+                        break
+                    attrib += text[pos]
+                    pos += 1
+
+                if attrib == 'cx' :
+
+                    continue
+                if attrib == 'cy' :
+
+                    continue
+                if attrib == 'rx' :
+
+                    continue
+                if attrib == 'ry' :
+
+                    continue
+                if attrib == 'pathLength' :
+
+                    continue
+            pos += 1
+
+    def WriteLine(text, pos, length, line) :
+        while pos < length :
+            attrib = ''
+            if text[pos] == '/' :
+                break
+            if text[pos] == ' ' :
+                pos += 1
+                while text[pos] != '=' and pos < length :
+                    if text[pos] == '>' :
+                        break
+                    attrib += text[pos]
+                    pos += 1
+                pos -= 1
+
+                if attrib == 'x1' :
+                    x1, pos = File2.GetValue(text, pos + 1, length)
+                if attrib == 'y1' :
+                    y1, pos = File2.GetValue(text, pos + 1, length)
+                if attrib == 'x2' :
+                    x2, pos = File2.GetValue(text, pos + 1, length)
+                if attrib == 'y2' :
+                    y2, pos = File2.GetValue(text, pos + 1, length)
+    #            if attrib == 'pathLength' :
+
+            pos += 1
+
+        line.append(((x1, y1), (x2, y2)))
+        return line
+
+    def WritePath(text, pos, length, CP, polylinePoints) :
+        while pos < length :
+            attrib = ''
+            if text[pos] == '/' :
+                break
+            if text[pos] == ' ' :
+                pos += 1
+                while text[pos] != '=' and pos < length :
+                    if text[pos] == '>' :
+                        break
+                    attrib += text[pos]
+                    pos += 1
+                if attrib == 'd' :
+                    CPoints, polyPoints, pos = File2.GetControlPoints(text, pos, length)
+                    continue
+                if attrib == 'pathLength' :
+
+                    continue
+            pos += 1
+        if len(CPoints) == 4 :
+            CP.append(CPoints)
+        if len(polyPoints) > 0:
+            polylinePoints.append(polyPoints)
+        return CP, polylinePoints
+
+
+    def WritePolygon(text, pos, length) :
+        while pos < length :
+            attrib = ''
+            if text[pos] == '/' :
+                break
+            if text[pos] != ' ' :
+                pos += 1
+                while text[pos] != '=' and pos < length :
+                    if text[pos] == '>' :
+                        break
+                    attrib += text[pos]
+                    pos += 1
+
+                if attrib == 'points' :
+
+                    continue
+                if attrib == 'pathLength' :
+
+                    continue
+            pos += 1
+
+    def WritePolyline(text, pos, length) :
+        while pos < length :
+            attrib = ''
+            if text[pos] == '/' :
+                break
+            if text[pos] != ' ' :
+                pos += 1
+                while text[pos] != '=' and pos < length:
+                    if text[pos] == '>' :
+                        break
+                    attrib += text[pos]
+                    pos += 1
+
+                if attrib == 'points' :
+
+                    continue
+                if attrib == 'pathLength' :
+
+                    continue
+            pos += 1
+
+    def WriteRect(text, pos, length) :
+        while pos < length :
+            attrib = ''
+            if text[pos] == '/' :
+                break
+            if text[pos] != ' ' :
+                pos += 1
+                while text[pos] != '=' and pos < length:
+                    if text[pos] == '>' :
+                        break
+                    attrib += text[pos]
+                    pos += 1
+
+                if attrib == 'x' :
+
+                    continue
+                if attrib == 'y' :
+
+                    continue
+                if attrib == 'width' :
+
+                    continue
+                if attrib == 'height' :
+
+                    continue
+                if attrib == 'rx' :
+
+                    continue
+                if attrib == 'ry' :
+
+                    continue
+                if attrib == 'pathLength' :
+
+                    continue
+            pos += 1
 
     def CalculateObjects(file2) :
-        type2 = [entity.dxftype for entity in dxf2.entities]
-        output2 = [entity for entity in dxf2.entities]
-        Color2 = [entity.color for entity in output2]
-        Linetype2 = [entity.linetype for entity in output2 if entity.dxftype != 'POINT']
+        textLines = file2.file.readlines()
+
+        group = False
+        points = []
+        polylinePoints = []
+        pointTags = []
+        line = []
         CP2 = []
-        points2 = []
-        line2 = []
-        Bezier2 = []
-        circle2 = []
-        ellipse2 = []
-        arc2 = []
-        LWPolyline2 = []
-        splineCP2 = []
-        #get parameters of objects
-        polyPoints = []
-        lineStart2 = [[0], [1]]
-        lineEnd2 = [[0], [1]]
-        for entity in output2:
-            #Point
-            if entity.dxftype == 'POINT':
-                point2 = entity.point
-                if len(points2) == 0 :
-                    points2.append([point2[0], point2[1]])
-                    continue
-                pos = File2.SortInsertPos(point2, points2, 0, len(points2) - 1)
-                if pos != -1 :
-                    x = [point2[0]]
-                    y = [point2[1]]
-                    points2.insert(pos, [point2[0], point2[1]])
-                    plt.plot(x, y, 'o', color = '#bc0e13', alpha = 0.5)
-            #Line
-            if entity.dxftype == 'LINE':
-                print("*")
-                lineStart2tmp = entity.start
-                lineStart2[0] = lineStart2tmp[0] * 20
-                lineStart2[1] = lineStart2tmp[1] * 20
-                lineEnd2tmp = entity.end
-                lineEnd2[0] = lineEnd2tmp[0] * 20
-                lineEnd2[1] = lineEnd2tmp[1] * 20
-                try :
-                    line2.index([(lineStart2[0], lineStart2[1]), (lineEnd2[0], lineEnd2[1])])
-                    continue
-                except :
+        CPtmp = []
 
-                    if Calculations.PointDist([lineStart2[0], lineStart2[1]], [lineEnd2[0], lineEnd2[1]]) < 10 :
-                        if len(polyPoints) == 0 :
-                            polyPoints.append((lineStart2[0], lineStart2[1]))
-                            polyPoints.append((lineEnd2[0], lineEnd2[1]))
-                        else :
-                            if len(polyPoints) == 2 and lineStart2[0] == polyPoints[0][0] and lineStart2[1] == polyPoints[0][1] and lineEnd2[0] == polyPoints[1][0] and lineEnd2[1] == polyPoints[1][1] :
-                                continue
-                            if round(lineStart2[0], 5) == round(polyPoints[-1][0], 5) and round(lineStart2[1], 5) == round(polyPoints[-1][1], 5) :
-                                a1 = Calculations.LineSlope([lineStart2[0], lineStart2[1]], [lineEnd2[0], lineEnd2[1]])
-                                a2 = Calculations.LineSlope(polyPoints[-1], polyPoints[-2])
-                                angle = np.degrees(np.arctan((a2 - a1) / (1 + abs(a1 * a2))))
+        for textLine in textLines :
+            lenText = len(textLine)
+            for i in range(lenText) :
+                element = ''
+                if textLine[i] == '<' :
+                    j = i + 1
+                    while (textLine[j] != '>' and textLine[j] != ' ') :
+                        element += textLine[j]
+                        i = j
+                        j += 1
 
-                                print("angle :", angle)
+                    #<svg>
+                    if element == 'g':
+                        group = True
+                    if element == '/text' :
+                        group = False
+                    if element == 'circle' :
+                        points, polylinePoints = File2.WriteCircle(textLine, i + 1, lenText, points, polylinePoints)
+                    if element == 'text' :
+                        pointTags = File2.WriteText(textLine, i + 1, lenText, pointTags, group)
+                    if element == 'ellipse' :
+                        File2.WriteEllipse(textLine, i + 1, lenText)
+                    if element == 'line' :
+                        line = File2.WriteLine(textLine, i + 1, lenText, line)
+                    if element == 'path' :
+                        CPtmp1, polylinePoints = File2.WritePath(textLine, i + 1, lenText, [], polylinePoints)
+                        CPtmp.append(CPtmp1)
+                    if element == 'polygon' :
+                        File2.WritePolygon(textLine, i + 1, lenText)
+                    if element == 'polyline' :
+                        File2.WritePolyline(textLine, i + 1, lenText)
+                    if element == 'rect' :
+                        File2.WriteRect(textLine, i + 1, lenText)
+                    break
 
-                                if abs(angle) > 50 and abs(angle) < 130 :
-                                    if len(polyPoints) > 2 :
-                                        print("A")
-                                        print("polyPints :", polyPoints)
-                                        print("red line :", (lineStart2[0], lineStart2[1]), (lineEnd2[0], lineEnd2[1]))
-                                        print("length :", Calculations.PointDist([lineStart2[0], lineStart2[1]], [lineEnd2[0], lineEnd2[1]]))
+        CPgr = []
+        lenCPtmp = len(CPtmp)
 
-                                        Beziertmp, CP = CalculateBezier.CompositeBezier(polyPoints, 2)
-                                        Bezier2.append(Beziertmp)
-                                        CP2.append(CP)
-                                        polyPoints.clear()
-                                    elif len(polyPoints) > 0 :
-                                        x = [polyPoints[0][0], polyPoints[1][0]]
-                                        y = [polyPoints[0][1], polyPoints[1][1]]
-                                        plt.plot(x, y, color = '#bc0e13', alpha = 0.2)
-                                        plt.plot(polyPoints[0][0], polyPoints[0][1], 'o', color = '#bc0e13', alpha = 0.5)
-                                        plt.plot(polyPoints[1][0], polyPoints[1][1], 'o', color = '#bc0e13', alpha = 0.5)
-                                        polyPoints.clear()
-                                else :
-                                    polyPoints.append((lineEnd2[0], lineEnd2[1]))
-                            elif len(polyPoints) > 0 :
-                                x = [polyPoints[0][0], polyPoints[1][0]]
-                                y = [polyPoints[0][1], polyPoints[1][1]]
-                                plt.plot(x, y, color = '#bc0e13', alpha = 0.2)
-                                plt.plot(polyPoints[0][0], polyPoints[0][1], 'o', color = '#bc0e13', alpha = 0.5)
-                                plt.plot(polyPoints[1][0], polyPoints[1][1], 'o', color = '#bc0e13', alpha = 0.5)
-                                polyPoints.clear()
-                        continue
-                    if len(polyPoints) > 2 :
-                        print("B")
-                        print("polyPints :", polyPoints)
-                        print("red line :", (lineStart2[0], lineStart2[1]), (lineEnd2[0], lineEnd2[1]))
-                        print("length :", Calculations.PointDist([lineStart2[0], lineStart2[1]], [lineEnd2[0], lineEnd2[1]]))
-                        Beziertmp, CP = CalculateBezier.CompositeBezier(polyPoints, 2)
-                        Bezier2.append(Beziertmp)
-                        CP2.append(CP)
-                        polyPoints.clear()
-                    elif len(polyPoints) > 0 :
-                        x = [polyPoints[0][0], polyPoints[1][0]]
-                        y = [polyPoints[0][1], polyPoints[1][1]]
-                        plt.plot(x, y, color = '#bc0e13', alpha = 0.2)
-                        plt.plot(polyPoints[0][0], polyPoints[0][1], 'o', color = '#bc0e13', alpha = 0.5)
-                        plt.plot(polyPoints[1][0], polyPoints[1][1], 'o', color = '#bc0e13', alpha = 0.5)
-                        polyPoints.clear()
-                    line2.append([(lineStart2[0], lineStart2[1]), (lineEnd2[0], lineEnd2[1])])
+        for i in range(lenCPtmp) :
+            print("...............")
+            print(len(CPgr))
+            print(len(CPtmp[i]))
+            print(CPtmp[i])
+            print(CPgr)
 
-                x = [lineStart2[0], lineEnd2[0]]
-                y = [lineStart2[1], lineEnd2[1]]
-                plt.plot(x, y, color = '#bc0e13', alpha = 0.2)
-                plt.plot(lineStart2[0], lineStart2[1], 'o', color = '#bc0e13', alpha = 0.5)
-                plt.plot(lineEnd2[0], lineEnd2[1], 'o', color = '#bc0e13', alpha = 0.5)
-            #Circle
-            if entity.dxftype == 'CIRCLE':
-                centerPoints2 = entity.center
-                radius2 = entity.radius
-                lenCirclePnts = len(centerPoints2)
-                for i in lenCirclePnts :
-                    circle2.append(centerPoints2[i], radius2[i])
-            #Ellipse
-            if entity.dxftype == 'ELLIPSE':
-                EllipseCenter2 = entity.center
-                EllipseMajorAxis2 = entity.major_axis
-            #Arc
-            if entity.dxftype == 'ARC':
-                arcCenter2 = entity.center
-                arcRadius2 = entity.radius
-                arcStartAngle2 = entity.start_angle
-                arcEndAngle2 = entity.end_angle
-                arc2.append([arcCenter2, arcRadius2, arcStartAngle2, arcEndAngle2])
-            #Polyline
-            if entity.dxftype == 'POLYLINE':
-                PolylinePoints2 = entity.points
-                Beziertmp, CP = CalculateBezier.CompositeBezier(PolylinePoints2, 2)
-                Bezier2.append(Beziertmp)
-                CP2.append(CP)
-            #LWPolyline
-            if entity.dxftype == 'LWPOLYLINE':
-                LWPolylinePoints2 = entity.points
-                Beziertmp, CP = CalculateBezier.CompositeBezier(LWPolylinePoints2, 2)
-                Bezier2.append(Beziertmp)
-                CP2.append(CP)
-            #Spline
-            if entity.dxftype == 'SPLINE':
-                splineControlPoints2 = entity.control_points
-                splineCP2.append(splineControlPoints2)
+            if len(CPtmp[i]) == 0 :
+                continue
+            if i == lenCPtmp - 1 :
+                CP2.append(CPgr)
+            if len(CPgr) == 0 :
+                print(111111111111111)
+                CPgr.append(CPtmp[i])
+                continue
 
-        return line2, Bezier2, CP2
+            if CPgr[-1][3][0] == CPtmp[i][0][0] and CPgr[-1][3][1] == CPtmp[i][0][1] :
+                CPgr.append(CPtmp[i])
+            else :
+                CP2.append(CPgr)
+                CPgr.clear()
+                continue
+
+        print(CP2)
+
+        Bezier = []
+        Beziertmp = []
+        for i in CP2 :
+            for j in i:
+                Bx, By = CalculateBezier.BezierFormulaComp(j)
+                Beziertmp.append([Bx, By])
+            Bezier.append(Beziertmp)
+
+        for i in polylinePoints :
+            Beziertmp, CPtmp = CalculateBezier.CompositeBezier(i, 2)
+            CP2.append(CPtmp)
+            Bezier.append(Beziertmp)
+
+        return line, Bezier, CP2
+
+
+
 
 
 
@@ -730,11 +1200,6 @@ print("333333333333333333333333333")
 file2 = File2(fileName2)
 print("444444444444444444444444444")
 line2, Bezier2, CP2 = file2.CalculateObjects()
-
-
-
-
-
 
 
 t = Symbol('t')
@@ -1580,7 +2045,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
                     elif visited[(Bezier2[j][-1][0].subs(t, 1), Bezier2[j][-1][1].subs(t, 1))] == 1 :
                         lineSt2tmp = 0
                 elif visited[(Bezier2[j][0][0].subs(t, 0), Bezier2[j][0][1].subs(t, 0))] == 1 :
-                    if not (Bezier2[j][-1][0].subs(t, 1), Bezier1[j][-1][1].subs(t, 1)) in visited :
+                    if not (Bezier2[j][-1][0].subs(t, 1), Bezier2[j][-1][1].subs(t, 1)) in visited :
                         lineSt2tmp = 0
                     elif visited[(Bezier2[j][-1][0].subs(t, 1), Bezier2[j][-1][1].subs(t, 1))] == 1 :
                         lineSt2tmp = 0
@@ -1745,7 +2210,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
                 a2 = Calculations.LineSlope((Bezier2[j][0][0].subs(t, 0), Bezier2[j][0][1].subs(t, 0)), (Bezier2[j][-1][0].subs(t, 1), Bezier2[j][-1][1].subs(t, 1)))
                 angtmp = round((a2 - a1) / (1 + abs(a1 * a2)), 5)
                 angle = np.degrees(np.arctan(angtmp))
-                if abs(angle) > 5 :
+                if abs(angle) > 30 :
                     #if (i == lenLine1 - 1 and not j in ObjectsBezier2 and not j in equalObjectsBezier2) :
 
     #                    PlotBezier(CP2[j], '#6c9f92', 1, 'dotted')
@@ -1758,7 +2223,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
                     continue
                 if (lineSt1 != -1 and lineSt2tmp != -1) :
                     print("pointDist")
-                    endDist = PointDist((Bezier1[i][-(lineSt1 + 1) % 2][0].subs(t, (lineSt1 + 1) % 2), Bezier1[i][-(lineSt1 + 1) % 2][1].subs(t, (lineSt1 + 1) % 2)), (Bezier2[j][-(lineSt2tmp + 1) % 2][0].subs(t, (lineSt2tmp + 1) % 2),Bezier2[j][-(lineSt2tmp + 1) % 2][1].subs(t, (lineSt2tmp + 1) % 2)))
+                    endDist = Calculations.PointDist((Bezier1[i][-(lineSt1 + 1) % 2][0].subs(t, (lineSt1 + 1) % 2), Bezier1[i][-(lineSt1 + 1) % 2][1].subs(t, (lineSt1 + 1) % 2)), (Bezier2[j][-(lineSt2tmp + 1) % 2][0].subs(t, (lineSt2tmp + 1) % 2),Bezier2[j][-(lineSt2tmp + 1) % 2][1].subs(t, (lineSt2tmp + 1) % 2)))
                     print("pointDist")
                     if (i == lenLine1 - 1 and not j in ObjectsBezier2 and not j in equalObjectsBezier2 and endDist >= 30) :
                         visited = ObjectComparison.DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min)
@@ -2007,6 +2472,8 @@ print(uniqueObjectsBezier2)
 
 
 
+#new color of the first file : #20456d
+
 
 nreqf = 0.0
 nr1f = 1.0
@@ -2126,6 +2593,3 @@ for i in range(lenBezier2) :
         print(round(nr2f, 2), ' - ', uniqueObjectsBezier2[i] / 10, 'cm')
 
 plt.show()
-
-os.remove("D:/prog/file2.eps")
-os.remove(fileName2)
