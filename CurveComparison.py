@@ -568,6 +568,7 @@ class File2(CalculateBezier, Calculations) :
         polyPoints = []
         value = ''
         while pos < length :
+            #get first point in path
             if text[pos] == 'M' :
                 pos += 1
                 while text[pos] != ' ' and text[pos] != '\"' :
@@ -585,9 +586,8 @@ class File2(CalculateBezier, Calculations) :
                 value = float(value)
                 P1y = value
                 value = ''
-
+            #get controlpoints of given Bezier
             if text[pos] == 'C' :
-
                 CP.append([])
                 CP[0].append(P1x)
                 CP[0].append(P1y)
@@ -827,8 +827,6 @@ class File2(CalculateBezier, Calculations) :
                         #plt.plot(xprim, yprim, 'o', color = '#976aa5')
                         t = (t + 0.01) % (2 * np.pi)
             pos += 1
-            print("°°°°°°°°°°°°°°", CP)
-        print(CP)
         return CP, polyPoints, pos
 
 
@@ -975,7 +973,7 @@ class File2(CalculateBezier, Calculations) :
         line.append(((x1, y1), (x2, y2)))
         return line
 
-    def WritePath(text, pos, length, CP, polylinePoints) :
+    def WritePath(text, pos, length, polylinePoints) :
         while pos < length :
             attrib = ''
             if text[pos] == '/' :
@@ -994,11 +992,11 @@ class File2(CalculateBezier, Calculations) :
 
                     continue
             pos += 1
-        if len(CPoints) == 4 :
-            CP.append(CPoints)
+
         if len(polyPoints) > 0:
             polylinePoints.append(polyPoints)
-        return CP, polylinePoints
+
+        return CPoints, polylinePoints
 
 
     def WritePolygon(text, pos, length) :
@@ -1115,7 +1113,7 @@ class File2(CalculateBezier, Calculations) :
                     if element == 'line' :
                         line = File2.WriteLine(textLine, i + 1, lenText, line)
                     if element == 'path' :
-                        CPtmp1, polylinePoints = File2.WritePath(textLine, i + 1, lenText, [], polylinePoints)
+                        CPtmp1, polylinePoints = File2.WritePath(textLine, i + 1, lenText, polylinePoints)
                         CPtmp.append(CPtmp1)
                     if element == 'polygon' :
                         File2.WritePolygon(textLine, i + 1, lenText)
@@ -1125,33 +1123,28 @@ class File2(CalculateBezier, Calculations) :
                         File2.WriteRect(textLine, i + 1, lenText)
                     break
 
-        CPgr = []
+        CPgr = [[]]
         lenCPtmp = len(CPtmp)
-
         for i in range(lenCPtmp) :
-            print("...............")
-            print(len(CPgr))
-            print(len(CPtmp[i]))
-            print(CPtmp[i])
-            print(CPgr)
-
             if len(CPtmp[i]) == 0 :
+                if len(CPgr[0]) != 0 and i == lenCPtmp - 1 :
+                    CP2.extend(CPgr)
+                    CPgr.clear()
+                continue
+            if len(CPgr[0]) == 0 :
+                CPgr[0].append(CPtmp[i])
+                if i == lenCPtmp - 1 :
+                    CP2.extend(CPgr)
                 continue
             if i == lenCPtmp - 1 :
-                CP2.append(CPgr)
-            if len(CPgr) == 0 :
-                print(111111111111111)
-                CPgr.append(CPtmp[i])
-                continue
-
-            if CPgr[-1][3][0] == CPtmp[i][0][0] and CPgr[-1][3][1] == CPtmp[i][0][1] :
-                CPgr.append(CPtmp[i])
+                CP2.extend(CPgr)
+            if CPgr[0][-1][3][0] == CPtmp[i][0][0] and CPgr[0][-1][3][1] == CPtmp[i][0][1] :
+                CPgr[0].append(CPtmp[i])
             else :
-                CP2.append(CPgr)
+                CP2.extend(CPgr)
                 CPgr.clear()
-                continue
-
-        print(CP2)
+                CPgr.append([])
+                CPgr[0].append(CPtmp[i])
 
         Bezier = []
         Beziertmp = []
@@ -1246,72 +1239,82 @@ for i in Bezier2 :
 #If we have found the match then - take one point, pair it with all the other
 #   points and find their matching pairs in second file
 #Because we do that with vector there is no reason to compare each two points
-def rotate(points1, points2, line1, line2, Bezier1, Bezier2, arc1, arc2, circle1, circle2, ellipse1, ellipse2) :
-    dist11 = PointDist(points1[0], points1[1])
-    dist12 = PointDist(points1[0], points1[2])
-    dist13 = PointDist(points1[1], points1[2])
-    for i in range(len(points2) - 1) :
-        t = True
-        transf = False
-        dist21 = PointDist(points2[i], points2[i + 1])
-        for j in range(len(points2)) :
-            if j == i:
-                continue
-            dist22 = PointDist(points2[i], points2[j])
-            if dist11 / dist21 == dist12/ dist22 :
-                dist23 = PointDist(points2[i + 1], points2[j])
-                if dist11 / dist21 == dist13 / dist23 :
-                    ratio = dist21 / dist11
-                    dist = PointDist(points1[0], points2[i])
-                    unitV = []  #Unit vector of difference between points1 and points2
-                    tmpVx = points1[0][0] - points2[i][0]
-                    tmpVy = points2[0][1] - points2[i][1]
-                    if dist != 0 :
-                        tmpVx /= abs(dist)
-                        tmpVy /= abs(dist)
-                    unitV.append(tmpVx)
-                    unitV.append(tmpVy)
-                    for k in range(3, len(points1)) :
-                        dist1 = PointDist(points1[0], points1[k])
-                        tmpPx = points2[i][0] + unitV[0] * dist1
-                        tmpPy = points2[i][1] + unitV[1] * dist1
-                        tmpP = []
-                        tmpP.append(tmpPx)
-                        tmpP.append(tmpPy)
-                        try:
-                            points2.index(tmpP)
-                        except ValueError :
-                            t = False
-                            break
-                        if k == len(points2) - 1 :
-                            d = PointDist(points1[0], points2[i])
-                            transfVx = points2[i][0] - points1[0][0] #Transformation vector
-                            transfVy = points2[i][1] - points1[0][0]
-                            Ptmpx = points2[j + 1][0] - transfVx
-                            Ptmpy = points2[j + 1][1] - transfVy
-                            if (((points1[0][0] - points2[i][0]) == 0) and ((points1[0][0] - Ptmpx) == 0)) :
-                                alpha = 0
-                            elif (points1[0][0] - points2[i][0]) == 0 :
-                                a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx)
-                                alpha = 90 - np.degrees(np.arctan(a2))
-                            elif (points1[0][0] - Ptmpx[i][0]) == 0 :
-                                a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
-                                alpha = 90 - np.degrees(np.arcatn(a1))
-                            else:
-                                a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
-                                a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx)
-                                alpha = np.degrees(np.arctan((a2 - a1) / (1 + a1 * a2)))
-                            points2 = pointTransform(points2, transfVx, transfVy, points1[0], - alpha)
-                            transf = True
+class Rotate(points1, points2, line1, line2, Bezier1, Bezier2, arc1, arc2, circle1, circle2, ellipse1, ellipse2) :
+    def __init__(rotate) :
+        pass
+
+    def FindFrame() :
+        lenLine = len(line2)
+        for i in range(0, lenLine) :
+            for j in range(i, lenLine)
+                dist = pointDist
+
+    def Transformation() :
+        #dist11 = PointDist(points1[0], points1[1])
+        #dist12 = PointDist(points1[0], points1[2])
+        #dist13 = PointDist(points1[1], points1[2])
+        for i in range(len(points2) - 1) :
+            t = True
+            transf = False
+            dist21 = PointDist(points2[i], points2[i + 1])
+            for j in range(len(points2)) :
+                if j == i:
+                    continue
+                dist22 = PointDist(points2[i], points2[j])
+                if dist11 / dist21 == dist12/ dist22 :
+                    dist23 = PointDist(points2[i + 1], points2[j])
+                    if dist11 / dist21 == dist13 / dist23 :
+                        ratio = dist21 / dist11
+                        dist = PointDist(points1[0], points2[i])
+                        unitV = []  #Unit vector of difference between points1 and points2
+                        tmpVx = points1[0][0] - points2[i][0]
+                        tmpVy = points2[0][1] - points2[i][1]
+                        if dist != 0 :
+                            tmpVx /= abs(dist)
+                            tmpVy /= abs(dist)
+                        unitV.append(tmpVx)
+                        unitV.append(tmpVy)
+                        for k in range(3, len(points1)) :
+                            dist1 = PointDist(points1[0], points1[k])
+                            tmpPx = points2[i][0] + unitV[0] * dist1
+                            tmpPy = points2[i][1] + unitV[1] * dist1
+                            tmpP = []
+                            tmpP.append(tmpPx)
+                            tmpP.append(tmpPy)
+                            try:
+                                points2.index(tmpP)
+                            except ValueError :
+                                t = False
+                                break
+                            if k == len(points2) - 1 :
+                                d = PointDist(points1[0], points2[i])
+                                transfVx = points2[i][0] - points1[0][0] #Transformation vector
+                                transfVy = points2[i][1] - points1[0][0]
+                                Ptmpx = points2[j + 1][0] - transfVx
+                                Ptmpy = points2[j + 1][1] - transfVy
+                                if (((points1[0][0] - points2[i][0]) == 0) and ((points1[0][0] - Ptmpx) == 0)) :
+                                    alpha = 0
+                                elif (points1[0][0] - points2[i][0]) == 0 :
+                                    a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx)
+                                    alpha = 90 - np.degrees(np.arctan(a2))
+                                elif (points1[0][0] - Ptmpx[i][0]) == 0 :
+                                    a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
+                                    alpha = 90 - np.degrees(np.arcatn(a1))
+                                else:
+                                    a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
+                                    a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx)
+                                    alpha = np.degrees(np.arctan((a2 - a1) / (1 + a1 * a2)))
+                                points2 = pointTransform(points2, transfVx, transfVy, points1[0], - alpha)
+                                transf = True
+                                break
+                        if t == False or transf == True :
                             break
                     if t == False or transf == True :
                         break
-                if t == False or transf == True :
+                if transf == True :
                     break
             if transf == True :
                 break
-        if transf == True :
-            break
 
 #Comparison of objects
 #we will go through all objects in both files by picking the first object in first files
