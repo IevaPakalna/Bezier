@@ -400,6 +400,175 @@ class CalculateBezier(Calculations) :
         C = np.matmul(C, P)
         return C
 
+class Rotate(Calculations) :
+    def __init__(rotate) :
+        pass
+
+    def FindFrame(line) :
+        P11tmp = []
+        P12tmp = []
+        P21tmp = []
+        P22tmp = []
+        P31tmp = []
+        P32tmp = []
+        max1 = 0
+        max2 = 0
+        P11 = []
+        P12 = []
+        P21 = []
+        P22 = []
+        lenLine = len(line)
+        for i in range(0, lenLine) :
+            for j in range(i, lenLine) :
+                maxDist1 = 0
+                maxDist2 = 0
+                maxDist3 = 0
+                dist1 = Calculations.PointDist(line[i][0], line[j][0])
+                dist2 = Calculations.PointDist(line[i][0], line[j][1])
+                dist3 = Calculations.PointDist(line[i][1], line[j][1])
+                #find the largest distance
+                if dist1 >= dist2 and dist1 >= dist3 and dist1 > maxDist1 :
+                    maxDist1 = dist1
+                if dist2 >= dist1 and dist2 >= dist3 and dist2 > maxDist2:
+                    maxDist2 = dist2
+                if dist3 >= dist1 and dist3 >= dist2 and dist3 > maxDist3:
+                    maxDist3 = dist3
+                print(maxDist1, line[i][0], line[j][0])
+                #update points placed in second furthest distance
+                if max1 <= max2 :
+                    if maxDist1 > max1 :
+                        max1 = maxDist1
+                        P11 = line[i][0]
+                        P12 = line[j][0]
+                    if maxDist2 > max1 :
+                        max1 = maxDist2
+                        P11 = line[i][0]
+                        P12 = line[j][1]
+                    if maxDist3 > max1 :
+                        max1 = maxDist3
+                        P11 = line[i][1]
+                        P12 = line[j][1]
+                else :
+                    if maxDist1 > max2 :
+                        max2 = maxDist1
+                        P21 = line[i][0]
+                        P22 = line[j][0]
+                    if maxDist2 > max2 :
+                        max2 = maxDist2
+                        P21 = line[i][0]
+                        P22 = line[j][1]
+                    if maxDist3 > max2 :
+                        max2 = maxDist3
+                        P21 = line[i][1]
+                        P22 = line[j][1]
+
+
+
+        return P11, P12, max1, P21, P22, max2
+
+
+    def Transformation(points1, points2, line1, line2, CP1, CP2) :
+        P111, P112, dist1, P121, P122, dist2 = Rotate.FindFrame(line1)
+        P211, P212, dist2, P221, P222, dist2 = Rotate.FindFrame(line2)
+        #dist11 = PointDist(points1[0], points1[1])
+        #dist12 = PointDist(points1[0], points1[2])
+        #dist13 = PointDist(points1[1], points1[2])
+        print(P111, P112, dist1, P121, P122, dist2)
+        #find left vertical edge of frame in file 1
+        if P111[0] < P112[0] and P111[1] < P112[1] :
+            P11 = P111
+            if P121[1] < P122[1] :
+                P12 = P121
+            else :
+                P12 = P122
+        elif P112[0] < P111[0] and P112[1] < P111[1] :
+            P11 = P112
+            if P121[1] < P122[1] :
+                P12 = P121
+            else :
+                P12 = P122
+        elif P121[0] < P122[0] and P121[1] < P122[1] :
+            P11 = P121
+            if P121[1] < P122[1] :
+                P12 = P121
+            else :
+                P12 = P122
+        elif P122[0] < P121[0] and P122[1] < P121[1] :
+            P11 = P121
+            if P121[1] < P122[1] :
+                P12 = P121
+            else :
+                P12 = P122
+
+        #find respective left vertical edge of frame in file 2
+        if P211[0] < P212[0] and P211[1] < P212[1] :
+            P21 = P211
+            if P221[1] < P222[1] :
+                P22 = P221
+            else :
+                P22 = P222
+        elif P212[0] < P211[0] and P212[1] < P211[1] :
+            P21 = P212
+            if P221[1] < P222[1] :
+                P22 = P221
+            else :
+                P22 = P222
+        elif P221[0] < P222[0] and P221[1] < P222[1] :
+            P21 = P221
+            if P221[1] < P222[1] :
+                P22 = P221
+            else :
+                P22 = P222
+        elif P222[0] < P221[0] and P222[1] < P221[1] :
+            P21 = P221
+            if P221[1] < P222[1] :
+                P22 = P221
+            else :
+                P22 = P222
+
+        a1 = Calculations.LineSlope(P11, P12)
+        a2 = Calculations.LineSlope(P21, P22)
+        alpha = np.degrees(np.arctan((a2 - a1) / (1 + a1 * a2)))
+        dist1tmp = PointDist(P11, P12)
+        dist2tmp = PointDist(P21, P22)
+        vectX = P11[0] - P21[0]
+        vextY = P11[1] - P21[1]
+
+        lenPoints2 = len(points2)
+        for i in range(lenPoints2):
+            #move
+            points2[i][0] -= vectX
+            points2[i][1] -= vectY
+            #rotate
+            points2[i][0] = np.cos(alpha) * (points2[i][0] - P11[0]) + np.sin(alpha) * (points2[i][1] - P11[1]) + P11[0]
+            points2[i][1] = np.sin(alpha) * (points2[i][0] - P11[0]) - np.cos(alpha) * (points2[i][1] - P11[1]) + P11[1]
+
+        lenLine2 = len(line2)
+        for i in range(lenPoints2):
+            #move
+            line2[i][0][0] -= vectX
+            line2[i][0][1] -= vectY
+            line2[i][1][0] -= vectX
+            line2[i][1][1] -= vectY
+            #rotate
+            line2[i][0][0] = np.cos(alpha) * (line2[i][0][0] - P11[0]) + np.sin(alpha) * (point2[i][0][1] - P11[1]) + P11[0]
+            line2[i][0][1] = np.sin(alpha) * (line2[i][0][0] - P11[0]) - np.cos(alpha) * (point2[i][0][1] - P11[1]) + P11[1]
+            line2[i][1][0] = np.cos(alpha) * (line2[i][1][0] - P11[0]) + np.sin(alpha) * (point2[i][1][1] - P11[1]) + P11[0]
+            line2[i][1][1] = np.sin(alpha) * (line2[i][1][0] - P11[0]) - np.cos(alpha) * (point2[i][1][1] - P11[1]) + P11[1]
+
+        lenCP2 = len(CP2)
+        for i in range(lenCP2) :
+            for j in range(4) :
+                #move
+                CP2[i][j][0] -= vectX
+                CP2[i][j][1] -= vectY
+                #rotate
+                CP2[i][j][0] = np.cos(alpha) * (CP2[i][j][0] - P11[0]) + np.sin(alpha) * (CP2[i][j][1] - P11[1]) + P11[0]
+                CP2[i][j][1] = np.sin(alpha) * (CP2[i][j][0] - P11[0]) - np.cos(alpha) * (CP2[i][j][1] - P11[1]) + P11[1]
+
+        return points2, line2, CP2
+
+
 
 
 
@@ -520,10 +689,10 @@ class File1(CalculateBezier, Calculations) :
                 splineControlPoints1 = entity.control_points
                 splineCP1.append(splineControlPoints1)
 
-        return line1, Bezier1, CP1
+        return points1, line1, Bezier1, CP1
 
 
-class File2(CalculateBezier, Calculations) :
+class File2(CalculateBezier, Rotate) :
     def __init__(file2, filename) :
         file2.file = open(filename)
 
@@ -1146,6 +1315,12 @@ class File2(CalculateBezier, Calculations) :
                 CPgr.append([])
                 CPgr[0].append(CPtmp[i])
 
+        for i in polylinePoints :
+            Beziertmp, CPtmp = CalculateBezier.CompositeBezier(i, 2)
+            CP2.append(CPtmp)
+
+        points, line, CP2 = Rotate.Transformation(points1, points, line1, line, CP1, CP2)
+
         Bezier = []
         Beziertmp = []
         for i in CP2 :
@@ -1154,12 +1329,12 @@ class File2(CalculateBezier, Calculations) :
                 Beziertmp.append([Bx, By])
             Bezier.append(Beziertmp)
 
-        for i in polylinePoints :
-            Beziertmp, CPtmp = CalculateBezier.CompositeBezier(i, 2)
-            CP2.append(CPtmp)
-            Bezier.append(Beziertmp)
+#        for i in polylinePoints :
+#            Beziertmp, CPtmp = CalculateBezier.CompositeBezier(i, 2)
+#            CP2.append(CPtmp)
+#            Bezier.append(Beziertmp)
 
-        return line, Bezier, CP2
+        return points, line, Bezier, CP2
 
 
 
@@ -1188,11 +1363,11 @@ class Plot(Calculations) :
 print("111111111111111111111111111")
 file1 = File1(fileName1)
 print("222222222222222222222222222")
-line1, Bezier1, CP1 = file1.CalculateObjects()
+points1, line1, Bezier1, CP1 = file1.CalculateObjects()
 print("333333333333333333333333333")
 file2 = File2(fileName2)
 print("444444444444444444444444444")
-line2, Bezier2, CP2 = file2.CalculateObjects()
+points2, line2, Bezier2, CP2 = file2.CalculateObjects()
 
 
 t = Symbol('t')
@@ -1239,82 +1414,10 @@ for i in Bezier2 :
 #If we have found the match then - take one point, pair it with all the other
 #   points and find their matching pairs in second file
 #Because we do that with vector there is no reason to compare each two points
-class Rotate(points1, points2, line1, line2, Bezier1, Bezier2, arc1, arc2, circle1, circle2, ellipse1, ellipse2) :
-    def __init__(rotate) :
-        pass
 
-    def FindFrame() :
-        lenLine = len(line2)
-        for i in range(0, lenLine) :
-            for j in range(i, lenLine)
-                dist = pointDist
 
-    def Transformation() :
-        #dist11 = PointDist(points1[0], points1[1])
-        #dist12 = PointDist(points1[0], points1[2])
-        #dist13 = PointDist(points1[1], points1[2])
-        for i in range(len(points2) - 1) :
-            t = True
-            transf = False
-            dist21 = PointDist(points2[i], points2[i + 1])
-            for j in range(len(points2)) :
-                if j == i:
-                    continue
-                dist22 = PointDist(points2[i], points2[j])
-                if dist11 / dist21 == dist12/ dist22 :
-                    dist23 = PointDist(points2[i + 1], points2[j])
-                    if dist11 / dist21 == dist13 / dist23 :
-                        ratio = dist21 / dist11
-                        dist = PointDist(points1[0], points2[i])
-                        unitV = []  #Unit vector of difference between points1 and points2
-                        tmpVx = points1[0][0] - points2[i][0]
-                        tmpVy = points2[0][1] - points2[i][1]
-                        if dist != 0 :
-                            tmpVx /= abs(dist)
-                            tmpVy /= abs(dist)
-                        unitV.append(tmpVx)
-                        unitV.append(tmpVy)
-                        for k in range(3, len(points1)) :
-                            dist1 = PointDist(points1[0], points1[k])
-                            tmpPx = points2[i][0] + unitV[0] * dist1
-                            tmpPy = points2[i][1] + unitV[1] * dist1
-                            tmpP = []
-                            tmpP.append(tmpPx)
-                            tmpP.append(tmpPy)
-                            try:
-                                points2.index(tmpP)
-                            except ValueError :
-                                t = False
-                                break
-                            if k == len(points2) - 1 :
-                                d = PointDist(points1[0], points2[i])
-                                transfVx = points2[i][0] - points1[0][0] #Transformation vector
-                                transfVy = points2[i][1] - points1[0][0]
-                                Ptmpx = points2[j + 1][0] - transfVx
-                                Ptmpy = points2[j + 1][1] - transfVy
-                                if (((points1[0][0] - points2[i][0]) == 0) and ((points1[0][0] - Ptmpx) == 0)) :
-                                    alpha = 0
-                                elif (points1[0][0] - points2[i][0]) == 0 :
-                                    a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx)
-                                    alpha = 90 - np.degrees(np.arctan(a2))
-                                elif (points1[0][0] - Ptmpx[i][0]) == 0 :
-                                    a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
-                                    alpha = 90 - np.degrees(np.arcatn(a1))
-                                else:
-                                    a1 = (points1[0][1] - points2[i][1]) / (points1[0][0] - points2[i][0])
-                                    a2 = (points1[0][1] - Ptmpy) / (points1[0][0] - Ptmpx)
-                                    alpha = np.degrees(np.arctan((a2 - a1) / (1 + a1 * a2)))
-                                points2 = pointTransform(points2, transfVx, transfVy, points1[0], - alpha)
-                                transf = True
-                                break
-                        if t == False or transf == True :
-                            break
-                    if t == False or transf == True :
-                        break
-                if transf == True :
-                    break
-            if transf == True :
-                break
+
+
 
 #Comparison of objects
 #we will go through all objects in both files by picking the first object in first files
