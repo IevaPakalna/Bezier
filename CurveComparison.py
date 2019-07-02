@@ -13,8 +13,8 @@ import subprocess
 import os
 
 
-fileName1 = 'D:/prog/dxfFiles/Parastie_platgurnu_m3_p2_002.dxf'
-fileName2 = 'D:/prog/svgFiles/V-009/Sievietes_torss_ar_koef.svg'
+fileName1 = 'D:/prog/dxfFiles/svarki/DS123-17_002.dxf'
+fileName2 = 'D:/prog/svgFiles/svarki/DS123-17.svg'
 
 #subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "D:/prog/file2.eps","--export-ignore-filters", "--export-ps-level=3"])
 #subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-polyaslines", "D:/prog/file2.eps", "D:/prog/file2.dxf"])
@@ -413,10 +413,10 @@ class Rotate(Calculations) :
         P32tmp = []
         max1 = 0
         max2 = 0
-        P11 = []
-        P12 = []
-        P21 = []
-        P22 = []
+        P11 = (-1, +1)
+        P12 = (-1, +1)
+        P21 = (-1, +1)
+        P22 = (-1, +1)
         lenLine = len(line)
         for i in range(0, lenLine) :
             for j in range(i, lenLine) :
@@ -433,67 +433,78 @@ class Rotate(Calculations) :
                     maxDist2 = dist2
                 if dist3 >= dist1 and dist3 >= dist2 and dist3 > maxDist3:
                     maxDist3 = dist3
-                print(maxDist1, line[i][0], line[j][0])
+
                 #update points placed in second furthest distance
                 if max1 <= max2 :
                     if maxDist1 > max1 :
+                        if (line[i][0][0] == P21[0] and line[i][0][1] == P21[1]) or (line[j][0][0] == P22[0] and line[j][0][1] == P22[1]) or (line[i][0][0] == P22[0] and line[i][0][1] == P22[1]) or (line[j][0][0] == P21[0] and line[j][0][1] == P21[1]) :
+                            continue
                         max1 = maxDist1
                         P11 = line[i][0]
                         P12 = line[j][0]
                     if maxDist2 > max1 :
+                        if (line[i][0][0] == P21[0] and line[i][0][1] == P21[1]) or (line[j][1][0] == P22[0] and line[j][1][1] == P22[1]) or (line[i][0][0] == P22[0] and line[i][0][1] == P22[1]) or (line[j][1][0] == P21[0] and line[j][1][1] == P21[1]) :
+                            continue
                         max1 = maxDist2
                         P11 = line[i][0]
                         P12 = line[j][1]
                     if maxDist3 > max1 :
+                        if (line[i][1][0] == P21[0] and line[i][1][1] == P21[1]) or (line[j][1][0] == P22[0] and line[j][1][1] == P22[1]) or (line[i][1][0] == P22[0] and line[i][1][1] == P22[1]) or (line[j][1][0] == P21[0] and line[j][1][1] == P21[1]) :
+                            continue
                         max1 = maxDist3
                         P11 = line[i][1]
                         P12 = line[j][1]
                 else :
                     if maxDist1 > max2 :
+                        if (line[i][0][0] == P11[0] and line[i][0][1] == P11[1]) or (line[j][0][0] == P12[0] and line[j][0][1] == P12[1]) or (line[i][0][0] == P12[0] and line[i][0][1] == P12[1]) or (line[j][0][0] == P11[0] and line[j][0][1] == P11[1]) :
+                            continue
                         max2 = maxDist1
                         P21 = line[i][0]
                         P22 = line[j][0]
                     if maxDist2 > max2 :
+                        if (line[i][0][0] == P11[0] and line[i][0][1] == P11[1]) or (line[j][1][0] == P12[0] and line[j][1][1] == P12[1]) or (line[i][0][0] == P12[0] and line[i][0][1] == P12[1]) or (line[j][1][0] == P11[0] and line[j][1][1] == P11[1]) :
+                            continue
                         max2 = maxDist2
                         P21 = line[i][0]
                         P22 = line[j][1]
                     if maxDist3 > max2 :
+                        if (line[i][1][0] == P11[0] and line[i][1][1] == P11[1]) or (line[j][1][0] == P12[0] and line[j][1][1] == P12[1]) or (line[i][1][0] == P12[0] and line[i][1][1] == P12[1]) or (line[j][1][0] == P11[0] and line[j][1][1] == P11[1]) :
+                            continue
                         max2 = maxDist3
                         P21 = line[i][1]
                         P22 = line[j][1]
-
-
 
         return P11, P12, max1, P21, P22, max2
 
 
     def Transformation(points1, points2, line1, line2, CP1, CP2) :
-        P111, P112, dist1, P121, P122, dist2 = Rotate.FindFrame(line1)
-        P211, P212, dist2, P221, P222, dist2 = Rotate.FindFrame(line2)
+        P111, P112, dist11, P121, P122, dist12 = Rotate.FindFrame(line1)
+        P211, P212, dist21, P221, P222, dist22 = Rotate.FindFrame(line2)
         #dist11 = PointDist(points1[0], points1[1])
         #dist12 = PointDist(points1[0], points1[2])
         #dist13 = PointDist(points1[1], points1[2])
-        print(P111, P112, dist1, P121, P122, dist2)
+        print(P111, P112, dist11, P121, P122, dist12)
+
         #find left vertical edge of frame in file 1
-        if P111[0] < P112[0] and P111[1] < P112[1] :
+        if P111[0] < P112[0] and P111[1] > P112[1] :
             P11 = P111
             if P121[1] < P122[1] :
                 P12 = P121
             else :
                 P12 = P122
-        elif P112[0] < P111[0] and P112[1] < P111[1] :
+        elif P112[0] < P111[0] and P112[1] > P111[1] :
             P11 = P112
             if P121[1] < P122[1] :
                 P12 = P121
             else :
                 P12 = P122
-        elif P121[0] < P122[0] and P121[1] < P122[1] :
+        elif P121[0] < P122[0] and P121[1] > P122[1] :
             P11 = P121
-            if P121[1] < P122[1] :
-                P12 = P121
+            if P111[1] < P112[1] :
+                P12 = P111
             else :
-                P12 = P122
-        elif P122[0] < P121[0] and P122[1] < P121[1] :
+                P12 = P112
+        elif P122[0] < P121[0] and P122[1] > P121[1] :
             P11 = P121
             if P121[1] < P122[1] :
                 P12 = P121
@@ -503,70 +514,102 @@ class Rotate(Calculations) :
         #find respective left vertical edge of frame in file 2
         if P211[0] < P212[0] and P211[1] < P212[1] :
             P21 = P211
-            if P221[1] < P222[1] :
+            if P221[1] > P222[1] :
                 P22 = P221
             else :
                 P22 = P222
+            print(1)
         elif P212[0] < P211[0] and P212[1] < P211[1] :
             P21 = P212
-            if P221[1] < P222[1] :
+            if P221[1] > P222[1] :
                 P22 = P221
             else :
                 P22 = P222
+            print(2)
         elif P221[0] < P222[0] and P221[1] < P222[1] :
             P21 = P221
-            if P221[1] < P222[1] :
-                P22 = P221
+            if P211[1] > P212[1] :
+                P22 = P211
             else :
-                P22 = P222
+                P22 = P212
+            print(3)
         elif P222[0] < P221[0] and P222[1] < P221[1] :
-            P21 = P221
-            if P221[1] < P222[1] :
-                P22 = P221
+            P21 = P222
+            if P211[1] > P212[1] :
+                P22 = P211
             else :
-                P22 = P222
+                P22 = P212
+            print(4)
 
+        print(P11, P12)
+        efwe
         a1 = Calculations.LineSlope(P11, P12)
         a2 = Calculations.LineSlope(P21, P22)
         alpha = np.degrees(np.arctan((a2 - a1) / (1 + a1 * a2)))
-        dist1tmp = PointDist(P11, P12)
-        dist2tmp = PointDist(P21, P22)
-        vectX = P11[0] - P21[0]
-        vextY = P11[1] - P21[1]
+        dist1tmp = Calculations.PointDist(P11, P12)
+        dist2tmp = Calculations.PointDist(P21, P22)
+        unit = dist1tmp / dist2tmp
 
+        points = []
         lenPoints2 = len(points2)
         for i in range(lenPoints2):
             #move
-            points2[i][0] -= vectX
-            points2[i][1] -= vectY
+            points.append([])
+            points[i].append((points2[i][0] - P11[0]) * unit)
+            points[i].append((- points2[i][1] - P11[1]) * unit)
             #rotate
-            points2[i][0] = np.cos(alpha) * (points2[i][0] - P11[0]) + np.sin(alpha) * (points2[i][1] - P11[1]) + P11[0]
-            points2[i][1] = np.sin(alpha) * (points2[i][0] - P11[0]) - np.cos(alpha) * (points2[i][1] - P11[1]) + P11[1]
+#            points[i][0] = np.cos(alpha) * (points[i][0] - P11[0]) + np.sin(alpha) * (points[i][1] - P11[1]) + P11[0]
+#            points[i][1] = np.sin(alpha) * (points[i][0] - P11[0]) - np.cos(alpha) * (points[i][1] - P11[1]) + P11[1]
+
+            points[i] = tuple(points[i])
+
+        points2.clear()
+
+        line = []
 
         lenLine2 = len(line2)
-        for i in range(lenPoints2):
+        for i in range(lenLine2):
             #move
-            line2[i][0][0] -= vectX
-            line2[i][0][1] -= vectY
-            line2[i][1][0] -= vectX
-            line2[i][1][1] -= vectY
+            line.append([])
+            line[i].append([])
+            line[i][0].append((line2[i][0][0] - P11[0]) * unit)
+            line[i][0].append((- line2[i][0][1] - P11[1]) * unit)
+            line[i].append([])
+            line[i][1].append((line2[i][1][0] - P11[0]) * unit)
+            line[i][1].append((- line2[i][1][1] - P11[1]) * unit)
             #rotate
-            line2[i][0][0] = np.cos(alpha) * (line2[i][0][0] - P11[0]) + np.sin(alpha) * (point2[i][0][1] - P11[1]) + P11[0]
-            line2[i][0][1] = np.sin(alpha) * (line2[i][0][0] - P11[0]) - np.cos(alpha) * (point2[i][0][1] - P11[1]) + P11[1]
-            line2[i][1][0] = np.cos(alpha) * (line2[i][1][0] - P11[0]) + np.sin(alpha) * (point2[i][1][1] - P11[1]) + P11[0]
-            line2[i][1][1] = np.sin(alpha) * (line2[i][1][0] - P11[0]) - np.cos(alpha) * (point2[i][1][1] - P11[1]) + P11[1]
+#            line[i][0][0] = np.cos(alpha) * (line[i][0][0] - P11[0]) + np.sin(alpha) * (line[i][0][1] - P11[1]) + P11[0]
+#            line[i][0][1] = np.sin(alpha) * (line[i][0][0] - P11[0]) - np.cos(alpha) * (line[i][0][1] - P11[1]) + P11[1]
+#            line[i][1][0] = np.cos(alpha) * (line[i][1][0] - P11[0]) + np.sin(alpha) * (line[i][1][1] - P11[1]) + P11[0]
+#            line[i][1][1] = np.sin(alpha) * (line[i][1][0] - P11[0]) - np.cos(alpha) * (line[i][1][1] - P11[1]) + P11[1]
+
+            line[i][0] = tuple(line[i][0])
+            line[i][1] = tuple(line[i][1])
+
+        line2.clear()
+
+        CP = []
 
         lenCP2 = len(CP2)
         for i in range(lenCP2) :
-            for j in range(4) :
-                #move
-                CP2[i][j][0] -= vectX
-                CP2[i][j][1] -= vectY
-                #rotate
-                CP2[i][j][0] = np.cos(alpha) * (CP2[i][j][0] - P11[0]) + np.sin(alpha) * (CP2[i][j][1] - P11[1]) + P11[0]
-                CP2[i][j][1] = np.sin(alpha) * (CP2[i][j][0] - P11[0]) - np.cos(alpha) * (CP2[i][j][1] - P11[1]) + P11[1]
+            CP.append([])
+            lenCP2i = len(CP2[i])
+            for j in range(lenCP2i) :
+                CP[i].append([])
+                for k in range(4) :
+                    #move
+                    CP[i][j].append([])
+                    CP[i][j][k].append((CP2[i][j][k][0] - P11[0]) * unit)
+                    CP[i][j][k].append((- CP2[i][j][k][1] - P11[1]) * unit)
+                    #rotate
+#                    CP[i][j][k][0] = np.cos(alpha) * (CP[i][j][k][0] - P11[0]) + np.sin(alpha) * (CP[i][j][k][1] - P11[1]) + P11[0]
+#                    CP[i][j][k][1] = np.sin(alpha) * (CP[i][j][k][0] - P11[0]) - np.cos(alpha) * (CP[i][j][k][1] - P11[1]) + P11[1]
 
-        return points2, line2, CP2
+                    CP[i][j][k] = tuple(CP[i][j][k])
+
+        CP2.clear()
+
+        return points, line, CP
 
 
 
@@ -1000,6 +1043,8 @@ class File2(CalculateBezier, Rotate) :
 
 
     def WriteCircle(text, pos, length, points, polylinePoints) :
+        cx = -1
+        cy = +1
         while pos < length :
             attrib = ''
             if text[pos] == '/' :
@@ -1026,6 +1071,10 @@ class File2(CalculateBezier, Rotate) :
                     continue
             pos += 1
         if r <= 0.1 :
+            if cx == -1 :
+                cx = 0
+            if cy == 1 :
+                cy = 0
             points.append((cx, cy))
         else :
             t = 0
@@ -1719,6 +1768,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
         lineSt = 0
         for i in range(len(arr)) :
             if min == -1 :
+                print(arr[i])
                 if not arr[i][0] in visited:
                     mintmp = Calculations.PointDist(P, arr[i][0])
                     if mintmp > minDist :
