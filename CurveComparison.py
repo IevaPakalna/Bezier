@@ -2631,35 +2631,55 @@ def CircleDiff(CP, r, circle1, circle2, visited) :
 #        visited = CircleDiff(i, circle1, circle2, visited)
 
 print("equal Line")
-print(equalObjectsLine)
+len00 = len(equalObjectsLine)
+for i in equalObjectsLine:
+    print(i, line1[i])
 
 print("equal Bezier")
-print(equalObjectsBezier)
+len0 = len(equalObjectsBezier)
+for i in equalObjectsBezier:
+    print(i, Bezier1[i])
 
 print("line1")
-print(ObjectsLine1)
+len1 = len(ObjectsLine1)
+for i in ObjectsLine1:
+    print(i, line1[i])
 
 print("line2")
-print(ObjectsLine2)
+len2 = len(ObjectsLine2)
+for i in ObjectsLine2:
+    print(i, line2[i])
 
 print("UniqueLine1")
-print(uniqueObjectsLine1)
+len3 = len(uniqueObjectsLine1)
+for i in uniqueObjectsLine1:
+    print(i, line1[i])
 
 print("Unique Line2")
-print(uniqueObjectsLine2)
+len4 = len(uniqueObjectsLine2)
+for i in uniqueObjectsLine2:
+    print(i, line2[i])
 
 
 print("Bezier1")
-print(ObjectsBezier1)
+len5 = len(ObjectsBezier1)
+for i in ObjectsBezier1:
+    print(i, Bezier1[i])
 
 print("Bezier2")
-print(ObjectsBezier2)
+len6 = len(ObjectsBezier2)
+for i in ObjectsBezier2:
+    print(i, Bezier2[i])
 
 print("UniqueBezier1")
-print(uniqueObjectsBezier1)
+len7 = len(uniqueObjectsBezier1)
+for i in uniqueObjectsBezier1:
+    print(i, Bezier1[i])
 
 print("Unique Bezier2")
-print(uniqueObjectsBezier2)
+len8 = len(uniqueObjectsBezier2)
+for i in uniqueObjectsBezier2:
+    print(i, Bezier2[i])
 
 
 
