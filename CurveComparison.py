@@ -13,8 +13,8 @@ import subprocess
 import os
 
 
-fileName1 = 'D:/prog/dxfFiles/svarki/DS123-17_002.dxf'
-fileName2 = 'D:/prog/svgFiles/svarki/DS123-17.svg'
+fileName1 = 'D:/prog/dxfFiles/svarki/Skaidra Disb_platgurnu_garas iesuves_002.dxf'
+fileName2 = 'D:/prog/svgFiles/svarki/SKAIDRA.svg'
 
 #subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "D:/prog/file2.eps","--export-ignore-filters", "--export-ps-level=3"])
 #subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-polyaslines", "D:/prog/file2.eps", "D:/prog/file2.dxf"])
@@ -27,7 +27,7 @@ dxf1 = dxfgrabber.readfile(fileName1)
 #dxf2 = dxfgrabber.readfile(fileName2)
 
 
-firstFileCol = '#055583'
+firstFileCol = '#20456d'
 secondFileCol = '#bc0e13'
 
 #Graph formatting
@@ -413,10 +413,10 @@ class Rotate(Calculations) :
         P32tmp = []
         max1 = 0
         max2 = 0
-        P11 = (-1, +1)
-        P12 = (-1, +1)
-        P21 = (-1, +1)
-        P22 = (-1, +1)
+        P11 = (0, 0)
+        P12 = (0, 0)
+        P21 = (0, 0)
+        P22 = (0, 0)
         lenLine = len(line)
         for i in range(0, lenLine) :
             for j in range(i, lenLine) :
@@ -426,54 +426,87 @@ class Rotate(Calculations) :
                 dist1 = Calculations.PointDist(line[i][0], line[j][0])
                 dist2 = Calculations.PointDist(line[i][0], line[j][1])
                 dist3 = Calculations.PointDist(line[i][1], line[j][1])
+                print("DIST: ", dist1, dist2, dist3)
+
+                a1 = Calculations.LineSlope(P11, P12)
+                a2 = Calculations.LineSlope(P21, P22)
+
                 #find the largest distance
                 if dist1 >= dist2 and dist1 >= dist3 and dist1 > maxDist1 :
                     maxDist1 = dist1
+                    slope = Calculations.LineSlope(line[i][0], line[j][0])
+                    alpha1 = np.degrees(np.arctan((slope - a1) / (1 + a1 * slope)))
+                    alpha2 = np.degrees(np.arctan((slope - a2) / (1 + a2 * slope)))
+
+                    angle = np.degrees(np.arctan((slope) / (1)))
                 if dist2 >= dist1 and dist2 >= dist3 and dist2 > maxDist2:
                     maxDist2 = dist2
-                if dist3 >= dist1 and dist3 >= dist2 and dist3 > maxDist3:
-                    maxDist3 = dist3
+                    slope = Calculations.LineSlope(line[i][0], line[j][1])
+                    alpha1 = np.degrees(np.arctan((slope - a1) / (1 + a1 * slope)))
+                    alpha2 = np.degrees(np.arctan((slope - a2) / (1 + a2 * slope)))
 
+                    angle = np.degrees(np.arctan((slope) / (1)))
+                if dist3 >= dist1 and dist3 >= dist2 and dist3 > maxDist3:
+                    maxDist = dist3
+                    slope = Calculations.LineSlope(line[i][1], line[j][1])
+                    alpha1 = np.degrees(np.arctan((slope - a1) / (1 + a1 * slope)))
+                    alpha2 = np.degrees(np.arctan((slope - a2) / (1 + a2 * slope)))
+
+                    angle = np.degrees(np.arctan((slope) / (1)))
+                print("maxDist: ", maxDist1, maxDist2, maxDist3)
+                print("----------------------------------", maxDist1, maxDist2, maxDist3)
+
+                angle1 = np.degrees(np.arctan((a1) / (1)))
+                angle2 = np.degrees(np.arctan((a2) / (1)))
+                print((max1 <= max2) or abs(alpha1) < 5)
+                print((max2 < max1) or abs(alpha2) < 5)
                 #update points placed in second furthest distance
-                if max1 <= max2 :
+                if (max1 <= max2) or abs(alpha1) < 5 :
                     if maxDist1 > max1 :
-                        if (line[i][0][0] == P21[0] and line[i][0][1] == P21[1]) or (line[j][0][0] == P22[0] and line[j][0][1] == P22[1]) or (line[i][0][0] == P22[0] and line[i][0][1] == P22[1]) or (line[j][0][0] == P21[0] and line[j][0][1] == P21[1]) :
+                        if abs(angle - angle2) < 5 :
                             continue
                         max1 = maxDist1
                         P11 = line[i][0]
                         P12 = line[j][0]
+                        print(1)
                     if maxDist2 > max1 :
-                        if (line[i][0][0] == P21[0] and line[i][0][1] == P21[1]) or (line[j][1][0] == P22[0] and line[j][1][1] == P22[1]) or (line[i][0][0] == P22[0] and line[i][0][1] == P22[1]) or (line[j][1][0] == P21[0] and line[j][1][1] == P21[1]) :
+                        if abs(angle - angle2) < 5 :
                             continue
                         max1 = maxDist2
                         P11 = line[i][0]
                         P12 = line[j][1]
+                        print(2)
                     if maxDist3 > max1 :
-                        if (line[i][1][0] == P21[0] and line[i][1][1] == P21[1]) or (line[j][1][0] == P22[0] and line[j][1][1] == P22[1]) or (line[i][1][0] == P22[0] and line[i][1][1] == P22[1]) or (line[j][1][0] == P21[0] and line[j][1][1] == P21[1]) :
+                        if abs(angle - angle2) < 5 :
                             continue
                         max1 = maxDist3
                         P11 = line[i][1]
                         P12 = line[j][1]
-                else :
+                        print(3)
+                elif (max2 < max1) or abs(alpha2) < 5 :
                     if maxDist1 > max2 :
-                        if (line[i][0][0] == P11[0] and line[i][0][1] == P11[1]) or (line[j][0][0] == P12[0] and line[j][0][1] == P12[1]) or (line[i][0][0] == P12[0] and line[i][0][1] == P12[1]) or (line[j][0][0] == P11[0] and line[j][0][1] == P11[1]) :
+                        if abs(angle - angle1) < 5 :
                             continue
                         max2 = maxDist1
                         P21 = line[i][0]
                         P22 = line[j][0]
+                        print(4)
                     if maxDist2 > max2 :
-                        if (line[i][0][0] == P11[0] and line[i][0][1] == P11[1]) or (line[j][1][0] == P12[0] and line[j][1][1] == P12[1]) or (line[i][0][0] == P12[0] and line[i][0][1] == P12[1]) or (line[j][1][0] == P11[0] and line[j][1][1] == P11[1]) :
+                        if abs(angle - angle1) < 5 :
                             continue
                         max2 = maxDist2
                         P21 = line[i][0]
                         P22 = line[j][1]
+                        print(5)
                     if maxDist3 > max2 :
-                        if (line[i][1][0] == P11[0] and line[i][1][1] == P11[1]) or (line[j][1][0] == P12[0] and line[j][1][1] == P12[1]) or (line[i][1][0] == P12[0] and line[i][1][1] == P12[1]) or (line[j][1][0] == P11[0] and line[j][1][1] == P11[1]) :
+                        if abs(angle - angle1) < 5 :
                             continue
                         max2 = maxDist3
                         P21 = line[i][1]
                         P22 = line[j][1]
-
+                        print(6)
+                print(P11, P12, P21, P22)
+                print(max1, max2)
         return P11, P12, max1, P21, P22, max2
 
 
@@ -484,7 +517,7 @@ class Rotate(Calculations) :
         #dist12 = PointDist(points1[0], points1[2])
         #dist13 = PointDist(points1[1], points1[2])
         print(P111, P112, dist11, P121, P122, dist12)
-
+        print(P211, P212, dist21, P221, P222, dist22)
         #find left vertical edge of frame in file 1
         if P111[0] < P112[0] and P111[1] > P112[1] :
             P11 = P111
@@ -505,11 +538,11 @@ class Rotate(Calculations) :
             else :
                 P12 = P112
         elif P122[0] < P121[0] and P122[1] > P121[1] :
-            P11 = P121
+            P11 = P122
             if P121[1] < P122[1] :
-                P12 = P121
+                P12 = P111
             else :
-                P12 = P122
+                P12 = P112
 
         #find respective left vertical edge of frame in file 2
         if P211[0] < P212[0] and P211[1] < P212[1] :
@@ -542,17 +575,19 @@ class Rotate(Calculations) :
             print(4)
 
         print(P11, P12)
-        efwe
+        print(P21, P22)
         a1 = Calculations.LineSlope(P11, P12)
         a2 = Calculations.LineSlope(P21, P22)
         alpha = np.degrees(np.arctan((a2 - a1) / (1 + a1 * a2)))
         dist1tmp = Calculations.PointDist(P11, P12)
         dist2tmp = Calculations.PointDist(P21, P22)
         unit = dist1tmp / dist2tmp
-
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",unit)
+        unit = 10
         points = []
         lenPoints2 = len(points2)
         for i in range(lenPoints2):
+            #print(points2[i][0], " - ", P11[0], " * ", unit)
             #move
             points.append([])
             points[i].append((points2[i][0] - P11[0]) * unit)
