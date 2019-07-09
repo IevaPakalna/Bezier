@@ -570,11 +570,11 @@ class Rotate(Calculations) :
             #print(points2[i][0], " - ", P11[0], " * ", unit)
             #move
             points.append([])
-            points[i].append((points2[i][0] - P11[0]) * unit)
+            points[i].append((points2[i][0]) * unit)
             if points2[i][1] == 0.0 :
-                points[i].append(( points2[i][1] - P11[1]) * unit)
+                points[i].append(( points2[i][1]) * unit)
             else :
-                points[i].append((- points2[i][1] - P11[1]) * unit)
+                points[i].append((- points2[i][1]) * unit)
 
             #rotate
 #            points[i][0] = np.cos(alpha) * (points[i][0] - P11[0]) + np.sin(alpha) * (points[i][1] - P11[1]) + P11[0]
@@ -584,37 +584,7 @@ class Rotate(Calculations) :
 
         points2.clear()
 
-        line = []
-
-        lenLine2 = len(line2)
-        for i in range(lenLine2):
-            #move
-            line.append([])
-            line[i].append([])
-            line[i][0].append((line2[i][0][0] - P11[0]) * unit)
-            if line2[i][0][1] == 0.0 :
-                line[i][0].append((line2[i][0][1] - P11[1]) * unit)
-            else :
-                line[i][0].append((- line2[i][0][1] - P11[1]) * unit)
-            line[i].append([])
-            line[i][1].append((line2[i][1][0] - P11[0]) * unit)
-            if line2[i][1][1] == 0.0 :
-                line[i][1].append((line2[i][1][1] - P11[1]) * unit)
-            else :
-                line[i][1].append((- line2[i][1][1] - P11[1]) * unit)
-            #rotate
-#            line[i][0][0] = np.cos(alpha) * (line[i][0][0] - P11[0]) + np.sin(alpha) * (line[i][0][1] - P11[1]) + P11[0]
-#            line[i][0][1] = np.sin(alpha) * (line[i][0][0] - P11[0]) - np.cos(alpha) * (line[i][0][1] - P11[1]) + P11[1]
-#            line[i][1][0] = np.cos(alpha) * (line[i][1][0] - P11[0]) + np.sin(alpha) * (line[i][1][1] - P11[1]) + P11[0]
-#            line[i][1][1] = np.sin(alpha) * (line[i][1][0] - P11[0]) - np.cos(alpha) * (line[i][1][1] - P11[1]) + P11[1]
-
-            line[i][0] = tuple(line[i][0])
-            line[i][1] = tuple(line[i][1])
-
-        line2.clear()
-
         CP = []
-
         lenCP2 = len(CP2)
         for i in range(lenCP2) :
             CP.append([])
@@ -624,11 +594,11 @@ class Rotate(Calculations) :
                 for k in range(4) :
                     #move
                     CP[i][j].append([])
-                    CP[i][j][k].append((CP2[i][j][k][0] - P11[0]) * unit)
+                    CP[i][j][k].append((CP2[i][j][k][0]) * unit)
                     if CP2[i][j][k][1] == 0.0 :
-                        CP[i][j][k].append((CP2[i][j][k][1] - P11[1]) * unit)
+                        CP[i][j][k].append((CP2[i][j][k][1]) * unit)
                     else :
-                        CP[i][j][k].append((- CP2[i][j][k][1] - P11[1]) * unit)
+                        CP[i][j][k].append((- CP2[i][j][k][1]) * unit)
 
                     #rotate
 #                    CP[i][j][k][0] = np.cos(alpha) * (CP[i][j][k][0] - P11[0]) + np.sin(alpha) * (CP[i][j][k][1] - P11[1]) + P11[0]
@@ -638,7 +608,7 @@ class Rotate(Calculations) :
 
         CP2.clear()
 
-        return points, line, CP
+        return points, line2, CP
 
 
 
@@ -712,35 +682,12 @@ class File1(CalculateBezier, Calculations) :
                 lineEnd1 = entity.end
 
                 linetmp = []
-                lineTest = []
                 try:
                     CP1.index([[lineStart1, lineStart1, lineEnd1, lineEnd1]])
                 except:
                     linetmp.append([])
                     linetmp[0].append([])
                     linetmp[0][0] = CalculateBezier.BezierFormulaComp([lineStart1, lineStart1, lineEnd1, lineEnd1])
-
-                    for i in CP1 :
-                        if (i[0][0][0] == lineStart1 and i[0][0][1] == lineStart1 and i[0][1][0] == lineStart1 and i[0][1][1] == lineStart1) :
-                            CP1[i].insert(0, [lineEnd1, lineEnd1, lineStart1, lineStart1])
-                            Bezier1[i].insert(0, linetmp)
-                            linetmp.clear()
-                            continue
-                        if (i[0][0][0] == lineEnd1 and i[0][0][1] == lineEnd1 and i[0][1][0] == lineEnd1 and i[0][1][1] == lineEnd1) :
-                            CP1[i].insert(0, [lineStart1, lineStart1, lineEnd1, lineEnd1])
-                            Bezier1[i].insert(0, linetmp)
-                            linetmp.clear()
-                            continue
-                        if (i[-1][3][0] == lineStart1 and i[-1][3][1] == lineStart1 and i[-1][3][0] == lineStart1 and i[-1][3][1] == lineStart1) :
-                            CP1[i].append([lineStart1, lineStart1, lineEnd1, lineEnd1])
-                            Bezier1[i].extend(linetmp)
-                            linetmp.clear()
-                            continue
-                        if (i[-1][3][0] == lineEnd1 and i[-1][3][1] == lineEnd1 and i[-1][3][0] == lineEnd1 and i[-1][3][1] == lineEnd1) :
-                            CP1[i].append([lineEnd1, lineEnd1, lineStart1, lineStart1])
-                            Bezier1[i].extend(linetmp)
-                            linetmp.clear()
-                            continue
                     Bezier1.extend(linetmp)
                     CP1.append([[lineStart1, lineStart1, lineEnd1, lineEnd1]])
                     linetmp.clear()
@@ -792,6 +739,153 @@ class File1(CalculateBezier, Calculations) :
             if entity.dxftype == 'SPLINE':
                 splineControlPoints1 = entity.control_points
                 splineCP1.append(splineControlPoints1)
+
+        linetmp = []
+        linetmp.append([])
+
+        #compress lines, so there are not seperate line segments
+        lenCP1 = len(CP1)
+        j = 0
+        while j < len(CP1) :
+            if (CP1[j][0][0][0] == CP1[j][0][1][0] and CP1[j][0][0][1] == CP1[j][0][1][1] and CP1[j][0][2][0] == CP1[j][0][3][0] and CP1[j][0][2][1] == CP1[j][0][3][1]) :
+                #length of CP1 is changing as lines are being compressed
+                lenCP1tmp = len(CP1)
+                for i in range(j + 1, lenCP1tmp) :
+                    if len(CP1[i]) == 1 and (CP1[i][0][0][0] == CP1[i][0][1][0] and CP1[i][0][0][1] == CP1[i][0][1][1] and CP1[i][0][2][0] == CP1[i][0][3][0] and CP1[i][0][2][1] == CP1[i][0][3][1]) :
+                        print(CP1[j])
+                        print(CP1[i])
+                        print("----------------------------------------------------")
+                        if (CP1[j][0][0][0] == CP1[i][0][0][0] and CP1[j][0][0][1] == CP1[i][0][0][1]) :
+                            #compare line slopes as the points could be endpoints of segments of two different lines
+                            a1 = Calculations.LineSlope(CP1[j][0][0], CP1[j][0][3])
+                            a2 = Calculations.LineSlope(CP1[i][0][0], CP1[i][0][3])
+                            print(a1, a2)
+                            if abs(a1 - a2) > 0 :
+                                continue
+
+                            #check if found segment doesnt belong to respective segment
+                            dist11 = Calculations.PointDist(CP1[j][0][0], (0, 0))
+                            dist12 = Calculations.PointDist(CP1[j][0][3], (0, 0))
+                            dist21 = Calculations.PointDist(CP1[i][0][0], (0, 0))
+                            dist22 = Calculations.PointDist(CP1[i][0][3], (0, 0))
+                            #if needed, remove respective segment
+                            if ((dist11 - dist12) * (dist21 - dist22)) >= 0 :
+                                if abs((dist11 - dist12)) < abs(dist21 - dist22) :
+                                    if len(CP1[j]) == 1 :
+                                        CP1.pop(j)
+                                    else :
+                                        CP1[j].pop(0)
+                                    j -= 1
+                                else :
+                                    CP1.pop(i)
+                                continue
+
+                            CP1[j].insert(0, [CP1[i][0][3], CP1[i][0][3], CP1[i][0][0], CP1[i][0][0]])
+                            linetmp[0] = CalculateBezier.BezierFormulaComp([CP1[i][0][3], CP1[i][0][3], CP1[i][0][0], CP1[i][0][0]])
+                            Bezier1[j].insert(0, linetmp)
+                            linetmp.clear()
+                            linetmp.append([])
+
+                            CP1.pop(i)
+                            Bezier1.pop(i)
+                            break
+                        if (CP1[j][0][0][0] == CP1[i][0][3][0] and CP1[j][0][0][1] == CP1[i][0][3][1]) :
+                            a1 = Calculations.LineSlope(CP1[j][0][0], CP1[j][0][3])
+                            a2 = Calculations.LineSlope(CP1[i][0][0], CP1[i][0][3])
+                            print(a1, a2)
+                            if abs(a1 - a2) > 0 :
+                                continue
+                            #check if found segment doesnt belong to respective segment
+                            dist11 = Calculations.PointDist(CP1[j][0][0], (0, 0))
+                            dist12 = Calculations.PointDist(CP1[j][0][3], (0, 0))
+                            dist21 = Calculations.PointDist(CP1[i][0][0], (0, 0))
+                            dist22 = Calculations.PointDist(CP1[i][0][3], (0, 0))
+                            #if needed, remove respective segment
+                            if ((dist11 - dist12) * (dist21 - dist22)) >= 0 :
+                                if abs((dist11 - dist12)) < abs(dist21 - dist22) :
+                                    if len(CP1[j]) == 1 :
+                                        CP1.pop(j)
+                                    else :
+                                        CP1[j].pop(0)
+                                    j -= 1
+                                else :
+                                    CP1.pop(i)
+                                continue
+                            CP1[j].insert(0, [CP1[i][0][0], CP1[i][0][0], CP1[i][0][3], CP1[i][0][3]])
+                            linetmp[0] = CalculateBezier.BezierFormulaComp([CP1[i][0][0], CP1[i][0][0], CP1[i][0][3], CP1[i][0][3]])
+                            Bezier1[j].insert(0, linetmp)
+                            linetmp.clear()
+                            linetmp.append([])
+
+                            CP1.pop(i)
+                            Bezier1.pop(i)
+                            break
+                        if (CP1[j][-1][3][0] == CP1[i][0][0][0] and CP1[j][-1][3][1] == CP1[i][0][0][1]) :
+                            a1 = Calculations.LineSlope(CP1[j][-1][0], CP1[j][-1][3])
+                            a2 = Calculations.LineSlope(CP1[i][0][0], CP1[i][0][3])
+                            print(a1, a2)
+                            if abs(a1 - a2) > 0 :
+                                continue
+                            #check if found segment doesnt belong to respective segment
+                            dist11 = Calculations.PointDist(CP1[j][-1][0], (0, 0))
+                            dist12 = Calculations.PointDist(CP1[j][-1][3], (0, 0))
+                            dist21 = Calculations.PointDist(CP1[i][0][0], (0, 0))
+                            dist22 = Calculations.PointDist(CP1[i][0][3], (0, 0))
+                            #if needed, remove respective segment
+                            if ((dist11 - dist12) * (dist21 - dist22)) >= 0 :
+                                if abs((dist11 - dist12)) < abs(dist21 - dist22) :
+                                    if len(CP1[j]) == 1 :
+                                        CP1.pop(j)
+                                    else :
+                                        CP1[j].pop(-1)
+                                    j -= 1
+                                else :
+                                    CP1.pop(i)
+                                continue
+                            CP1[j].append([CP1[i][0][0], CP1[i][0][0], CP1[i][0][3], CP1[i][0][3]])
+                            linetmp[0] = CalculateBezier.BezierFormulaComp([CP1[i][0][0], CP1[i][0][0], CP1[i][0][3], CP1[i][0][3]])
+                            Bezier1[j].extend(linetmp)
+                            linetmp.clear()
+                            linetmp.append([])
+
+                            CP1.pop(i)
+                            Bezier1.pop(i)
+                            break
+                        if (CP1[j][-1][3][0] == CP1[i][0][3][0] and CP1[j][-1][3][1] == CP1[i][0][3][1]) :
+                            a1 = Calculations.LineSlope(CP1[j][-1][0], CP1[j][-1][3])
+                            a2 = Calculations.LineSlope(CP1[i][0][0], CP1[i][0][3])
+                            print(a1, a2)
+                            if abs(a1 - a2) > 0 :
+                                continue
+                            #check if found segment doesnt belong to respective segment
+                            dist11 = Calculations.PointDist(CP1[j][0][0], (0, 0))
+                            dist12 = Calculations.PointDist(CP1[j][0][3], (0, 0))
+                            dist21 = Calculations.PointDist(CP1[i][0][0], (0, 0))
+                            dist22 = Calculations.PointDist(CP1[i][0][3], (0, 0))
+                            #if needed, remove respective segment
+                            if ((dist11 - dist12) * (dist21 - dist22)) >= 0 :
+                                if abs((dist11 - dist12)) < abs(dist21 - dist22) :
+                                    if len(CP1[j]) == 1 :
+                                        CP1.pop(j)
+                                    else :
+                                        CP1[j].pop(-1)
+                                    j -= 1
+                                else :
+                                    CP1.pop(i)
+                                continue
+                            CP1[j].append([CP1[i][0][3], CP1[i][0][3], CP1[i][0][0], CP1[i][0][0]])
+                            linetmp[0] = CalculateBezier.BezierFormulaComp([CP1[i][0][3], CP1[i][0][3], CP1[i][0][0], CP1[i][0][0]])
+                            Bezier1[j].extend(linetmp)
+                            linetmp.clear()
+                            linetmp.append([])
+
+                            CP1.pop(i)
+                            Bezier1.pop(i)
+                            break
+                print(len(CP1))
+                print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+            j += 1
+
         return points1, line1, Bezier1, CP1
 
 
@@ -1562,6 +1656,8 @@ class BezierCalculations(Calculations) :
         for i in range(len(arr)) :
             #as the Bezier curve is made from multiple cubic Bezier curves, we have to compare only the start point of first and end point of last cubic curve that belongs to specific composite Bezier
             if min == -1 :
+                print(0, not (arr[i][0][0][0], arr[i][0][0][1]) in visited)
+                print(arr[i][0][0])
                 if not (arr[i][0][0][0], arr[i][0][0][1]) in visited:
                     mintmp = Calculations.PointDist(P, (arr[i][0][0][0], arr[i][0][0][1]))
                     if mintmp > minDist :
@@ -1574,9 +1670,17 @@ class BezierCalculations(Calculations) :
                         min = mintmp
                         minPind = i
                         lineSt = 0
-
+            print(1, not (arr[i][0][0][0], arr[i][0][0][1]) in visited)
+            print(arr[i][0][0])
+            if (arr[i][0][0][0], arr[i][0][0][1]) in visited :
+                print(2, visited[(arr[i][0][0][0], arr[i][0][0][1])] == 1)
+                print(arr[i][0][0])
+            print(3, not (arr[i][-1][3][0], arr[i][-1][3][1]) in visited)
+            print(arr[i][-1][3])
+            if (arr[i][-1][3][0], arr[i][-1][3][1]) in visited :
+                print(4, visited[(arr[i][-1][3][0], arr[i][-1][3][1])] == 1)
+                print(arr[i][-1][3])
             if not (arr[i][0][0][0], arr[i][0][0][1]) in visited :
-
                 tmpD = Calculations.PointDist(P, (arr[i][0][0][0], arr[i][0][0][1]))
                 if tmpD < min and tmpD > minDist:
                     min = tmpD
@@ -1588,7 +1692,6 @@ class BezierCalculations(Calculations) :
                     min = tmpD
                     minPind = i
                     lineSt = 0
-
             if not (arr[i][-1][3][0], arr[i][-1][3][1]) in visited :
                 tmpD = Calculations.PointDist(P, (arr[i][-1][3][0], arr[i][-1][3][1]))
                 if tmpD < min and tmpD > minDist:
@@ -1947,8 +2050,6 @@ class ObjectComparison(BezierCalculations, Calculations) :
             nr2 = lenB2 - 1
         else :
             nr2 = 0
-        print(lineSt1, CP1)
-        print(lineSt2, CP2)
         param1 = lineSt1
         param2 = lineSt2
         for i in range(11) :
@@ -2371,6 +2472,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
 
             if P1rndx == P1tmprndx0 and P1rndy == P1tmprndy0 :
                 print(222222222222222222222222222)
+                print(visited)
                 if not (CP1[i][0][0][0], CP1[i][0][0][1]) in visited :
                     if not (CP1[i][-1][3][0], CP1[i][-1][3][1]) in visited :
                         P1Ind = i
@@ -2645,10 +2747,6 @@ for i in line1 :
 
 
 t = Symbol('t')
-print("TEST")
-print(CP1)
-print()
-print(visited)
 for i in CP1 :
     if not (i[0][0][0], i[0][0][1]) in visited :
         visited = ObjectComparison.DiffAllBezier((i[0][0][0], i[0][0][1]), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, -1)
