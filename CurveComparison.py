@@ -649,6 +649,8 @@ class File1(CalculateBezier, Calculations) :
 
     #Binary sort (for abscissa)
     def SortInsertPosLines(P, CP, l, r): #l - left side, r - right side of segment in array
+        if r == -1:
+            return 0
         if l == r :
             if CP[l][0][0][0] == P[0] and CP[l][0][0][0] == CP[l][0][1][0] and CP[l][0][0][1] == CP[l][0][1][1] :
                 if CP[l][0][0][1] == P[1] :
@@ -686,7 +688,7 @@ class File1(CalculateBezier, Calculations) :
         arc1 = []
         LWPolyline1 = []
         splineCP1 = []
-        linesSum = 0
+        linesSum = -1
         object1nr = 1.000
         object2nr = 2.000
         #get parameters of objects
@@ -799,9 +801,8 @@ class File1(CalculateBezier, Calculations) :
                     if len(CP1[i]) == 1 and (CP1[i][0][0][0] == CP1[i][0][1][0] and CP1[i][0][0][1] == CP1[i][0][1][1] and CP1[i][0][2][0] == CP1[i][0][3][0] and CP1[i][0][2][1] == CP1[i][0][3][1]) :
                         #this is yet not in use, if statement - kreiss to not work
                         a1 = Calculations.LineSlope(CP1[j][-1][0], CP1[j][-1][3])
-                        a2 = Calculations.LineSlope(CP1[j][0][0], CP1[j][0][3])
                         a3 = Calculations.LineSlope(CP1[i][0][0], CP1[i][0][3])
-                        if a1 == a2 :
+                        if a1 == a3 :
                             t = Symbol('t')
                             a1Fx, a1Fy = CalculateBezier.ParamLineFormula(CP1[j][-1][0], CP1[j][-1][3])
                             a3Fx, a3Fy = CalculateBezier.ParamLineFormula(CP1[i][0][0], CP1[i][0][3])
@@ -810,26 +811,28 @@ class File1(CalculateBezier, Calculations) :
                             if y1 == y2:
                                 print(000000000000000000000000)
                                 if CP1[i][0][0][0] >= CP1[j][-1][0][0] and CP1[i][0][3][0] >= CP1[j][-1][3][0] and CP1[i][0][0][0] <= CP1[j][-1][3][0] and CP1[j][0][0][1] == CP1[i][0][3][1]:
-                                    print("111111111111", i)
+                                    print("111111111111", i, len(CP1), len(Bezier1))
                                     print(CP1[i])
                                     print(CP1[j][-1])
+                                    print(Bezier1[j][-1])
                                     CP1[j][-1][3] = CP1[i][0][3]
                                     CP1[j][-1][2] = CP1[i][0][3]
-                                    Beziertmp = CalculateBezier.BezierFormulaComp(CP1[j][-1])
                                     print(CP1[j][-1])
                                     Bezier1[j][-1] = CalculateBezier.BezierFormulaComp(CP1[j][-1])
+                                    print(Bezier1[j][-1])
+
                                     Bezier1.pop(i)
                                     CP1.pop(i)
-
+                                    print(len(CP1), len(Bezier1))
                                 elif CP1[i][0][0][1] >= CP1[j][-1][0][1] and CP1[i][0][3][1] >= CP1[j][-1][3][1] and CP1[i][0][0][1] <= CP1[j][-1][3][1] and CP1[j][0][0][0] == CP1[i][0][3][0]:
-                                    print(222222222222, i)
+                                    print(222222222222, i, len(CP1), len(Bezier1))
                                     print(CP1[i])
                                     CP1[j][-1][3][0] = CP1[i][0][3]
                                     CP1[j][-1][2][1] = CP1[i][0][3]
                                     Bezier1[j][-1] = CalculateBezier.BezierFormulaComp(CP1[j][-1])
                                     Bezier1.pop(i)
                                     CP1.pop(i)
-
+                                    print(len(CP1), len(Bezier1))
                             print(CP1[j])
                     i += 1
 
@@ -865,6 +868,38 @@ class File2(CalculateBezier, Rotate) :
 #            if points[med][1] < P[1] :
 #                return File2.SortInsertPos(P, points, med + 1, r)
 
+    #Binary sort (for abscissa)
+    def SortInsertPosLines(P, CP, l, r): #l - left side, r - right side of segment in array
+        if r == -1 :
+            return 0
+        if l == r :
+            print(l, CP)
+            print(CP[l])
+            if CP[l][0][0][0] == P[0] and CP[l][0][0][0] == CP[l][0][1][0] and CP[l][0][0][1] == CP[l][0][1][1] :
+                if CP[l][0][0][1] == P[1] :
+                    return -1
+                if CP[l][0][0][1] < P[1] :
+                    return l + 1
+                return l
+            if CP[l][0][0][0] < P[0] :
+                return l + 1
+            return l
+        med = l + (r - l) // 2
+        print(med)
+        print(CP[med][0][0])
+        print(CP[med][0][0][0])
+        print(P[0])
+        if CP[med][0][0][0] > P[0] :
+            return File2.SortInsertPosLines(P, CP, l, med)
+        if CP[med][0][0][0] < P[0] :
+            return File2.SortInsertPosLines(P, CP, med + 1, r)
+        if CP[med][0][0][0] == P[0] :
+            if CP[med][0][0][1] == P[1] :
+                return -1 #there already exists identical point, therefore we will not save it
+            if CP[med][0][0][1] > P[1] :
+                return File2.SortInsertPosLines(P, CP, l, med)
+            if CP[med][0][0][1] < P[1] :
+                return File2.SortInsertPosLines(P, CP, med + 1, r)
 
     def GetValue(text, pos, length) :
         value = ''
@@ -1289,8 +1324,14 @@ class File2(CalculateBezier, Rotate) :
     #            if attrib == 'pathLength' :
 
             pos += 1
-
-        CP = ([(x1, y1), (x1, y1), (x2, y2), (x2, y2)])
+        if x1 < x2 :
+            CP = ([(x1, y1), (x1, y1), (x2, y2), (x2, y2)])
+        elif x1 > x2 :
+            CP = ([(x2, y2), (x2, y2), (x1, y1), (x1, y1)])
+        elif y1 < y2 :
+            CP = ([(x1, y1), (x1, y1), (x2, y2), (x2, y2)])
+        else :
+            CP = ([(x2, y2), (x2, y2), (x1, y1), (x1, y1)])
 
         return CP
 
@@ -1407,7 +1448,7 @@ class File2(CalculateBezier, Rotate) :
         pointTags = []
         line = []
         CP2 = []
-        CPtmp = []
+        linesSum = -1
 
         for textLine in textLines :
             lenText = len(textLine)
@@ -1432,14 +1473,17 @@ class File2(CalculateBezier, Rotate) :
                     if element == 'ellipse' :
                         File2.WriteEllipse(textLine, i + 1, lenText)
                     if element == 'line' :
-                        CPtmp1 = File2.WriteLine(textLine, i + 1, lenText)
+                        CPtmp = File2.WriteLine(textLine, i + 1, lenText)
                         try :
-                            CPtmp.index(CPtmp1)
+                            CP2.index([CPtmp])
                         except :
-                            CPtmp.append(CPtmp1)
+                            print(CPtmp, linesSum)
+                            pos = File2.SortInsertPosLines(CPtmp[0], CP2, 0, linesSum)
+                            CP2.insert(pos, [CPtmp])
+                            linesSum += 1
                     if element == 'path' :
-                        CPtmp1, polylinePoints = File2.WritePath(textLine, i + 1, lenText, polylinePoints)
-                        CPtmp.append(CPtmp1)
+                        CPtmp, polylinePoints = File2.WritePath(textLine, i + 1, lenText, polylinePoints)
+                        CP2.append([CPtmp])
                     if element == 'polygon' :
                         File2.WritePolygon(textLine, i + 1, lenText)
                     if element == 'polyline' :
@@ -1447,35 +1491,56 @@ class File2(CalculateBezier, Rotate) :
                     if element == 'rect' :
                         File2.WriteRect(textLine, i + 1, lenText)
                     break
+        print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+        print(CP2)
 
-        CPgr = [[]]
-        lenCPtmp = len(CPtmp)
-        for i in range(lenCPtmp) :
-            if len(CPtmp[i]) == 0 :
-                if len(CPgr[0]) != 0 and i == lenCPtmp - 1 :
-                    CP2.extend(CPgr)
-                    CPgr.clear()
-                continue
-            if len(CPgr[0]) == 0 :
-                CPgr[0].append(CPtmp[i])
-                if i == lenCPtmp - 1 :
-                    CP2.extend(CPgr)
-                continue
-            a1 = Calculations.LineSlope(CPgr[0][-1][-2], CPgr[0][-1][-1])
-            a2 = Calculations.LineSlope(CPtmp[i][0], CPtmp[i][1])
-            if round(a1, 3) == round(a2, 3) and CPgr[0][-1][-1][0] == CPtmp[i][0][0] and CPgr[0][-1][-1][1] == CPtmp[i][0][1] :
-                CPgr[0].append(CPtmp[i])
-            else :
-                CP2.extend(CPgr)
-                CPgr.clear()
-                CPgr.append([])
-                CPgr[0].append(CPtmp[i])
-            if i == lenCPtmp - 1 :
-                CP2.extend(CPgr)
+        #compress lines, so there are not seperate line segments
+        lenCP2 = len(CP2)
+        j = 0
+        while j < len(CP2) :
+            print("------------------------------------------------------------------------------")
+            print(CP2[j])
+            if (CP2[j][0][0][0] == CP2[j][0][1][0] and CP2[j][0][0][1] == CP2[j][0][1][1] and CP2[j][0][2][0] == CP2[j][0][3][0] and CP2[j][0][2][1] == CP2[j][0][3][1]) :
+                #length of CP1 is changing as lines are being compressed
+                i = j + 1
+                while i < len(CP2) :
+                    if len(CP2[i]) == 1 and (CP2[i][0][0][0] == CP2[i][0][1][0] and CP2[i][0][0][1] == CP2[i][0][1][1] and CP2[i][0][2][0] == CP2[i][0][3][0] and CP2[i][0][2][1] == CP2[i][0][3][1]) :
+                        #this is yet not in use, if statement - kreiss to not work
+                        a1 = Calculations.LineSlope(CP2[j][-1][0], CP2[j][-1][3])
+                        a3 = Calculations.LineSlope(CP2[i][0][0], CP2[i][0][3])
+                        if a1 == a3 :
+                            t = Symbol('t')
+                            a1Fx, a1Fy = CalculateBezier.ParamLineFormula(CP2[j][-1][0], CP2[j][-1][3])
+                            a3Fx, a3Fy = CalculateBezier.ParamLineFormula(CP2[i][0][0], CP2[i][0][3])
+                            y1 = a1Fx.subs(t, 0)
+                            y2 = a1Fx.subs(t, 0)
+                            if y1 == y2:
+                                print(000000000000000000000000)
+                                if CP2[i][0][0][0] >= CP2[j][-1][0][0] and CP2[i][0][3][0] >= CP2[j][-1][3][0] and CP2[i][0][0][0] <= CP2[j][-1][3][0] and CP2[j][0][0][1] == CP2[i][0][3][1]:
+                                    print("111111111111", i, len(CP2), len(Bezier1))
+                                    print(CP2[i])
+                                    print(CP2[j][-1])
+                                    CP2[j][-1][3] = CP2[i][0][3]
+                                    CP2[j][-1][2] = CP2[i][0][3]
+                                    print(CP2[j][-1])
+
+                                    CP2.pop(i)
+                                    print(len(CP2))
+                                elif CP2[i][0][0][1] >= CP2[j][-1][0][1] and CP2[i][0][3][1] >= CP2[j][-1][3][1] and CP2[i][0][0][1] <= CP2[j][-1][3][1] and CP2[j][0][0][0] == CP2[i][0][3][0]:
+                                    print(222222222222, i, len(CP2), len(Bezier1))
+                                    print(CP2[i])
+                                    CP2[j][-1][3][0] = CP2[i][0][3]
+                                    CP2[j][-1][2][1] = CP2[i][0][3]
+                                    CP2.pop(i)
+                                    print(len(CP2))
+                            print(CP2[j])
+                    i += 1
+
+            j += 1
 
         for i in polylinePoints :
             Beziertmp, CPtmp = CalculateBezier.CompositeBezier(i, 2)
-            CP2.append(CPtmp)
+            CP2.append([CPtmp])
 
         points, line, CP2 = Rotate.Transformation(points1, points, line1, line, CP1, CP2)
 
