@@ -13,8 +13,8 @@ import subprocess
 import os
 
 
-fileName1 = 'D:/prog/dxfFiles/svarki/PG31-25_002.dxf'
-fileName2 = 'D:/prog/svgFiles/svarki/PGS31-25.svg'
+fileName1 = 'D:/prog/dxfFiles/svarki/SG160-14_002.dxf'
+fileName2 = 'D:/prog/svgFiles/svarki/SG160-14.svg'
 
 #subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "D:/prog/file2.eps","--export-ignore-filters", "--export-ps-level=3"])
 #subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-polyaslines", "D:/prog/file2.eps", "D:/prog/file2.dxf"])
@@ -290,8 +290,10 @@ class CalculateBezier(Calculations) :
         t = Symbol('t')
         Bx = 0
         By = 0
+        print("-----------------------------------")
         for i in range(4):
             BinC = Calculations.BinCoef(3, i)
+            print(C[i])
             Bxtmp = BinC*(1 - t)**(i)*t**(4 - i - 1)*(C[i][0])    #Create Bx(t) formula
             Bx = Bxtmp + Bx
             Bytmp = BinC*(1 - t)**(i)*t**(4 - i - 1)*(C[i][1])  #Create Bx(t) formula
@@ -711,17 +713,17 @@ class File1(CalculateBezier, Calculations) :
                 P1 = entity.start
                 P2 = entity.end
                 if P1[0] < P2[0] :
-                    lineStart1 = P1
-                    lineEnd1 = P2
+                    lineStart1 = [P1[0], P1[1]]
+                    lineEnd1 = [P2[0], P2[1]]
                 elif P1[0] > P2[0] :
-                    lineStart1 = P2
-                    lineEnd1 = P1
+                    lineStart1 = [P2[0], P2[1]]
+                    lineEnd1 = [P1[0], P1[1]]
                 elif P1[1] < P2[1] :
-                    lineStart1 = P1
-                    lineEnd1 = P2
+                    lineStart1 = [P1[0], P1[1]]
+                    lineEnd1 = [P2[0], P2[1]]
                 else :
-                    lineStart1 = P2
-                    lineEnd1 = P1
+                    lineStart1 = [P2[0], P2[1]]
+                    lineEnd1 = [P1[0], P1[1]]
 
                 linetmp = []
                 try:
@@ -826,9 +828,10 @@ class File1(CalculateBezier, Calculations) :
                                     print(len(CP1), len(Bezier1))
                                 elif CP1[i][0][0][1] >= CP1[j][-1][0][1] and CP1[i][0][3][1] >= CP1[j][-1][3][1] and CP1[i][0][0][1] <= CP1[j][-1][3][1] and CP1[j][0][0][0] == CP1[i][0][3][0]:
                                     print(222222222222, i, len(CP1), len(Bezier1))
-                                    print(CP1[i])
-                                    CP1[j][-1][3][0] = CP1[i][0][3]
-                                    CP1[j][-1][2][1] = CP1[i][0][3]
+                                    print(CP1[i][0][3])
+                                    CP1[j][-1][3] = CP1[i][0][3]
+                                    CP1[j][-1][2] = CP1[i][0][3]
+                                    print(CP1[j][-1])
                                     Bezier1[j][-1] = CalculateBezier.BezierFormulaComp(CP1[j][-1])
                                     Bezier1.pop(i)
                                     CP1.pop(i)
@@ -911,12 +914,24 @@ class File2(CalculateBezier, Rotate) :
                     i += 1
                 value = float(value)
                 return value, i
+    def GetStrValue(text, pos, length) :
+        value = ''
+        for i in range(pos, length + 1) :
+            if text[i] == '\"' :
+                i += 1
+                while text[i] != '\"' :
+                    value += text[i]
+                    i += 1
+                return value, i
 
     def GetControlPoints(text, pos, length) :
         CP = []
         polyPoints = []
         value = ''
         while pos < length :
+            print("*", pos, text[pos])
+            if text[pos] == '\"' :
+                return CP, polyPoints, pos
             #get first point in path
             if text[pos] == 'M' :
                 pos += 1
@@ -931,7 +946,6 @@ class File2(CalculateBezier, Rotate) :
                 while text[pos] != ' ' and text[pos] != '\"' :
                     value += text[pos]
                     pos += 1
-                pos += 1
                 value = float(value)
                 P1y = value
                 value = ''
@@ -990,6 +1004,7 @@ class File2(CalculateBezier, Rotate) :
                 value = float(value)
                 CP[3].append(value)
                 value = ''
+                pos -= 1
 
             #get parameters of an ellipse (first parameter is under 'M')
             if text[pos] == 'A' :
@@ -1059,11 +1074,11 @@ class File2(CalculateBezier, Rotate) :
                     while text[pos] != ' ' and text[pos] != '\"' and text[pos] != '.':
                         valuetmp += text[pos]
                         pos += 1
+                pos -= 1
 
                 value = float(value)
                 valuetmp = float(valuetmp)
                 P2y = value + valuetmp
-                pos += 1
                 value = ''
 
                 #for now its given that every ellipse will be a circle
@@ -1182,6 +1197,7 @@ class File2(CalculateBezier, Rotate) :
     def WriteCircle(text, pos, length, points, polylinePoints) :
         cx = -1
         cy = +1
+        isShape = False
         while pos < length :
             attrib = ''
             if text[pos] == '/' :
@@ -1206,6 +1222,12 @@ class File2(CalculateBezier, Rotate) :
                 if attrib == 'pathLength' :
 
                     continue
+                if attrib == 'stroke' :
+                    color, pos = File2.GetStrValue(text, pos, length)
+                    if color == '#000000' :
+                        isShape = True
+                    else :
+                        return points, polylinePoints, isShape
             pos += 1
         if r <= 0.1 :
             if cx == -1 :
@@ -1221,7 +1243,7 @@ class File2(CalculateBezier, Rotate) :
                 polylinePoints.append((x, y))
                 t += 20
 
-        return points, polylinePoints
+        return points, polylinePoints, isShape
 
                 #these we will add later
                 #clip-path, clip-rule, color, color-interpolation, color-rendering, cursor, display, fill, fill-opacity, fill-rule, filter, mask, opacity, pointer-events, shape-rendering, stroke, stroke-dasharray, stroke-dashoffset, stroke-linecap, stroke-linejoin, stroke-miterlimit, stroke-opacity, stroke-width, transform, vector-effect, visibility
@@ -1270,6 +1292,7 @@ class File2(CalculateBezier, Rotate) :
         return pointTags
 
     def WriteEllipse(text, pos, length) :
+        isShape = False
         while pos < length :
             attrib = ''
             if text[pos] == '/' :
@@ -1297,9 +1320,15 @@ class File2(CalculateBezier, Rotate) :
                 if attrib == 'pathLength' :
 
                     continue
+                if attrib == 'stroke' :
+                    isShape = True
+                else :
+                    return
             pos += 1
+        return
 
     def WriteLine(text, pos, length) :
+        isShape = False
         while pos < length :
             attrib = ''
             if text[pos] == '/' :
@@ -1322,43 +1351,64 @@ class File2(CalculateBezier, Rotate) :
                 if attrib == 'y2' :
                     y2, pos = File2.GetValue(text, pos + 1, length)
     #            if attrib == 'pathLength' :
-
+                if attrib == 'stroke' :
+                    color, pos = File2.GetStrValue(text, pos + 1, length)
+                    if color == '#000000' :
+                        isShape = True
+                    else :
+                        return [], isShape
             pos += 1
         if x1 < x2 :
-            CP = ([(x1, y1), (x1, y1), (x2, y2), (x2, y2)])
+            CP = ([[x1, y1], [x1, y1], [x2, y2], [x2, y2]])
         elif x1 > x2 :
-            CP = ([(x2, y2), (x2, y2), (x1, y1), (x1, y1)])
+            CP = ([[x2, y2], [x2, y2], [x1, y1], [x1, y1]])
         elif y1 < y2 :
-            CP = ([(x1, y1), (x1, y1), (x2, y2), (x2, y2)])
+            CP = ([[x1, y1], [x1, y1], [x2, y2], [x2, y2]])
         else :
-            CP = ([(x2, y2), (x2, y2), (x1, y1), (x1, y1)])
+            CP = ([[x2, y2], [x2, y2], [x1, y1], [x1, y1]])
 
-        return CP
+        return CP, isShape
 
     def WritePath(text, pos, length, polylinePoints) :
+        print("((((((((((((((((((((((((((((((((((((((((((((((()))))))))))))))))))))))))))))))))))))))))))))))")
+        isShape = False
         while pos < length :
+            print(pos, text[pos])
             attrib = ''
             if text[pos] == '/' :
                 break
             if text[pos] == ' ' :
                 pos += 1
+                print(text[pos])
                 while text[pos] != '=' and pos < length :
+                    print("^^^^^^^^^^^^")
                     if text[pos] == '>' :
                         break
+
                     attrib += text[pos]
                     pos += 1
+                    print(attrib)
+                print(attrib)
                 if attrib == 'd' :
-                    CPoints, polyPoints, pos = File2.GetControlPoints(text, pos, length)
+                    CPoints, polyPoints, pos = File2.GetControlPoints(text, pos + 2, length)
                     continue
                 if attrib == 'pathLength' :
 
                     continue
+                if attrib == 'stroke' :
+                    print("*")
+                    color, pos = File2.GetStrValue(text, pos + 1, length)
+                    print(color)
+                    if color == '#000000' :
+                        isShape = True
+                    else :
+                        return CPoints, polylinePoints, isShape
             pos += 1
 
         if len(polyPoints) > 0:
             polylinePoints.append(polyPoints)
 
-        return CPoints, polylinePoints
+        return CPoints, polylinePoints, isShape
 
 
     def WritePolygon(text, pos, length) :
@@ -1467,13 +1517,15 @@ class File2(CalculateBezier, Rotate) :
                     if element == '/text' :
                         group = False
                     if element == 'circle' :
-                        points, polylinePoints = File2.WriteCircle(textLine, i + 1, lenText, points, polylinePoints)
+                        points, polylinePoints, isShape = File2.WriteCircle(textLine, i + 1, lenText, points, polylinePoints)
                     if element == 'text' :
                         pointTags = File2.WriteText(textLine, i + 1, lenText, pointTags, group)
                     if element == 'ellipse' :
                         File2.WriteEllipse(textLine, i + 1, lenText)
                     if element == 'line' :
-                        CPtmp = File2.WriteLine(textLine, i + 1, lenText)
+                        CPtmp, isShape = File2.WriteLine(textLine, i + 1, lenText)
+                        if isShape == False :
+                            continue
                         try :
                             CP2.index([CPtmp])
                         except :
@@ -1482,7 +1534,9 @@ class File2(CalculateBezier, Rotate) :
                             CP2.insert(pos, [CPtmp])
                             linesSum += 1
                     if element == 'path' :
-                        CPtmp, polylinePoints = File2.WritePath(textLine, i + 1, lenText, polylinePoints)
+                        CPtmp, polylinePoints, isShape = File2.WritePath(textLine, i + 1, lenText, polylinePoints)
+                        if isShape == False :
+                            continue
                         CP2.append([CPtmp])
                     if element == 'polygon' :
                         File2.WritePolygon(textLine, i + 1, lenText)
@@ -1529,8 +1583,8 @@ class File2(CalculateBezier, Rotate) :
                                 elif CP2[i][0][0][1] >= CP2[j][-1][0][1] and CP2[i][0][3][1] >= CP2[j][-1][3][1] and CP2[i][0][0][1] <= CP2[j][-1][3][1] and CP2[j][0][0][0] == CP2[i][0][3][0]:
                                     print(222222222222, i, len(CP2), len(Bezier1))
                                     print(CP2[i])
-                                    CP2[j][-1][3][0] = CP2[i][0][3]
-                                    CP2[j][-1][2][1] = CP2[i][0][3]
+                                    CP2[j][-1][3] = CP2[i][0][3]
+                                    CP2[j][-1][2] = CP2[i][0][3]
                                     CP2.pop(i)
                                     print(len(CP2))
                             print(CP2[j])
@@ -1601,12 +1655,12 @@ points2, line2, Bezier2, CP2 = file2.CalculateObjects()
 t = Symbol('t')
 for i in CP1 :
     Plot.PlotBezier(i, firstFileCol, 0.2, 'solid')
-    plt.plot(i[0][0][0], i[0][0][1], 'o', color = firstFileCol, alpha = 0.5)
-    plt.plot(i[-1][3][0], i[-1][3][1], 'o', color = firstFileCol, alpha = 0.5)
+    plt.plot(i[0][0][0], i[0][0][1], 'o', color = firstFileCol, alpha = 0.7)
+    plt.plot(i[-1][3][0], i[-1][3][1], 'o', color = firstFileCol, alpha = 0.7)
 for i in CP2 :
     Plot.PlotBezier(i, secondFileCol, 0.2, 'solid')
-    plt.plot(i[0][0][0], i[0][0][1], 'o', color = secondFileCol, alpha = 0.5)
-    plt.plot(i[-1][3][0], i[-1][3][1], 'o', color = secondFileCol, alpha = 0.5)
+    plt.plot(i[0][0][0], i[0][0][1], 'o', color = secondFileCol, alpha = 0.7)
+    plt.plot(i[-1][3][0], i[-1][3][1], 'o', color = secondFileCol, alpha = 0.7)
 
 
 
@@ -1815,7 +1869,7 @@ class BezierCalculations(Calculations) :
         t = Symbol('t')
         lenB1 = len(B1)
         lenB2 = len(B2)
-        max = 0
+        max = -1
         P = []
         P.append([])
         P.append([])
@@ -1835,6 +1889,17 @@ class BezierCalculations(Calculations) :
         for i in range(lenB2) :
             cnt = 0
             param = 0
+            x2 = B2[i][0].subs(t, param)
+            y2 = B2[i][1].subs(t, param)
+            endpointDist = Calculations.PointDist((B1[0][0].subs(t, 0), B1[0][1].subs(t, 0)), (x2, y2))
+            if endpointDist > max :
+                P11[0] = B1[0][0].subs(t, 0)
+                P11[1] = B1[0][1].subs(t, 0)
+                P22[0] = x2
+                P22[1] = y2
+                max = endpointDist
+            print((B1[0][0].subs(t, 0), B1[0][1].subs(t, 0)), (x2, y2))
+            print(endpointDist, max)
             while param <= 1 :
                 cnt += 0.1
                 x2 = B2[i][0].subs(t, param)
@@ -1852,7 +1917,7 @@ class BezierCalculations(Calculations) :
                     if dist > min:
                         nr -= 1
                         break
-                if min >= max :
+                if min > max and min != 10000 :
                     max = min
                     P11[0] = P1[0]
                     P11[1] = P1[1]
@@ -1860,6 +1925,8 @@ class BezierCalculations(Calculations) :
                     P22[1] = P2[1]
 
                 param = cnt
+
+
             #print(P1, P2)
             #plt.plot([P1[0], P2[0]], [P1[1], P2[1]])
         #plt.plot([P1[0], P2[0]], [P1[1], P2[1]], color = '#667281')
@@ -1997,12 +2064,12 @@ class ObjectComparison(BezierCalculations, Calculations) :
         for i in range(lenLine) :
             if (P == line[i][0] or P == line[i][1]) :
                 if fnr == 1 :
-    #                plt.plot((line[i][0][0], line[i][1][0]), (line[i][0][1], line[i][1][1]), color = '#055583', linestyle = 'dotted')
+    #                plt.plot((line[i][0][0], line[i][1][0]), (line[i][0][1], line[i][1][1]), color = '#055583', linestyle = (0, (3, 5, 1, 5)))
                     if uniqueObjectsLine1.get(i) == None and ObjectsLine1.get(i) == None:
                         length = Calculations.PointDist(line[i][0], line[i][1])
                         uniqueObjectsLine1[i] = length
                 if fnr == 2 :
-    #                plt.plot((line[i][0][0], line[i][1][0]), (line[i][0][1], line[i][1][1]), color = '#bc0e13', linestyle = 'dotted')
+    #                plt.plot((line[i][0][0], line[i][1][0]), (line[i][0][1], line[i][1][1]), color = '#bc0e13', linestyle = (0, (3, 5, 1, 5)))
                     if uniqueObjectsLine2.get(i) == None and ObjectsLine2.get(i) == None :
                         length = Calculations.PointDist(line[i][0], line[i][1])
                         uniqueObjectsLine2[i] = length
@@ -2015,12 +2082,12 @@ class ObjectComparison(BezierCalculations, Calculations) :
         for i in range(lenCP) :
             if (P == (CP[i][0][0][0], CP[i][0][0][1]) or (P == (CP[i][-1][3][0], CP[i][-1][3][1]))) :
                 if fnr == 1 :
-    #                PlotBezier(CP[i], '#055583', 1, 'dotted')
+    #                PlotBezier(CP[i], '#055583', 1, (0, (3, 5, 1, 5)))
                     if uniqueObjectsBezier1.get(i) == None and ObjectsBezier1.get(i) == None and equalObjectsBezier.get(i) == None :
                         length = BezierCalculations.CompositeBezierLen(CP[i])
                         uniqueObjectsBezier1[i] = length
                 if fnr == 2 :
-    #                PlotBezier(CP[i], '#bc0e13', 1, 'dotted')
+    #                PlotBezier(CP[i], '#bc0e13', 1, (0, (3, 5, 1, 5)))
                     if uniqueObjectsBezier2.get(i) == None and ObjectsBezier2.get(i) == None and equalObjectsBezier2.get(i) == None :
                         length = BezierCalculations.CompositeBezierLen(CP[i])
                         uniqueObjectsBezier2[i] = length
@@ -2209,7 +2276,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
                 if abs(angle) > 5 :
                     #if (i == lenLine1 - 1 and not j in ObjectsLine2 and not j in equalObjectsLine2) :
                         #visited = DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min)
-    #                    plt.plot([line2[j][0][0], line2[j][1][0]], [line2[j][0][1], line2[j][1][1]], color = '#6c9f92', linestyle = 'dotted')
+    #                    plt.plot([line2[j][0][0], line2[j][1][0]], [line2[j][0][1], line2[j][1][1]], color = '#6c9f92', linestyle = (0, (3, 5, 1, 5)))
                         #if uniqueObjectsLine2.get(j) == None and ObjectsLine2.get(j) == None:
                         #    length = PointDist(line2[j][0], line2[j][1])
                         #    uniqueObjectsLine2[j] = length
@@ -2223,7 +2290,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
                     #if the endpoint distance is larger than 30 then its probably not the respective line
                     if (endDist >= 30 and not j in ObjectsLine2 and not j in equalObjectsLine2 and i == lenLine1 - 1) :
                         visited = ObjectComparison.DiffAllLine(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min)
-    #                    plt.plot([line2[j][0][0], line2[j][1][0]], [line2[j][0][1], line2[j][1][1]], color = '#6c9f92', linestyle = 'dotted')
+    #                    plt.plot([line2[j][0][0], line2[j][1][0]], [line2[j][0][1], line2[j][1][1]], color = '#6c9f92', linestyle = (0, (3, 5, 1, 5)))
                         if uniqueObjectsLine2.get(j) == None and ObjectsLine2.get(j) == None:
                             length = Calculations.PointDist(line2[j][0], line2[j][1])
                             uniqueObjectsLine2[j] = length
@@ -2238,7 +2305,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
                         lineSt2 = lineSt2tmp
                     elif endDist < minEndDist :
                         #if (i == lenLine1 - 1 and not P2Ind in ObjectsLine2 and not P2Ind in equalObjectsLine2) :
-    #                        plt.plot([line2[P2Ind][0][0], line2[P2Ind][1][0]], [line2[P2Ind][0][1], line2[P2Ind][1][1]], color = '#6c9f92', linestyle = 'dotted')
+    #                        plt.plot([line2[P2Ind][0][0], line2[P2Ind][1][0]], [line2[P2Ind][0][1], line2[P2Ind][1][1]], color = '#6c9f92', linestyle = (0, (3, 5, 1, 5)))
                         #    if uniqueObjectsLine2.get(P2Ind) == None and ObjectsLine2.get(P2Ind):
                         #        length = PointDist(line2[P2Ind][0], line2[P2Ind][1])
                         #        uniqueObjectsLine2[P2Ind] = length
@@ -2252,7 +2319,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
             #if there is no respective line in second file then 1. file line is found only in one file -> lets mark it differently
             if (P2Ind == -1 and P1Ind != -1):
                 visited = ObjectComparison.DiffAllLine(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min)
-    #            plt.plot([line1[P1Ind][0][0], line1[P1Ind][1][0]], [line1[P1Ind][0][1], line1[P1Ind][1][1]], color = '#055583', linestyle = 'dotted')
+    #            plt.plot([line1[P1Ind][0][0], line1[P1Ind][1][0]], [line1[P1Ind][0][1], line1[P1Ind][1][1]], color = '#055583', linestyle = (0, (3, 5, 1, 5)))
                 if uniqueObjectsLine1.get(P1Ind) == None and ObjectsLine1.get(P1Ind) == None:
                     length = Calculations.PointDist(line1[P1Ind][0], line1[P2Ind][1])
                     uniqueObjectsLine1[P1Ind] = length
@@ -2551,7 +2618,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
                 if abs(angle) > 30 :
                     #if (i == lenLine1 - 1 and not j in ObjectsBezier2 and not j in equalObjectsBezier2) :
 
-    #                    PlotBezier(CP2[j], '#6c9f92', 1, 'dotted')
+    #                    PlotBezier(CP2[j], '#6c9f92', 1, (0, (3, 5, 1, 5)))
                     #    visited[(Bezier2[j][-lineSt2tmp][0].subs(t, lineSt2tmp), Bezier2[j][-lineSt2tmp][1].subs(t, lineSt2tmp))] = 1
                     #    if not (Bezier2[j][- abs(-lineSt2tmp + 1)][0].subs(t, abs(lineSt2tmp - 1)), Bezier2[j][- abs(-lineSt2tmp + 1)][1].subs(t, abs(lineSt2tmp - 1))) in visited:
                     #        visited[Bezier2[j][- abs(-lineSt2tmp + 1)][0].subs(t, abs(lineSt2tmp - 1)), Bezier2[j][- abs(-lineSt2tmp + 1)][1].subs(t, abs(lineSt2tmp))] = 1
@@ -2563,7 +2630,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
                     endDist = Calculations.PointDist((CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][0], CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][1]), (CP2[j][-((lineSt2tmp + 1) % 2)][((lineSt2tmp + 1) % 2) * 3][0], CP2[j][-((lineSt2tmp + 1) % 2)][((lineSt2tmp + 1) % 2) * 3][1]))
                     if (i == lenLine1 - 1 and not j in ObjectsBezier2 and not j in equalObjectsBezier2 and endDist >= 30) :
                         visited, absMaxDist = ObjectComparison.DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min, absMaxDist)
-    #                    PlotBezier(CP2[j], '#6c9f92', 1, 'dotted')
+    #                    PlotBezier(CP2[j], '#6c9f92', 1, (0, (3, 5, 1, 5)))
                         visited[(CP2[j][-lineSt2tmp][lineSt2tmp * 3][0], CP2[j][-lineSt2tmp][lineSt2tmp * 3][1])] = 1
 
                         if not (CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][0], CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][1]) in visited :
@@ -2580,9 +2647,10 @@ class ObjectComparison(BezierCalculations, Calculations) :
                         print("maxDist")
                         absDist, P1max, P2max = BezierCalculations.MaxBezierDist(Bezier1[i], Bezier2[j])
                         print("maxDist")
+                        print(absDist, P1max, P2max)
                     elif endDist <= minEndDist :
                     #    if (i == lenLine1 - 1 and not P2Ind in ObjectsBezier2 and not P2Ind in equalObjectsBezier2) :
-    #                #        PlotBezier(CP2[P2Ind], '#6c9f92', 1, 'dotted', linewidth = 4)
+    #                #        PlotBezier(CP2[P2Ind], '#6c9f92', 1, (0, (3, 5, 1, 5)), linewidth = 4)
                     #        visited[(Bezier2[P2Ind][-lineSt2][0].subs(t, lineSt2), Bezier2[P2Ind][-lineSt2][1].subs(t, lineSt2))] = 1
                     #        if not (Bezier2[P2Ind][-abs(-lineSt2 + 1)][0].subs(t, abs(lineSt2 - 1)), Bezier2[P2Ind][-abs(-lineSt2 + 1)][1].subs(t, abs(lineSt2 - 1))) :
                     #            visited[(Bezier2[P2Ind][-abs(-lineSt2 + 1)][0].subs(t, abs(lineSt2 - 1)), Bezier2[P2Ind][-abs(-lineSt2 + 1)][1].subs(t, abs(lineSt2 - 1)))] = 1
@@ -2611,9 +2679,10 @@ class ObjectComparison(BezierCalculations, Calculations) :
                             absDist, P1max, P2max = BezierCalculations.MaxBezierDist(Bezier1[i], Bezier2[j])
                             print("maxDist3")
 
+
             if (P2Ind == -1) :
                 visited, absMaxDist = ObjectComparison.DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min, absMaxDist)
-    #            PlotBezier(CP1[i], '#055583', 1, 'dotted')
+    #            PlotBezier(CP1[i], '#055583', 1, (0, (3, 5, 1, 5)))
                 t = Symbol('t')
                 visited[(CP1[i][-lineSt1][lineSt1 * 3][0], CP1[i][-lineSt1][lineSt1 * 3][1])] = 2
                 if not (CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][0], CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][1]) :
@@ -2907,7 +2976,7 @@ for i in range(lenLine1) :
     if i in uniqueObjectsLine1 :
         nr1f += 0.01
         plt.plot([line1[i][0][0], line1[i][1][0]], [line1[i][0][1], line1[i][1][1]],
-            color = firstFileCol, alpha = 0.5, linestyle = 'dotted')
+            color = firstFileCol, alpha = 0.5, linestyle = (0, (3, 5, 1, 5)))
         a = ((line1[i][0][0] + line1[i][1][0]) / 2)
         b = ((line1[i][0][1] + line1[i][1][1]) / 2)
         ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
@@ -2918,7 +2987,7 @@ lenBezier1 = len(Bezier1)
 for i in range(lenBezier1) :
 
     if i in ObjectsBezier1 :
-        Plot.PlotBezier(CP1[i], firstFileCol, 0.5, 'solid')
+        Plot.PlotBezier(CP1[i], firstFileCol, 0.7, 'solid')
         nr1f += 0.01
         pos = int(round(len(Bezier1[i]) / 5))
         a = Bezier1[i][pos][0].subs(t, 0.5)
@@ -2927,7 +2996,7 @@ for i in range(lenBezier1) :
             color = '#00304c', ha = 'center', va = 'center', weight = 'bold')
         print(round(nr1f, 2), ' - ', ObjectsBezier1[i] / 10, 'cm')
     if i in uniqueObjectsBezier1 :
-        Plot.PlotBezier(CP1[i], firstFileCol, 0.5, 'dotted')
+        Plot.PlotBezier(CP1[i], firstFileCol, 0.5, (0, (3, 5, 1, 5)))
         nr1f += 0.01
         pos = int(round(len(Bezier1[i]) / 2))
         a = Bezier1[i][pos][0].subs(t, 0.5)
@@ -2950,7 +3019,7 @@ for i in range(lenLine2) :
     if i in uniqueObjectsLine2 :
         nr2f += 0.01
         plt.plot([line2[i][0][0], line2[i][1][0]], [line2[i][0][1], line2[i][1][1]],
-            color = secondFileCol, alpha = 0.5, linestyle = 'dotted')
+            color = secondFileCol, alpha = 0.5, linestyle = (0, (3, 5, 1, 5)))
         a = ((line2[i][0][0] + line2[i][1][0]) / 2)
         b = ((line2[i][0][1] + line2[i][1][1]) / 2)
         ax.annotate(round(nr2f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
@@ -2972,7 +3041,7 @@ for i in range(lenBezier2) :
             color = '#59080a', ha = 'center', va = 'center', weight = 'bold')
         print(round(nr2f, 2), ' - ', ObjectsBezier2[i] / 10, 'cm')
     if i in uniqueObjectsBezier2 :
-        Plot.PlotBezier(CP2[i], secondFileCol, 0.5, 'dotted')
+        Plot.PlotBezier(CP2[i], secondFileCol, 0.5, (0, (3, 5, 1, 5)))
         nr2f += 0.01
         pos = int(round(len(Bezier2[i]) / 2))
         a = Bezier2[i][pos][0].subs(t, 0.5)
