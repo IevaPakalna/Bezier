@@ -12,8 +12,9 @@ import matplotlib.axes as axes
 import subprocess
 import os
 
-
+#DXF
 fileName1 = 'D:/prog/dxfFiles/svarki/DS123-17_002.dxf'
+#SVG
 fileName2 = 'D:/prog/svgFiles/svarki/DISBALANSA testpiemēri 19-07-16/disbalansa_svarki_DS123-17_19-07-16.svg'
 
 #subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "D:/prog/file2.eps","--export-ignore-filters", "--export-ps-level=3"])
@@ -724,17 +725,17 @@ class File1(CalculateBezier, Calculations) :
                     lineEnd1 = [P1[0], P1[1]]
 
                 linetmp = []
-                try:
-                    CP1.index([[lineStart1, lineStart1, lineEnd1, lineEnd1]])
-                except:
-                    pos = File1.SortInsertPosLines(lineStart1, CP1, 0, linesSum)
-                    if pos == -1 :
-                        pos = linesSum
+#                try:
+#                    CP1.index([[lineStart1, lineStart1, lineEnd1, lineEnd1]])
+#                except:
+                pos = File1.SortInsertPosLines(lineStart1, CP1, 0, linesSum)
+                if pos == -1 :
+                    pos = linesSum
 
-                    Bezier1.insert(pos, [CalculateBezier.BezierFormulaComp([lineStart1, lineStart1, lineEnd1, lineEnd1])])
-                    CP1.insert(pos, [[lineStart1, lineStart1, lineEnd1, lineEnd1]])
+                Bezier1.insert(pos, [CalculateBezier.BezierFormulaComp([lineStart1, lineStart1, lineEnd1, lineEnd1])])
+                CP1.insert(pos, [[lineStart1, lineStart1, lineEnd1, lineEnd1]])
 
-                    linesSum += 1
+                linesSum += 1
 
 
                 x = [lineStart1[0], lineEnd1[0]]
@@ -786,7 +787,8 @@ class File1(CalculateBezier, Calculations) :
 
         linetmp = []
         linetmp.append([])
-
+        print("CP1--------------------------------------------")
+        print(CP1)
         #compress lines, so there are not seperate line segments
         lenCP1 = len(CP1)
         j = 0
@@ -807,18 +809,25 @@ class File1(CalculateBezier, Calculations) :
                             y2 = a1Fx.subs(t, 0)
                             if y1 == y2:
                                 if CP1[i][0][0][0] >= CP1[j][-1][0][0] and CP1[i][0][3][0] >= CP1[j][-1][3][0] and CP1[i][0][0][0] <= CP1[j][-1][3][0] and CP1[j][0][0][1] == CP1[i][0][3][1]:
+                                    if CP1[i][0][0][0] == CP1[j][-1][0][0] and CP1[i][0][3][0] == CP1[j][-1][3][0] and CP1[i][0][0][1] == CP1[j][-1][0][1] and CP1[i][0][3][1] == CP1[j][-1][3][1]:
+                                        i += 1
+                                        continue
                                     CP1[j][-1][3] = CP1[i][0][3]
                                     CP1[j][-1][2] = CP1[i][0][3]
                                     Bezier1[j][-1] = CalculateBezier.BezierFormulaComp(CP1[j][-1])
                                     Bezier1.pop(i)
                                     CP1.pop(i)
-
+                                    i -= 1
                                 elif CP1[i][0][0][1] >= CP1[j][-1][0][1] and CP1[i][0][3][1] >= CP1[j][-1][3][1] and CP1[i][0][0][1] <= CP1[j][-1][3][1] and CP1[j][0][0][0] == CP1[i][0][3][0]:
+                                    if CP1[i][0][0][0] == CP1[j][-1][0][0] and CP1[i][0][3][0] == CP1[j][-1][3][0] and CP1[i][0][0][1] == CP1[j][-1][0][1] and CP1[i][0][3][1] == CP1[j][-1][3][1]:
+                                        i += 1
+                                        continue
                                     CP1[j][-1][3] = CP1[i][0][3]
                                     CP1[j][-1][2] = CP1[i][0][3]
                                     Bezier1[j][-1] = CalculateBezier.BezierFormulaComp(CP1[j][-1])
                                     Bezier1.pop(i)
                                     CP1.pop(i)
+                                    i -= 1
                     i += 1
 
             j += 1
@@ -1477,8 +1486,8 @@ class File2(CalculateBezier, Rotate) :
                         element += textLine[j]
                         i = j
                         j += 1
+                        #<svg>
 
-                    #<svg>
                     if element == 'g':
                         group = True
                     if element == '/text' :
@@ -1493,12 +1502,12 @@ class File2(CalculateBezier, Rotate) :
                         CPtmp, isShape = File2.WriteLine(textLine, i + 1, lenText)
                         if isShape == False :
                             continue
-                        try :
-                            CP2.index([CPtmp])
-                        except :
-                            pos = File2.SortInsertPosLines(CPtmp[0], CP2, 0, linesSum)
-                            CP2.insert(pos, [CPtmp])
-                            linesSum += 1
+#                        try :
+#                            CP2.index([CPtmp])
+#                        except :
+                        pos = File2.SortInsertPosLines(CPtmp[0], CP2, 0, linesSum)
+                        CP2.insert(pos, [CPtmp])
+                        linesSum += 1
                     if element == 'path' :
                         CPtmp, polylinePoints, isShape = File2.WritePath(textLine, i + 1, lenText, polylinePoints)
                         if isShape == False :
@@ -1518,19 +1527,20 @@ class File2(CalculateBezier, Rotate) :
                     if element == 'rect' :
                         File2.WriteRect(textLine, i + 1, lenText)
                     break
+        print("CP2------------------------")
         print(CP2)
         #compress lines, so there are not seperate line segments
         lenCP2 = len(CP2)
         j = 0
         while j < len(CP2) :
-            print("- - - -- - - - -- - - -- - - - - - - - - -- - - - -")
-            print(CP2[j])
-            print(j, len(CP2))
             #length of CP1 is changing as lines are being compressed
             i = j + 1
+            print("------------")
+            print(CP2[j])
             while i < len(CP2) :
+                print("``````````````````")
+                print(CP2[j])
                 print(CP2[i])
-                print(".", i, len(CP2))
                 a1 = Calculations.PointDist(CP2[i][0][0], CP2[i][0][1])
                 a2 = Calculations.PointDist(CP2[i][0][1], CP2[i][0][2])
                 a3 = Calculations.PointDist(CP2[i][0][2], CP2[i][0][3])
@@ -1538,34 +1548,43 @@ class File2(CalculateBezier, Rotate) :
                 a4 = Calculations.PointDist(CP2[j][-1][0], CP2[j][-1][1])
                 a5 = Calculations.PointDist(CP2[j][-1][1], CP2[j][-1][2])
                 a6 = Calculations.PointDist(CP2[j][-1][2], CP2[j][-1][3])
-                print(a4, a5, a6, )
-                print((CP2[i][0][0][0] == CP2[i][0][1][0] and CP2[i][0][0][1] == CP2[i][0][1][1] and CP2[i][0][2][0] == CP2[i][0][3][0] and CP2[i][0][2][1] == CP2[i][0][3][1]) and (((a1 == 0 and a2 == 0) or (a2 == 0 and a3 == 0) or (a1 == 0 and a3 == 0)) and ((a4 == 0 and a5 == 0) or (a5 == 0 and a6 == 0) or (a4 == 0 and a6 == 0))))
-                if (CP2[i][0][0][0] == CP2[i][0][1][0] and CP2[i][0][0][1] == CP2[i][0][1][1] and CP2[i][0][2][0] == CP2[i][0][3][0] and CP2[i][0][2][1] == CP2[i][0][3][1]) and (((a1 == 0 and a2 == 0) or (a2 == 0 and a3 == 0)) and ((a4 == 0 and a5 == 0) or (a5 == 0 and a6 == 0))) :
-                    print(CP2[j])
+                if (((a1 == 0 and a2 == 0) or (a2 == 0 and a3 == 0) or (a1 == 0 and a3 == 0)) and ((a4 == 0 and a5 == 0) or (a5 == 0 and a6 == 0) or (a4 == 0 and a6 == 0))) :
+                    print("Is Line")
                     a1 = Calculations.LineSlope(CP2[j][-1][0], CP2[j][-1][3])
                     a3 = Calculations.LineSlope(CP2[i][0][0], CP2[i][0][3])
                     if a1 == a3 :
+                        print(1111111111111)
                         t = Symbol('t')
                         a1Fx, a1Fy = CalculateBezier.ParamLineFormula(CP2[j][-1][0], CP2[j][-1][3])
                         a3Fx, a3Fy = CalculateBezier.ParamLineFormula(CP2[i][0][0], CP2[i][0][3])
                         y1 = a1Fx.subs(t, 0)
                         y2 = a1Fx.subs(t, 0)
                         if y1 == y2:
-                            if CP2[i][0][0][0] >= CP2[j][-1][0][0] and CP2[i][0][3][0] >= CP2[j][-1][3][0] and CP2[i][0][0][0] <= CP2[j][-1][3][0] and CP2[j][0][0][1] == CP2[i][0][3][1]:
+                            print(2222222222222222)
+                            if CP2[i][0][0][0] > CP2[j][-1][0][0] and CP2[i][0][3][0] > CP2[j][-1][3][0] and CP2[i][0][0][0] <= CP2[j][-1][3][0] and CP2[j][0][0][1] == CP2[i][0][3][1] :
+                                print("A1")
+                                if CP2[i][0][0][0] == CP2[j][-1][0][0] and CP2[i][0][3][0] == CP2[j][-1][3][0] and CP2[i][0][0][1] == CP2[j][-1][0][1] and CP2[i][0][3][1] == CP2[j][-1][3][1] :
+                                    i += 1
+                                    continue
                                 CP2[j][-1][3] = CP2[i][0][3]
                                 CP2[j][-1][2] = CP2[i][0][3]
                                 CP2.pop(i)
-                            elif CP2[i][0][0][1] >= CP2[j][-1][0][1] and CP2[i][0][3][1] >= CP2[j][-1][3][1] and CP2[i][0][0][1] <= CP2[j][-1][3][1] and CP2[j][0][0][0] == CP2[i][0][3][0]:
+                                i -= 1
+                                print("B")
+                            elif CP2[i][0][0][1] > CP2[j][-1][0][1] and CP2[i][0][3][1] > CP2[j][-1][3][1] and CP2[i][0][0][1] <= CP2[j][-1][3][1] and CP2[j][-1][0][0] == CP2[i][0][3][0] :
+                                print("A2")
+                                if CP2[i][0][0][0] == CP2[j][-1][0][0] and CP2[i][0][3][0] == CP2[j][-1][3][0] and CP2[i][0][0][1] == CP2[j][-1][0][1] and CP2[i][0][3][1] == CP2[j][0][3][1] :
+                                    i += 1
+                                    continue
                                 CP2[j][-1][3] = CP2[i][0][3]
                                 CP2[j][-1][2] = CP2[i][0][3]
                                 CP2.pop(i)
-
+                                i -= 1
+                                print("B")
+                            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", CP2[j])
                 else :
-                    print(CP2[i])
+                    print("Not Line")
                     t = Symbol('t')
-                    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                    print(CP2[j])
-                    print(CP2[i])
                     dist1 = Calculations.PointDist(CP2[j][-1][0], CP2[j][-1][1])
                     dist2 = Calculations.PointDist(CP2[j][-1][1], CP2[j][-1][2])
                     dist3 = Calculations.PointDist(CP2[j][-1][2], CP2[j][-1][3])
@@ -1643,25 +1662,20 @@ class File2(CalculateBezier, Rotate) :
                         a4 = round(Calculations.LineSlope(CP2[i][0][0], CP2[i][0][3]), 3)
                         a4Fx, a4Fy = CalculateBezier.ParamLineFormula(CP2[i][0][0], CP2[i][0][3])
 
-                    print(a1, a2, a3, a4)
                     if a1 == a3 or a1 == a4 or a2 == a3 or a2 == a4 :
                         y1 = a1Fx.subs(t, 0)
                         y2 = a2Fx.subs(t, 0)
                         y3 = a3Fx.subs(t, 0)
                         y4 = a4Fx.subs(t, 0)
                         if y1 == y3 or y1 == y4 or y2 == y3 or y2 == y4 :
-                            print("A")
                             if round(P41[0], 1) == round(P21[0], 1) and round(P41[1], 1) == round(P21[1], 1) and ((P42[0] >= P41[0] and P42[1] >= P41[1] and P21[1] >= P22[1] and P21[1] >= P22[1]) or (P42[0] <= P41[0] and P42[1] <= P41[1] and P21[1] <= P22[1] and P21[1] <= P22[1])) :
-                                print("B2")
                                 if CP2[j][-1][3][0] < CP2[i][-1][3][0] :
                                     CP2[j].reverse()
                                     for k in CP2[j]:
                                         k.reverse()
-                                    print(CP2[j])
                                     CP2[j].extend(CP2[i])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C1", CP2[j])
                                 elif CP2[i][-1][3][0] < CP2[j][-1][3][0] :
                                     CP2[i].reverse()
                                     for k in CP2[i]:
@@ -1669,7 +1683,6 @@ class File2(CalculateBezier, Rotate) :
                                     CP2[j].insert(0, CP2[i][0])
                                     CP2.pop(i)
                                     i -=1
-                                    print("C2", CP2[j])
                                 elif CP2[i][-1][3][1] < CP2[j][-1][3][1] :
                                     CP2[i].reverse()
                                     for k in CP2[i]:
@@ -1677,7 +1690,6 @@ class File2(CalculateBezier, Rotate) :
                                     CP2[j].insert(0, CP2[i][0])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C3", CP2[j])
                                 else :
                                     CP2[j].reverse()
                                     for k in CP2[j]:
@@ -1685,64 +1697,48 @@ class File2(CalculateBezier, Rotate) :
                                     CP2[j].extend(CP2[i])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C4", CP2[j])
                             elif round(P41[0], 1) == round(P12[0], 1) and round(P41[1], 1) == round(P12[1], 1) and ((P42[0] >= P41[0] and P42[1] >= P41[1] and P12[1] >= P11[1] and P12[1] >= P11[1]) or (P42[0] <= P41[0] and P42[1] <= P41[1] and P12[1] <= P11[1] and P12[1] <= P11[1])) :
-                                print("B2")
                                 if CP2[j][0][0][0] < CP2[i][-1][3][0] :
-                                    print(CP2[j])
                                     CP2[j].extend(CP2[i])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C1", CP2[j])
                                 elif CP2[i][-1][3][0] < CP2[j][0][0][0] :
                                     CP2[j].insert(0, CP2[i][0])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C2", CP2[j])
                                 elif CP2[i][-1][3][1] < CP2[j][0][0][1] :
                                     CP2[j].insert(0, CP2[i][0])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C3", CP2[j])
                                 else :
                                     CP2[j].extend(CP2[i])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C4", CP2[j])
                             elif round(P32[0], 1) == round(P21[0], 1) and round(P32[1], 1) == round(P21[1], 1) and ((P31[0] >= P32[0] and P31[1] >= P32[1] and P21[1] >= P22[1] and P21[1] >= P22[1]) or (P31[0] <= P32[0] and P31[1] <= P32[1] and P21[1] <= P22[1] and P21[1] <= P22[1])) :
-                                print("B3")
                                 if CP2[j][-1][3][0] < CP2[i][0][0][0] :
-                                    print(CP2[j])
                                     CP2[j].extend(CP2[i])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C1", CP2[j])
                                 elif CP2[i][0][0][0] < CP2[j][-1][3][0] :
                                     CP2[j].insert(0, CP2[i][0])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C2", CP2[j])
                                 elif CP2[i][0][0][1] < CP2[j][-1][3][1] :
                                     CP2[j].insert(0, CP2[i][0])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C3", CP2[j])
                                 else :
                                     CP2[j].extend(CP2[i])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C4", CP2[j])
                             elif round(P32[0], 1) == round(P12[0], 1) and round(P32[1], 1) == round(P12[1], 1) and ((P31[0] >= P32[0] and P31[1] >= P32[1] and P12[1] >= P11[1] and P12[1] >= P22[1]) or (P31[0] <= P32[0] and P31[1] <= P32[1] and P12[1] <= P11[1] and P12[1] <= P11[1])) :
-                                print("B2")
                                 if CP2[j][0][0][0] < CP2[i][0][0][0] :
                                     CP2[j].reverse()
                                     for k in CP2[j]:
                                         k.reverse()
-                                    print(CP2[j])
                                     CP2[j].extend(CP2[i])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C1", CP2[j])
                                 elif CP2[i][0][0][0] < CP2[j][0][0][0] :
                                     CP2[i].reverse()
                                     for k in CP2[i]:
@@ -1750,7 +1746,6 @@ class File2(CalculateBezier, Rotate) :
                                     CP2[j].insert(0, CP2[i][0])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C2", CP2[j])
                                 elif CP2[i][0][0][1] < CP2[j][0][0][1] :
                                     CP2[i].reverse()
                                     for k in CP2[i]:
@@ -1758,7 +1753,6 @@ class File2(CalculateBezier, Rotate) :
                                     CP2[j].insert(0, CP2[i][0])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C3", CP2[j])
                                 else :
                                     CP2[j].reverse()
                                     for k in CP2[j]:
@@ -1766,7 +1760,6 @@ class File2(CalculateBezier, Rotate) :
                                     CP2[j].extend(CP2[i])
                                     CP2.pop(i)
                                     i -= 1
-                                    print("C4", CP2[j])
 
                 i += 1
 
@@ -2904,7 +2897,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
     #            PlotBezier(CP1[i], '#055583', 1, (0, (3, 5, 1, 5)))
                 t = Symbol('t')
                 print("visited4: ", (CP1[i][-lineSt1][lineSt1 * 3][0], CP1[i][-lineSt1][lineSt1 * 3][1]))
-                visited[(CP1[i][-lineSt1][lineSt1 * 3][0], CP1[i][-lineSt1][lineSt1 * 3][1])] = 2
+    #            visited[(CP1[i][-lineSt1][lineSt1 * 3][0], CP1[i][-lineSt1][lineSt1 * 3][1])] = 2
                 if not (CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][0], CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][1]) :
                     visited[(CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][0], CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][1])] = 1
                 if uniqueObjectsBezier1.get(i) == None and ObjectsBezier1.get(i) == None :
@@ -2953,8 +2946,6 @@ class ObjectComparison(BezierCalculations, Calculations) :
                 #ObjectComparison.LeastSquare(Bezier1[i], int1, lineSt1, Bezier2[P2Ind], int2, lineSt2, CP1[i], CP2[P2Ind])
                 #print("leastSquare")
     #            BezierDiff(Bezier1[i], int1, lineSt1, Bezier2[P2Ind], int2, lineSt2, CP1, CP2)
-        if P1Ind != -1 :
-            visited, absMaxDist = ObjectComparison.DiffAllBezier(CP1[P1Ind][], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min, absMaxDist)
         visited[P2] = 1
         print("visited1: ", P1)
         visited[P1] = 2
