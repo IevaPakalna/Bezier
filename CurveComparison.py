@@ -11,11 +11,16 @@ import matplotlib.pyplot as plt
 import matplotlib.axes as axes
 import subprocess
 import os
+import sys
 
 #DXF
-fileName1 = 'D:/prog/dxfFiles/svarki/DS123-17_002.dxf'
+fileName1 = sys.argv[1]
+#fileName1 = str(input("Enter DXF file path:   "))
+#fileName1 = 'D:/prog/svgFiles/torss/SIEVIETES_TORSS__AR__KOEF.svgSheet.ii.svg'
 #SVG
-fileName2 = 'D:/prog/svgFiles/svarki/DISBALANSA testpiemēri 19-07-16/disbalansa_svarki_DS123-17_19-07-16.svg'
+fileName2 = sys.argv[2]
+#fileName2 = str(input("Enter SVG file path:   "))
+#fileName2 = 'D:/prog/svgFiles/torss/SIEVIETES_TORSS__AR__KOEF.svgSheet.iii.svg'
 
 #subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "D:/prog/file2.eps","--export-ignore-filters", "--export-ps-level=3"])
 #subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-polyaslines", "D:/prog/file2.eps", "D:/prog/file2.dxf"])
@@ -24,16 +29,16 @@ fileName2 = 'D:/prog/svgFiles/svarki/DISBALANSA testpiemēri 19-07-16/disbalansa
 
 #Filenames should be written in the following two lines, as shown in example:
 #   dxf1(2) = dxfgrabber.readfile("filename")
-dxf1 = dxfgrabber.readfile(fileName1)
+#dxf1 = dxfgrabber.readfile(fileName1)
 #dxf2 = dxfgrabber.readfile(fileName2)
 
 
-firstFileCol = '#20456d'
+firstFileCol = '#000ec7'
 secondFileCol = '#bc0e13'
 
 #Graph formatting
 def MyForm(x, p):
-    return x / 10
+    return x/10
 
 plt.rcParams['xtick.bottom'] = plt.rcParams['xtick.labelbottom'] = False
 plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
@@ -504,68 +509,68 @@ class Rotate(Calculations) :
         return P11, P12, max1, P21, P22, max2
 
 
-    def Transformation(points1, points2, line1, line2, CP1, CP2) :
-        P111, P112, dist11, P121, P122, dist12 = Rotate.FindFrame(CP1)
-        P211, P212, dist21, P221, P222, dist22 = Rotate.FindFrame(CP2)
-
-        #find left vertical edge of frame in file 1
-        if P111[0] < P112[0] and P111[1] > P112[1] :
-            P11 = P111
-            if P121[1] < P122[1] :
-                P12 = P121
-            else :
-                P12 = P122
-        elif P112[0] < P111[0] and P112[1] > P111[1] :
-            P11 = P112
-            if P121[1] < P122[1] :
-                P12 = P121
-            else :
-                P12 = P122
-        elif P121[0] < P122[0] and P121[1] > P122[1] :
-            P11 = P121
-            if P111[1] < P112[1] :
-                P12 = P111
-            else :
-                P12 = P112
-        elif P122[0] < P121[0] and P122[1] > P121[1] :
-            P11 = P122
-            if P121[1] < P122[1] :
-                P12 = P111
-            else :
-                P12 = P112
-
-        #find respective left vertical edge of frame in file 2
-        if P211[0] < P212[0] and P211[1] < P212[1] :
-            P21 = P211
-            if P221[1] > P222[1] :
-                P22 = P221
-            else :
-                P22 = P222
-        elif P212[0] < P211[0] and P212[1] < P211[1] :
-            P21 = P212
-            if P221[1] > P222[1] :
-                P22 = P221
-            else :
-                P22 = P222
-        elif P221[0] < P222[0] and P221[1] < P222[1] :
-            P21 = P221
-            if P211[1] > P212[1] :
-                P22 = P211
-            else :
-                P22 = P212
-        elif P222[0] < P221[0] and P222[1] < P221[1] :
-            P21 = P222
-            if P211[1] > P212[1] :
-                P22 = P211
-            else :
-                P22 = P212
-
-        #a1 = Calculations.LineSlope(P11, P12)
-        #a2 = Calculations.LineSlope(P21, P22)
-        #alpha = np.degrees(np.arctan((a2 - a1) / (1 + a1 * a2)))
-        #dist1tmp = Calculations.PointDist(P11, P12)
-        #dist2tmp = Calculations.PointDist(P21, P22)
-        #unit = dist1tmp / dist2tmp
+    def Transformation(points2, line2, CP2) :
+#        P111, P112, dist11, P121, P122, dist12 = Rotate.FindFrame(CP1)
+#        P211, P212, dist21, P221, P222, dist22 = Rotate.FindFrame(CP2)
+#
+#        #find left vertical edge of frame in file 1
+#        if P111[0] < P112[0] and P111[1] > P112[1] :
+#            P11 = P111
+#            if P121[1] < P122[1] :
+#                P12 = P121
+#            else :
+#                P12 = P122
+#        elif P112[0] < P111[0] and P112[1] > P111[1] :
+#            P11 = P112
+#            if P121[1] < P122[1] :
+#                P12 = P121
+#            else :
+#                P12 = P122
+#        elif P121[0] < P122[0] and P121[1] > P122[1] :
+#            P11 = P121
+#            if P111[1] < P112[1] :
+#                P12 = P111
+#            else :
+#                P12 = P112
+#        elif P122[0] < P121[0] and P122[1] > P121[1] :
+#            P11 = P122
+#            if P121[1] < P122[1] :
+#                P12 = P111
+#            else :
+#                P12 = P112
+#
+#        #find respective left vertical edge of frame in file 2
+#        if P211[0] < P212[0] and P211[1] < P212[1] :
+#            P21 = P211
+#            if P221[1] > P222[1] :
+#                P22 = P221
+#            else :
+#                P22 = P222
+#        elif P212[0] < P211[0] and P212[1] < P211[1] :
+#            P21 = P212
+#            if P221[1] > P222[1] :
+#                P22 = P221
+#            else :
+#                P22 = P222
+#        elif P221[0] < P222[0] and P221[1] < P222[1] :
+#            P21 = P221
+#            if P211[1] > P212[1] :
+#                P22 = P211
+#            else :
+#                P22 = P212
+#        elif P222[0] < P221[0] and P222[1] < P221[1] :
+#            P21 = P222
+#            if P211[1] > P212[1] :
+#                P22 = P211
+#            else :
+#                P22 = P212
+#
+#        #a1 = Calculations.LineSlope(P11, P12)
+#        #a2 = Calculations.LineSlope(P21, P22)
+#        #alpha = np.degrees(np.arctan((a2 - a1) / (1 + a1 * a2)))
+#        #dist1tmp = Calculations.PointDist(P11, P12)
+#        #dist2tmp = Calculations.PointDist(P21, P22)
+#        #unit = dist1tmp / dist2tmp
         unit = 10
         points = []
         lenPoints2 = len(points2)
@@ -675,6 +680,43 @@ class File1(CalculateBezier, Calculations) :
             if CP[med][0][0][1] < P[1] :
                 return File1.SortInsertPosLines(P, CP, med + 1, r)
 
+    def Lines(P1, P2, Bezier1, CP1, linesSum) :
+        if P1[0] < P2[0] :
+            lineStart1 = [P1[0], P1[1]]
+            lineEnd1 = [P2[0], P2[1]]
+        elif P1[0] > P2[0] :
+            lineStart1 = [P2[0], P2[1]]
+            lineEnd1 = [P1[0], P1[1]]
+        elif P1[1] < P2[1] :
+            lineStart1 = [P1[0], P1[1]]
+            lineEnd1 = [P2[0], P2[1]]
+        else :
+            lineStart1 = [P2[0], P2[1]]
+            lineEnd1 = [P1[0], P1[1]]
+
+        linetmp = []
+#                try:
+#                    CP1.index([[lineStart1, lineStart1, lineEnd1, lineEnd1]])
+#                except:
+        pos = File1.SortInsertPosLines(lineStart1, CP1, 0, linesSum)
+        if pos == -1 :
+            pos = linesSum
+
+        Bezier1.insert(pos, [CalculateBezier.BezierFormulaComp([lineStart1, lineStart1, lineEnd1, lineEnd1])])
+        CP1.insert(pos, [[lineStart1, lineStart1, lineEnd1, lineEnd1]])
+
+        linesSum += 1
+
+
+        x = [lineStart1[0], lineEnd1[0]]
+        y = [lineStart1[1], lineEnd1[1]]
+
+        plt.plot(x, y, color = firstFileCol, alpha = 0.2)
+        plt.plot(lineStart1[0], lineStart1[1], 'o', ms = 1, color = firstFileCol, alpha = 0.5)
+        plt.plot(lineEnd1[0], lineEnd1[1], 'o', ms = 1, color = firstFileCol, alpha = 0.5)
+
+        return Bezier1, CP1, linesSum
+
     def CalculateObjects(file1) :
         type1 = [entity.dxftype for entity in file1.file.entities]
         output1 = [entity for entity in file1.file.entities]
@@ -706,44 +748,12 @@ class File1(CalculateBezier, Calculations) :
                     points1.insert(pos, [point1[0], point1[1]])
                     x = [point1[0]]
                     y = [point1[1]]
-                    plt.plot(x, y, 'o', color = '#055583', alpha = 0.65)
+                    plt.plot(x, y, 'o', ms = 1,  color = firstFileCol, alpha = 0.65)
             #Line
             if entity.dxftype == 'LINE':
                 P1 = entity.start
                 P2 = entity.end
-                if P1[0] < P2[0] :
-                    lineStart1 = [P1[0], P1[1]]
-                    lineEnd1 = [P2[0], P2[1]]
-                elif P1[0] > P2[0] :
-                    lineStart1 = [P2[0], P2[1]]
-                    lineEnd1 = [P1[0], P1[1]]
-                elif P1[1] < P2[1] :
-                    lineStart1 = [P1[0], P1[1]]
-                    lineEnd1 = [P2[0], P2[1]]
-                else :
-                    lineStart1 = [P2[0], P2[1]]
-                    lineEnd1 = [P1[0], P1[1]]
-
-                linetmp = []
-#                try:
-#                    CP1.index([[lineStart1, lineStart1, lineEnd1, lineEnd1]])
-#                except:
-                pos = File1.SortInsertPosLines(lineStart1, CP1, 0, linesSum)
-                if pos == -1 :
-                    pos = linesSum
-
-                Bezier1.insert(pos, [CalculateBezier.BezierFormulaComp([lineStart1, lineStart1, lineEnd1, lineEnd1])])
-                CP1.insert(pos, [[lineStart1, lineStart1, lineEnd1, lineEnd1]])
-
-                linesSum += 1
-
-
-                x = [lineStart1[0], lineEnd1[0]]
-                y = [lineStart1[1], lineEnd1[1]]
-
-                plt.plot(x, y, color = '#055583', alpha = 0.2)
-                plt.plot(lineStart1[0], lineStart1[1], 'o',color = '#055583', alpha = 0.5)
-                plt.plot(lineEnd1[0], lineEnd1[1], 'o',color = '#055583', alpha = 0.5)
+                Bezier1, CP1, linesSum = File1.Lines(P1, P2, Bezier1, CP1, linesSum)
 
             #Circle
             if entity.dxftype == 'CIRCLE':
@@ -769,6 +779,11 @@ class File1(CalculateBezier, Calculations) :
             #Polyline
             if entity.dxftype == 'POLYLINE':
                 PolylinePoints1 = entity.points
+                if len(PolylinePoints1) == 2 :
+                    Bezier1, CP1, linesSum = File1.Lines(PolylinePoints1[0], PolylinePoints1[1], Bezier1, CP1, linesSum)
+                    continue
+                if len(PolylinePoints1) == 3 :
+                    PolylinePoints1.append(PolylinePoints[-1])
                 Beziertmp, CP = CalculateBezier.CompositeBezier(PolylinePoints1, 1)
                 Bezier1.append(Beziertmp)
                 CP1.append(CP)
@@ -787,8 +802,6 @@ class File1(CalculateBezier, Calculations) :
 
         linetmp = []
         linetmp.append([])
-        print("CP1--------------------------------------------")
-        print(CP1)
         #compress lines, so there are not seperate line segments
         lenCP1 = len(CP1)
         j = 0
@@ -908,7 +921,7 @@ class File2(CalculateBezier, Rotate) :
                     value += text[i]
                     i += 1
                 return value, i
-
+#returns control points or polylinePoints based on which way the line is defined in given file
     def GetControlPoints(text, pos, length) :
         CP = []
         polyPoints = []
@@ -1045,8 +1058,10 @@ class File2(CalculateBezier, Rotate) :
                         pos += 1
                 value = float(value)
                 valuetmp = float(valuetmp)
-                P2x = value + valuetmp
-
+                if value < 0 :
+                    P2x = value - valuetmp
+                else :
+                    P2x = value + valuetmp
                 pos += 1
                 value = ''
                 while text[pos] != ' ' and text[pos] != '\"' and text[pos] != '.' :
@@ -1059,12 +1074,13 @@ class File2(CalculateBezier, Rotate) :
                         valuetmp += text[pos]
                         pos += 1
                 pos -= 1
-
                 value = float(value)
                 valuetmp = float(valuetmp)
-                P2y = value + valuetmp
+                if value < 0 :
+                    P2y = value - valuetmp
+                else :
+                    P2y = value + valuetmp
                 value = ''
-
                 #for now its given that every ellipse will be a circle
 
                 #let 'draw' radical axis, then calculate two possible central Points
@@ -1148,32 +1164,32 @@ class File2(CalculateBezier, Rotate) :
                     xprim = rx * np.cos(t) + c[0]
                     yprim = rx * np.sin(t) + c[1]
                     while not (xprim - 0.1 < Px and Px < xprim + 0.1) or not (yprim - 0.1 < Py and Py < yprim + 0.1) :
-                        t = (t + 0.01) % (2 * np.pi)
+                        t = (t + 0.05) % (2 * np.pi)
                         xprim = rx * np.cos(t) + c[0]
                         yprim = rx * np.sin(t) + c[1]
 
-                    t = (t + 0.01) % (2 * np.pi)
+                    t = (t + 0.05) % (2 * np.pi)
                     while not (xprim - 0.1 < Pxmax and Pxmax < xprim + 0.1) or not (yprim - 0.1 < Pymax and Pymax < yprim + 0.1) :
                         xprim = rx * np.cos(t) + c[0]
                         yprim = rx * np.sin(t) + c[1]
                         polyPoints.append((xprim, yprim))
                         #plt.plot(xprim, yprim, 'o', color = '#8c5667')
-                        t = (t + 0.01) % (2 * np.pi)
+                        t = (t + 0.05) % (2 * np.pi)
                 else :
                     t = 0
                     xprim = rx * np.cos(t) + c[0]
                     yprim = rx * np.sin(t) + c[1]
                     while not (xprim - 0.1 < Pxmax and Pxmax < xprim + 0.1) or not (yprim - 0.1 < Pymax and Pymax < yprim + 0.1) :
-                        t = (t + 0.01) % (2 * np.pi)
+                        t = (t + 0.05) % (2 * np.pi)
                         xprim = rx * np.cos(t) + c[0]
                         yprim = rx * np.sin(t) + c[1]
-                    t = (t + 0.01) % (2 * np.pi)
+                    t = (t + 0.05) % (2 * np.pi)
                     while not (xprim - 0.1 < Px and Px < xprim + 0.1) or not (yprim - 0.1 < Py and Py < yprim + 0.1) :
                         xprim = rx * np.cos(t) + c[0]
                         yprim = rx * np.sin(t) + c[1]
                         polyPoints.append((xprim, yprim))
                         #plt.plot(xprim, yprim, 'o', color = '#976aa5')
-                        t = (t + 0.01) % (2 * np.pi)
+                        t = (t + 0.05) % (2 * np.pi)
             pos += 1
         return CP, polyPoints, pos
 
@@ -1512,14 +1528,15 @@ class File2(CalculateBezier, Rotate) :
                         CPtmp, polylinePoints, isShape = File2.WritePath(textLine, i + 1, lenText, polylinePoints)
                         if isShape == False :
                             continue
-                        #for sorting we need to make sure Bezier is formed in the right way, meaning that the segments are corresponding
-                        if CPtmp[0][0] > CPtmp[3][0] :
-                            CPtmp.reverse()
-                        elif CPtmp[0][1] > CPtmp[3][1] :
-                            CPtmp.reverse()
-                        pos = File2.SortInsertPosLines(CPtmp[0], CP2, 0, linesSum)
-                        CP2.append([CPtmp])
-                        linesSum += 1
+                        if len(CPtmp) != 0 :
+                            #for sorting we need to make sure Bezier is formed in the right way, meaning that the segments are corresponding
+                            if CPtmp[0][0] > CPtmp[3][0] :
+                                CPtmp.reverse()
+                            elif CPtmp[0][1] > CPtmp[3][1] :
+                                CPtmp.reverse()
+                            pos = File2.SortInsertPosLines(CPtmp[0], CP2, 0, linesSum)
+                            CP2.append([CPtmp])
+                            linesSum += 1
                     if element == 'polygon' :
                         File2.WritePolygon(textLine, i + 1, lenText)
                     if element == 'polyline' :
@@ -1527,20 +1544,13 @@ class File2(CalculateBezier, Rotate) :
                     if element == 'rect' :
                         File2.WriteRect(textLine, i + 1, lenText)
                     break
-        print("CP2------------------------")
-        print(CP2)
         #compress lines, so there are not seperate line segments
         lenCP2 = len(CP2)
         j = 0
         while j < len(CP2) :
             #length of CP1 is changing as lines are being compressed
             i = j + 1
-            print("------------")
-            print(CP2[j])
             while i < len(CP2) :
-                print("``````````````````")
-                print(CP2[j])
-                print(CP2[i])
                 a1 = Calculations.PointDist(CP2[i][0][0], CP2[i][0][1])
                 a2 = Calculations.PointDist(CP2[i][0][1], CP2[i][0][2])
                 a3 = Calculations.PointDist(CP2[i][0][2], CP2[i][0][3])
@@ -1549,20 +1559,16 @@ class File2(CalculateBezier, Rotate) :
                 a5 = Calculations.PointDist(CP2[j][-1][1], CP2[j][-1][2])
                 a6 = Calculations.PointDist(CP2[j][-1][2], CP2[j][-1][3])
                 if (((a1 == 0 and a2 == 0) or (a2 == 0 and a3 == 0) or (a1 == 0 and a3 == 0)) and ((a4 == 0 and a5 == 0) or (a5 == 0 and a6 == 0) or (a4 == 0 and a6 == 0))) :
-                    print("Is Line")
                     a1 = Calculations.LineSlope(CP2[j][-1][0], CP2[j][-1][3])
                     a3 = Calculations.LineSlope(CP2[i][0][0], CP2[i][0][3])
                     if a1 == a3 :
-                        print(1111111111111)
                         t = Symbol('t')
                         a1Fx, a1Fy = CalculateBezier.ParamLineFormula(CP2[j][-1][0], CP2[j][-1][3])
                         a3Fx, a3Fy = CalculateBezier.ParamLineFormula(CP2[i][0][0], CP2[i][0][3])
                         y1 = a1Fx.subs(t, 0)
                         y2 = a1Fx.subs(t, 0)
                         if y1 == y2:
-                            print(2222222222222222)
                             if CP2[i][0][0][0] > CP2[j][-1][0][0] and CP2[i][0][3][0] > CP2[j][-1][3][0] and CP2[i][0][0][0] <= CP2[j][-1][3][0] and CP2[j][0][0][1] == CP2[i][0][3][1] :
-                                print("A1")
                                 if CP2[i][0][0][0] == CP2[j][-1][0][0] and CP2[i][0][3][0] == CP2[j][-1][3][0] and CP2[i][0][0][1] == CP2[j][-1][0][1] and CP2[i][0][3][1] == CP2[j][-1][3][1] :
                                     i += 1
                                     continue
@@ -1570,9 +1576,7 @@ class File2(CalculateBezier, Rotate) :
                                 CP2[j][-1][2] = CP2[i][0][3]
                                 CP2.pop(i)
                                 i -= 1
-                                print("B")
                             elif CP2[i][0][0][1] > CP2[j][-1][0][1] and CP2[i][0][3][1] > CP2[j][-1][3][1] and CP2[i][0][0][1] <= CP2[j][-1][3][1] and CP2[j][-1][0][0] == CP2[i][0][3][0] :
-                                print("A2")
                                 if CP2[i][0][0][0] == CP2[j][-1][0][0] and CP2[i][0][3][0] == CP2[j][-1][3][0] and CP2[i][0][0][1] == CP2[j][-1][0][1] and CP2[i][0][3][1] == CP2[j][0][3][1] :
                                     i += 1
                                     continue
@@ -1580,10 +1584,7 @@ class File2(CalculateBezier, Rotate) :
                                 CP2[j][-1][2] = CP2[i][0][3]
                                 CP2.pop(i)
                                 i -= 1
-                                print("B")
-                            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", CP2[j])
                 else :
-                    print("Not Line")
                     t = Symbol('t')
                     dist1 = Calculations.PointDist(CP2[j][-1][0], CP2[j][-1][1])
                     dist2 = Calculations.PointDist(CP2[j][-1][1], CP2[j][-1][2])
@@ -1764,12 +1765,11 @@ class File2(CalculateBezier, Rotate) :
                 i += 1
 
             j += 1
-
         for i in polylinePoints :
             Beziertmp, CPtmp = CalculateBezier.CompositeBezier(i, 2)
-            CP2.append([CPtmp])
+            CP2.append(CPtmp)
 
-        points, line, CP2 = Rotate.Transformation(points1, points, line1, line, CP1, CP2)
+        points, line, CP2 = Rotate.Transformation(points, line, CP2)
 
         Bezier = []
         Beziertmp = [[]]
@@ -1786,7 +1786,6 @@ class File2(CalculateBezier, Rotate) :
 #            Beziertmp, CPtmp = CalculateBezier.CompositeBezier(i, 2)
 #            CP2.append(CPtmp)
 #            Bezier.append(Beziertmp)
-
         return points, line, Bezier, CP2
 
 
@@ -1813,27 +1812,31 @@ class Plot(Calculations) :
         return
 
 
-print("111111111111111111111111111")
-file1 = File1(fileName1)
-print("222222222222222222222222222")
-points1, line1, Bezier1, CP1 = file1.CalculateObjects()
-print("333333333333333333333333333")
-file2 = File2(fileName2)
-print("444444444444444444444444444")
-points2, line2, Bezier2, CP2 = file2.CalculateObjects()
+if fileName1[-3] == 'd' and fileName1[-2] == 'x' and fileName1[-1] == 'f' :
+    file1 = File1(fileName1)
+    points1, line1, Bezier1, CP1 = file1.CalculateObjects()
+else :
+    file1 = File2(fileName1)
+    points1, line1, Bezier1, CP1 = file1.CalculateObjects()
 
+if fileName2[-3] == 'd' and fileName2[-2] == 'x' and fileName2[-1] == 'f' :
+    file2 = File1(fileName2)
+    points2, line2, Bezier2, CP2 = file2.CalculateObjects()
+else :
+    file2 = File2(fileName2)
+    points2, line2, Bezier2, CP2 = file2.CalculateObjects()
 
 
 
 t = Symbol('t')
 for i in CP1 :
     Plot.PlotBezier(i, firstFileCol, 0.2, 'solid')
-    plt.plot(i[0][0][0], i[0][0][1], 'o', color = firstFileCol, alpha = 0.7)
-    plt.plot(i[-1][3][0], i[-1][3][1], 'o', color = firstFileCol, alpha = 0.7)
+    plt.plot(i[0][0][0], i[0][0][1], 'o', ms = 1, color = firstFileCol, alpha = 0.7)
+    plt.plot(i[-1][3][0], i[-1][3][1], 'o', ms = 1, color = firstFileCol, alpha = 0.7)
 for i in CP2 :
     Plot.PlotBezier(i, secondFileCol, 0.2, 'solid')
-    plt.plot(i[0][0][0], i[0][0][1], 'o', color = secondFileCol, alpha = 0.7)
-    plt.plot(i[-1][3][0], i[-1][3][1], 'o', color = secondFileCol, alpha = 0.7)
+    plt.plot(i[0][0][0], i[0][0][1], 'o', ms = 1, color = secondFileCol, alpha = 0.7)
+    plt.plot(i[-1][3][0], i[-1][3][1], 'o', ms = 1, color = secondFileCol, alpha = 0.7)
 
 
 
@@ -2097,6 +2100,7 @@ class BezierCalculations(Calculations) :
 
 
         for i in range(lenB2) :
+            print(i)
             cnt = 0
             param = 0
             while param <= 1 :
@@ -2119,7 +2123,7 @@ class BezierCalculations(Calculations) :
                         break
 
                 if min > max and min != 10000 :
-                    print("*")
+
                     max = min
                     P11[0] = P1[0]
                     P11[1] = P1[1]
@@ -2298,7 +2302,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
                     visited[(CP[i][0][0][0], CP[i][0][0][1])] = 1
                 if not (CP[i][-1][3][0], CP[i][-1][3][1]) in visited :
                     visited[(CP[i][-1][3][0], CP[i][-1][3][1])] = 1
-        print("visited2: ", P)
+
         visited[P] = 2
         return visited
 
@@ -2677,14 +2681,11 @@ class ObjectComparison(BezierCalculations, Calculations) :
             return visited
 
         visited[P2] = 1
-        print("visited3: ", P1)
         visited[P1] = 2
         return visited
 
 
     def DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, minDist, absMaxDist) :
-        print(visited)
-        print("P1 :    ",P1)
         #Check if given point isn`t already visited
         if P1 in visited :
             if visited[P1] == 2 :
@@ -2716,7 +2717,6 @@ class ObjectComparison(BezierCalculations, Calculations) :
         elif min22 != -1 :
             P2 = P22
             min = min22
-        print("P2:  ", P2)
         #if the point is too far, then probably that is not the respective point
         if min >= 30 :
             print("min")
@@ -2732,9 +2732,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
         P2rndy = round(P2[1], 3)
         lenCP1 = len(CP1)
         lenCP2 = len(CP2)
-        print(lenCP1)
         for i in range(lenCP1) :
-            print("----------------------------------------------------------")
             P1Ind = -1
             lineSt1 = -1
             t = Symbol('t')
@@ -2742,7 +2740,6 @@ class ObjectComparison(BezierCalculations, Calculations) :
             P1tmprndy0 = round(CP1[i][0][0][1], 3)
             P1tmprndx1 = round(CP1[i][-1][3][0], 3)
             P1tmprndy1 = round(CP1[i][-1][3][1], 3)
-            print(CP1[i][0], CP1[i][-1])
             if P1rndx == P1tmprndx0 and P1rndy == P1tmprndy0 :
                 if not (CP1[i][0][0][0], CP1[i][0][0][1]) in visited :
                     if not (CP1[i][-1][3][0], CP1[i][-1][3][1]) in visited :
@@ -2787,10 +2784,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
             P2Ind = -1
             minEndDist = -1
 
-            print(CP1[i])
-            print("________________________________________________________")
             for j in range(lenCP2):
-                print(CP2[j])
                 lineSt2tmp = -1
                 P2tmprndx0 = round(CP2[j][0][0][0], 3)
                 P2tmprndy0 = round(CP2[j][0][0][1], 3)
@@ -2823,7 +2817,6 @@ class ObjectComparison(BezierCalculations, Calculations) :
                 #This is the case wher the other line end has been "fulli visited" or visited[] = 2
                 if lineSt2tmp == -1 :
                     continue
-                print("P2Ind: ", j)
                 a2 = Calculations.LineSlope((CP2[j][0][0][0], CP2[j][0][0][1]), (CP2[j][-1][3][0], CP2[j][-1][3][1]))
                 angtmp = round((a2 - a1) / (1 + abs(a1 * a2)), 5)
                 angle = np.degrees(np.arctan(angtmp))
@@ -2859,7 +2852,6 @@ class ObjectComparison(BezierCalculations, Calculations) :
                         print("maxDist")
                         absDist, P1max, P2max = BezierCalculations.MaxBezierDist(Bezier1[i], Bezier2[j], lineSt1, lineSt2)
                         print("maxDist")
-                        print(absDist, P1max, P2max)
                     elif endDist <= minEndDist :
                     #    if (i == lenLine1 - 1 and not P2Ind in ObjectsBezier2 and not P2Ind in equalObjectsBezier2) :
     #                #        PlotBezier(CP2[P2Ind], '#6c9f92', 1, (0, (3, 5, 1, 5)), linewidth = 4)
@@ -2896,7 +2888,6 @@ class ObjectComparison(BezierCalculations, Calculations) :
                 visited, absMaxDist = ObjectComparison.DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min, absMaxDist)
     #            PlotBezier(CP1[i], '#055583', 1, (0, (3, 5, 1, 5)))
                 t = Symbol('t')
-                print("visited4: ", (CP1[i][-lineSt1][lineSt1 * 3][0], CP1[i][-lineSt1][lineSt1 * 3][1]))
     #            visited[(CP1[i][-lineSt1][lineSt1 * 3][0], CP1[i][-lineSt1][lineSt1 * 3][1])] = 2
                 if not (CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][0], CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][1]) :
                     visited[(CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][0], CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][1])] = 1
@@ -2947,7 +2938,6 @@ class ObjectComparison(BezierCalculations, Calculations) :
                 #print("leastSquare")
     #            BezierDiff(Bezier1[i], int1, lineSt1, Bezier2[P2Ind], int2, lineSt2, CP1, CP2)
         visited[P2] = 1
-        print("visited1: ", P1)
         visited[P1] = 2
         return visited, absMaxDist
 
@@ -3082,65 +3072,7 @@ def CircleDiff(CP, r, circle1, circle2, visited) :
 #    if not centerPoints1 in visited :
 #        visited = CircleDiff(i, circle1, circle2, visited)
 
-print("equal Line")
-print(equalObjectsLine)
-print()
 
-print("equal Bezier")
-len0 = len(equalObjectsBezier)
-for i in range(len(CP1)):
-    if i in equalObjectsBezier :
-        print(i, CP1[i])
-        print()
-print()
-
-print("line1")
-print(ObjectsLine1)
-print()
-
-print("line2")
-print(ObjectsLine2)
-print()
-
-print("UniqueLine1")
-print(uniqueObjectsLine1)
-print()
-
-print("Unique Line2")
-print(uniqueObjectsLine2)
-print()
-
-print("Bezier1")
-len5 = len(ObjectsBezier1)
-for i in range(len(CP1)) :
-    if i in ObjectsBezier1 :
-        print(i, CP1[i])
-        print()
-print()
-
-print("Bezier2")
-len6 = len(ObjectsBezier2)
-for i in range(len(CP2)) :
-    if i in ObjectsBezier2 :
-        print(i, CP2[i])
-        print()
-print()
-
-print("UniqueBezier1")
-len7 = len(uniqueObjectsBezier1)
-for i in range(len(CP1)):
-    if i in uniqueObjectsBezier1 :
-        print(i, CP1[i])
-        print()
-print()
-
-print("Unique Bezier2")
-len8 = len(uniqueObjectsBezier2)
-for i in range(len(CP2)):
-    if i in uniqueObjectsBezier2 :
-        print(i, CP2[i])
-        print()
-print()
 
 
 #new color of the first file : #20456d
@@ -3158,21 +3090,21 @@ for i in range(lenLine1) :
     if i in equalObjectsLine :
         nreqf += 0.01
         plt.plot([line1[i][0][0], line1[i][1][0]], [line1[i][0][1], line1[i][1][1]],
-            color = '#717577', alpha = 0.5)
+            color = '#60635d', alpha = 0.3)
         a = ((line1[i][0][0] + line1[i][1][0]) / 2)
         b = ((line1[i][0][1] + line1[i][1][1]) / 2)
         ax.annotate(round(nreqf, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#3d4042', ha = 'center', va = 'center', weight = 'bold')
+            color = '#60635d', ha = 'center', va = 'center', weight = 'bold')
         print(round(nreqf, 2), ' - ', equalObjectsLine[i] / 10, 'cm')
 for i in range(lenBezier1) :
     if i in equalObjectsBezier :
-        Plot.PlotBezier(CP1[i], '#717577', 0.5, 'solid')
+        Plot.PlotBezier(CP1[i], '#60635d', 0.3, 'solid')
         nreqf += 0.01
         pos = int(round(len(Bezier1[i]) / 5))
         a = Bezier1[i][pos][0].subs(t, 0.5)
         b = Bezier1[i][pos][1].subs(t, 0.5)
         ax.annotate(round(nreqf, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#3d4042', ha = 'center', va = 'center', weight = 'bold')
+            color = '#60635d', ha = 'center', va = 'center', weight = 'bold')
         print(round(nreqf, 2), ' - ', equalObjectsBezier[i] / 10, 'cm')
 
 print()
@@ -3200,7 +3132,7 @@ lenBezier1 = len(Bezier1)
 for i in range(lenBezier1) :
 
     if i in ObjectsBezier1 :
-        Plot.PlotBezier(CP1[i], firstFileCol, 0.7, 'solid')
+        Plot.PlotBezier(CP1[i], firstFileCol, 0.5, 'solid')
         nr1f += 0.01
         pos = int(round(len(Bezier1[i]) / 5))
         a = Bezier1[i][pos][0].subs(t, 0.5)
@@ -3208,7 +3140,6 @@ for i in range(lenBezier1) :
         ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
             color = '#00304c', ha = 'center', va = 'center', weight = 'bold')
         print(round(nr1f, 2), ' - ', ObjectsBezier1[i] / 10, 'cm')
-        print("         ", CP1[i])
     if i in uniqueObjectsBezier1 :
         Plot.PlotBezier(CP1[i], firstFileCol, 0.5, (0, (3, 5, 1, 5)))
         nr1f += 0.01
@@ -3218,7 +3149,6 @@ for i in range(lenBezier1) :
         ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
             color = '#00304c', ha = 'center', va = 'center', weight = 'bold')
         print(round(nr1f, 2), ' - ', uniqueObjectsBezier1[i] / 10, 'cm')
-        print("         ", CP1[i])
 
 print()
 for i in range(lenLine2) :
@@ -3255,7 +3185,6 @@ for i in range(lenBezier2) :
         ax.annotate(round(nr2f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
             color = '#59080a', ha = 'center', va = 'center', weight = 'bold')
         print(round(nr2f, 2), ' - ', ObjectsBezier2[i] / 10, 'cm')
-        print("          ", CP2[i])
     if i in uniqueObjectsBezier2 :
         Plot.PlotBezier(CP2[i], secondFileCol, 0.5, (0, (3, 5, 1, 5)))
         nr2f += 0.01
@@ -3265,7 +3194,6 @@ for i in range(lenBezier2) :
         ax.annotate(round(nr2f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
             color = '#59080a', ha = 'center', va = 'center', weight = 'bold')
         print(round(nr2f, 2), ' - ', uniqueObjectsBezier2[i] / 10, 'cm')
-        print("         ", CP2[i])
 print()
 print("MAX Distance")
 print(absMaxDist/ 10)
