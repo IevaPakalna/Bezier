@@ -119,44 +119,47 @@ class Calculations :
         if P1[0] == P2[0]:
             return 1000
         return (P1[1] - P2[1]) / (P1[0] - P2[0])
+    #get vector of given line segment (P1 - start point, P2 - end point)
+    def GetVector(P1, P2) :
+        vx = P2[0] - P1[0]
+        vy = P2[1] - P1[1]
+        return [vx, vy]
+    #returns angle between two given vectors
+    def GetAngle(a, b) :
+        alen = Calculations.PointDist((0, 0), a)
+        blen = Calculations.PointDist((0, 0), b)
+        alpha = np.arccos((a[0] * b[0] + a[1] * b[1]) / (alen * blen))
+        return alpha
+    #Rotate point P around point rP by given angle alpha
+    def Rotate(P, rP, alpha):
+        x = np.cos(alpha) * (P[0] - rP[0]) - np.sin(alpha) * (P[1] - rP[1]) + rP[0]
+        y = np.sin(alpha) * (P[0] - rP[0]) + np.cos(alpha) * (P[1] - rP[1]) + rP[1]
+        return (x, y)
+    #returns point that lies on bisector of angle given by three points of which the vertex is the middle one
+    def Bisector(P1, P2, P3) :
+        a = Calculations.GetVector(P2, P1)
+        b = Calculations.GetVector(P2, P3)
+        alpha = Calculations.GetAngle(a, b) / 2
+        nP = Calculations.Rotate(P1, P2, -alpha)
+        return nP
     #Returns distance between two points
     def PointDist(a, b):
         dist = np.sqrt(round((a[0] - b[0])**2 + (a[1] - b[1])**2, 10))
         return dist
     #Calculate distant point along a line a certain distance away given point
+    #includes transportation using paralel line, if the given point doesn`t lie on line
     def DistantPoint(P, P1, P2, d):
         Ptmp = []
         dist = 0
         v = []
+        Pn = []
         P1n = []
         P2n = []
-        if P != P1 :
-            Ptmp = Calculations.PointProjecOnLine(P, P1, P2) #Project point on line
-            v.append(P[0] - Ptmp[0]) #Get distance vector
-            v.append(P[1] - Ptmp[1])
-            P1n.append(P1[0] + v[0])
-            P1n.append(P1[1] + v[1])
-            P2n.append(P2[0] + v[0])
-            P2n.append(P2[1] + v[1])
-            v1 = P2n[0] - P[0]
-            v2 = P2n[1] - P[1]
-        else:
-            v1 = P2[0] - P[0]
-            v2 = P2[1] - P[1]
-        sq = np.sqrt(round(v1**2 + v2**2, 5))
-        if v1 != 0 and sq != 0:
-            u1 = float(v1 / sq)
-        else :
-            u1 = 0
-        sq = np.sqrt(round(v1**2 + v2**2, 5))
-        if v2 != 0 and sq != 0 :
-            u2 = float(v2 / sq)
-        else :
-            u2 = 0
-        nP = []
-        nP.append(P[0] + d * u1)
-        nP.append(P[1] + d * u2)
-        return(nP)
+        a = Calculations.LineSlope(P1, P2)
+        alpha = np.arctan(round(a / (1), 5))
+        Pn.append(np.cos(alpha) * ((P[0] + d) - P[0]) - np.sin(alpha) * (P[1] - P[1])  + P[0])
+        Pn.append(np.sin(alpha) * ((P[0] + d) - P[0]) + np.cos(alpha) * (P[1] - P[1])  + P[1])
+        return(Pn)
     #Get Perpendicular formula
     def PerpFormula(P1, P2, P):
         x = Symbol('x')
@@ -165,7 +168,6 @@ class Calculations :
             return PF
         PF = - (P1[0] - P2[0]) / (P1[1] - P2[1]) * x + P[0] * ((P1[0] - P2[0]) / (P1[1] - P2[1])) + P[1]
         return(PF)
-
     #get factorial
     def Fact(n):
         f = 1
@@ -175,14 +177,13 @@ class Calculations :
     #get binominal coefficients
     def BinCoef(n, k):
         return int(Calculations.Fact(n)/(Calculations.Fact(k) * Calculations.Fact(n - k)))
-
     #transform points
     def pointTransform(P, Vx, Vy, rP, alpha) :
         for i in range(len(P) - 1) :
             tmpx = (P[i][0] - Vx)
             tmpy = (P[i][1] - Vy)
-            tmpx = np.cos(alpha) * (tmpx - rP[0]) + np.sin(alpha) * (tmpy - rP[1]) + rP[0]
-            tmpy = np.sin(alpha) * (tmpx - rP[0]) - np.cos(alpha) * (tmpy - rP[1]) + rP[1]
+            tmpx = np.cos(alpha) * (tmpx - rP[0]) - np.sin(alpha) * (tmpy - rP[1]) + rP[0]
+            tmpy = np.sin(alpha) * (tmpx - rP[0]) + np.cos(alpha) * (tmpy - rP[1]) + rP[1]
             P[i][0] = tmpx
             P[i][1] = tmpy
         return P
@@ -200,7 +201,15 @@ class CalculateBezier(Calculations) :
         x = Symbol('x')
         dtmp = Calculations.PointDist(P[0], P[1])
         d = dtmp
-        C[2] = Calculations.DistantPoint(P[1], P[2], P[0], d / 3) #Point on (P[1], P[2]) line in 1/3 distance of [P[0],P[1]] (C2 controlpoint)
+        if P[0][0] < P[2][0] :
+            d = - dtmp
+        bP = Calculations.Bisector(P[0], P[1], P[2])
+        perpF = Calculations.PerpFormula(bP, P[1], P[1])
+        C[2] = Calculations.DistantPoint(P[1], P[1], (-1, perpF.subs(x, -1)), d / 3) #Point on (P[1], P[2]) line in 1/3 distance of [P[0],P[1]] (C2 controlpoint)
+        if P[0][0] > P[1][0] :
+            d = - dtmp
+        else :
+            d = dtmp
         middlePnt = Calculations.DistantPoint(P[0], P[0], P[1], d / 2) #Middle point of [P[0],P[1]]
         PF1 = Calculations.PerpFormula(P[0], P[1], middlePnt)   #Middle perpendicular of [P[0],P[1]]
         PF1tmp = [] #Point on line PF1
@@ -238,54 +247,51 @@ class CalculateBezier(Calculations) :
         CP.append([C[0], C[1], C[2], C[3]])
         Bx, By = CalculateBezier.BezierFormulaComp(C)
         Bezier.append([Bx, By])
-        for i in range(1, len(P) + 1): #Calculate controlpoints for P[i], P[i + 1] segment
-            if len(P) > 3 and i < len(P) - 2 :
+        lenP = len(P)
+        for i in range(1, lenP + 1): #Calculate controlpoints for P[i], P[i + 1] segment
+            if lenP > 3 and i <= lenP - 3 :
                 dtmp = Calculations.PointDist(P[i], P[i + 1]) / 3
                 d = dtmp
-                C[2] = Calculations.DistantPoint(P[i + 1], P[i + 2], P[i], d)
+                if P[i][0] < P[i + 2][0] :
+                    d = - dtmp
+                bP = Calculations.Bisector(P[i], P[i + 1], P[i + 2])
+                perpF = Calculations.PerpFormula(bP, P[i + 1], P[i + 1])
+                C[2] = Calculations.DistantPoint(P[i + 1], P[i + 1], (-1, perpF.subs(x, -1)), d)
                 C[0] = P[i]
                 C[3] = P[i + 1]
-                C[1] = Calculations.DistantPoint(P[i], P[i - 1], P[i + 1], d)
+                if P[i - 1] < P[i + 1] :
+                    d = dtmp
+                else :
+                    d = - dtmp
+                bP = Calculations.Bisector(P[i - 1], P[i], P[i + 1])
+                perpF = Calculations.PerpFormula(bP, P[i], P[i])
+                C[1] = Calculations.DistantPoint(P[i], P[i], (-1, perpF.subs(x, -1)), d)
                 CP.append([C[0], C[1], C[2], C[3]])
                 Bx, By = CalculateBezier.BezierFormulaComp(C)
                 Bezier.append([Bx, By])
-            if i == len(P) - 2:
-                dtmp = Calculations.PointDist(P[-1], P[-2]) / 3
+            elif i == len(P) - 2:
+                C[0] = P[i]
+
+                dtmp = Calculations.PointDist(P[i + 1], P[i]) / 3
                 d = dtmp
-                C[1] = Calculations.DistantPoint(P[-2], P[-3], P[-1], d)
-                middlePnt = Calculations.DistantPoint(P[-1], P[-1], P[-2], d)
-                PF1 = Calculations.PerpFormula(P[-1], P[-2], middlePnt)
-                PF1tmp = []
-                if P[-1][0] == P[-2][0]:
-                    PF1tmp.append(-1)
-                    PF1tmp.append(middlePnt[-2])
-                elif P[-1][1] == P[-2][1]:
-                    PF1tmp.append(middlePnt[-1])
-                    PF1tmp.append(+1)
-                else:
-                    PF1tmp.append(0)
-                    PF1tmp.append((PF1).subs(x, 0))
-                PF2 = Calculations.PerpFormula(middlePnt, PF1tmp, C[1])
-                PF2tmp = []
-                #cases where x or y - constant
-                if middlePnt[-2] == PF1tmp[-2]:
-                    PF2tmp.append(C[-3][0])
-                    PF2tmp.append(+1)
-                elif middlePnt[-1] == PF1tmp[-1]:
-                    PF2tmp.append(-1)
-                    PF2tmp.append(C[-3][1])
-                else:
-                    PF2tmp.append(0)
-                    PF2tmp.append((PF2).subs(x, 0))
-                PF1xPF2 = Calculations.LineIntersect(middlePnt, PF1tmp, C[1], PF2tmp)
-                C2x = 2 * PF1xPF2[0] - C[1][0]
-                C2y = 2 * PF1xPF2[1] - C[1][1]
-                C2 = []
-                C2.append(C2x)
-                C2.append(C2y)
-                C[2] = C2
-                C[3] = (P[-1])
-                C[0] = (P[-2])
+                if P[i][0] > P[i + 1][0] :
+                    d = - dtmp
+                bP = Calculations.Bisector(P[i - 1], P[i], P[i + 1])
+                perpF = Calculations.PerpFormula(bP, P[i], P[i])
+                C[1] = Calculations.DistantPoint(P[i], P[i], (-1, perpF.subs(x, -1)), d)
+                Ptmp1 = Calculations.DistantPoint(P[i], P[i], P[i + 1], d)
+                perpF = Calculations.PerpFormula(P[i + 1], P[i], Ptmp1)
+                dtmp = Calculations.PointDist(P[i + 1], P[i]) / 2
+                if P[i][0] > P[i + 1][0] :
+                    d = - dtmp
+                else :
+                    d = dtmp
+                Ptmp = Calculations.DistantPoint(P[i], P[i], P[i + 1], d)
+                perptmpF = Calculations.PerpFormula(C[1], Ptmp1, C[1])
+                Ptmp2 = Calculations.LineIntersect(C[1], (-1, perptmpF.subs(x, -1)), Ptmp, (-1, perpF.subs(x, -1)))
+                C[2] = [2 * Ptmp2[0] - C[1][0], 2 * Ptmp2[1] - C[1][1]]
+                C[3] = P[i + 1]
+
                 CP.append([C[0], C[1], C[2], C[3]])
                 Bx, By = CalculateBezier.BezierFormulaComp(C)
                 Bezier.append([Bx, By])
@@ -583,13 +589,11 @@ class Rotate(Calculations) :
                 points[i].append(( points2[i][1]) * unit)
             else :
                 points[i].append((- points2[i][1]) * unit)
-
             #rotate
-#            points[i][0] = np.cos(alpha) * (points[i][0] - P11[0]) + np.sin(alpha) * (points[i][1] - P11[1]) + P11[0]
-#            points[i][1] = np.sin(alpha) * (points[i][0] - P11[0]) - np.cos(alpha) * (points[i][1] - P11[1]) + P11[1]
+#            points[i][0] = np.cos(alpha) * (points[i][0] - P11[0]) - np.sin(alpha) * (points[i][1] - P11[1]) + P11[0]
+#            points[i][1] = np.sin(alpha) * (points[i][0] - P11[0]) + np.cos(alpha) * (points[i][1] - P11[1]) + P11[1]
 
             points[i] = tuple(points[i])
-
         points2.clear()
 
         CP = []
@@ -609,19 +613,12 @@ class Rotate(Calculations) :
                         CP[i][j][k].append((- CP2[i][j][k][1]) * unit)
 
                     #rotate
-#                    CP[i][j][k][0] = np.cos(alpha) * (CP[i][j][k][0] - P11[0]) + np.sin(alpha) * (CP[i][j][k][1] - P11[1]) + P11[0]
-#                    CP[i][j][k][1] = np.sin(alpha) * (CP[i][j][k][0] - P11[0]) - np.cos(alpha) * (CP[i][j][k][1] - P11[1]) + P11[1]
+#                    CP[i][j][k][0] = np.cos(alpha) * (CP[i][j][k][0] - P11[0]) - np.sin(alpha) * (CP[i][j][k][1] - P11[1]) + P11[0]
+#                    CP[i][j][k][1] = np.sin(alpha) * (CP[i][j][k][0] - P11[0]) + np.cos(alpha) * (CP[i][j][k][1] - P11[1]) + P11[1]
 
                     CP[i][j][k] = tuple(CP[i][j][k])
-
         CP2.clear()
-
         return points, line2, CP
-
-
-
-
-
 
 
 class File1(CalculateBezier, Calculations) :
@@ -707,7 +704,6 @@ class File1(CalculateBezier, Calculations) :
 
         linesSum += 1
 
-
         x = [lineStart1[0], lineEnd1[0]]
         y = [lineStart1[1], lineEnd1[1]]
 
@@ -754,7 +750,6 @@ class File1(CalculateBezier, Calculations) :
                 P1 = entity.start
                 P2 = entity.end
                 Bezier1, CP1, linesSum = File1.Lines(P1, P2, Bezier1, CP1, linesSum)
-
             #Circle
             if entity.dxftype == 'CIRCLE':
                 centerPoints1 = entity.center
@@ -762,13 +757,11 @@ class File1(CalculateBezier, Calculations) :
                 lenCirclePnts = len(centerPoints1)
                 for i in lenCirclePnts :
                     circle1.append(centerPoints1[i], radius1[i])
-
             #Ellipse
             if entity.dxftype == 'ELLIPSE':
                 ellipseCenter1 = entity.center
                 ellipseMajorAxis1 = entity.major_axis
                 ellipse.append([ellipseCenter1, ellipseMajorAxis1])
-
             #Arc
             if entity.dxftype == 'ARC':
                 arcCenter1 = entity.center
@@ -787,14 +780,12 @@ class File1(CalculateBezier, Calculations) :
                 Beziertmp, CP = CalculateBezier.CompositeBezier(PolylinePoints1, 1)
                 Bezier1.append(Beziertmp)
                 CP1.append(CP)
-
             #LWPolyline
             if entity.dxftype == 'LWPOLYLINE':
                 LWPolylinePoints1 = entity.points
                 Beziertmp, CP = CalculateBezier.CompositeBezier(LWPolylinePoints1, 1)
                 Bezier1.append(Beziertmp)
                 CP1.append(CP)
-
             #Spline
             if entity.dxftype == 'SPLINE':
                 splineControlPoints1 = entity.control_points
@@ -850,31 +841,6 @@ class File1(CalculateBezier, Calculations) :
 class File2(CalculateBezier, Rotate) :
     def __init__(file2, filename) :
         file2.file = open(filename)
-
-#    #Binary sort (for abscissa)
-#    def SortInsertPos(P, points, l, r): #l - left side, r - right side of segment in array
-#            if points[l][0] == P[0] :
-#                if points[l][1] == P[1] :
-#                    return -1
-#                if points[l][1] < P[1] :
-#                    return l + 1
-#                return l
-#            if points[l][0] < P[0] :
-#                return l + 1
-#            return l
-#        med = l + (r - l) // 2
-#        if points[med][0] > P[0] :
-#            return File2.SortInsertPos(P, points, l, med)
-#        if points[med][0] < P[0] :
-#            return File2.SortInsertPos(P, points, med + 1, r)
-#        if points[med][0] == P[0] :
-#            if points[med][1] == P[1] :
-#                return -1 #there already exists identical point, therefore we will not save it
-#            if points[med][1] > P[1] :
-#                return File2.SortInsertPos(P, points, l, med)
-#            if points[med][1] < P[1] :
-#                return File2.SortInsertPos(P, points, med + 1, r)
-
     #Binary sort (for abscissa)
     def SortInsertPosLines(P, CP, l, r): #l - left side, r - right side of segment in array
         if r == -1 :
@@ -1103,93 +1069,89 @@ class File2(CalculateBezier, Rotate) :
                 c1 = Calculations.DistantPoint((midx, midy), (midx, midy), (tmpx, tmpy), edge3)
                 c2 = Calculations.DistantPoint((midx, midy), (midx, midy), (tmpx, tmpy), - edge3)
                 c = []
-                if sweepFlag == 0 :
-                    if (c1[0] >= c2[0] and c1[1] >= c2[1]) or (c1[0] < c2[0] and c1[1] < c2[1]):
-                        c = c1
-                    else :
-                        c = c2
-                else :
-                    if (c1[0] <= c2[0] and c1[1] <= c2[1]) or (c1[0] <= c2[0] and c1[1] <= c2[1]):
-                        c = c1
-                    else :
-                        c = c2
+                #get the correct arc based on largeArcFlag and sweepFlag from 4 possible options
+                radToDeg = 57.2957795
 
-                #to know if the large or small arc is used, calculate the angle to given arc
+                a1 = Calculations.LineSlope(c1, (P1x, P1y))
+                a2 = Calculations.LineSlope(c1, (P2x, P2y))
+                t1 = np.arctan(a1 / 1)
+                if P1x < c1[0] :
+                    t1 = ((t1 + 180 / radToDeg) % (2 * np.pi))
+                a2 = Calculations.LineSlope(c1, (P2x, P2y))
+                t2 = np.arctan(a2 / 1)
+                if P2x < c1[0] :
+                    t2 = ((t2 + 180 / radToDeg) % (2 * np.pi))
+                if t1 > t2 :
+                    arcang = 360 - t1 + t2
+                else :
+                    arcang = t2 - t1
+
+                if largeArcFlag == 0 and sweepFlag == 0 and 360 - arcang <= 180 :
+                    c = c1
+                elif largeArcFlag == 0 and sweepFlag == 0 :
+                    c = c2
+                elif largeArcFlag == 0 and sweepFlag == 1 and arcang <= 180 :
+                    c = c1
+                elif largeArcFlag == 0 and sweepFlag == 1 :
+                    c = c2
+                elif largeArcFlag == 1 and sweepFlag == 0 and 360 - arcang > 180 :
+                    c = c1
+                elif largeArcFlag == 1 and sweepFlag == 0 :
+                    c = c2
+                elif largeArcFlag == 1 and sweepFlag == 1 and arcang > 180 :
+                    c = c1
+                else :
+                    c = c2
+
                 a1 = Calculations.LineSlope(c, (P1x, P1y))
                 a2 = Calculations.LineSlope(c, (P2x, P2y))
-                alpha = np.degrees(np.arctan((a2-a1) / 1 + abs(a1 * a2)))
+                t1 = np.arctan(a1 / 1)
+                if P1x < c[0] :
+                    t1 = ((t1 + 180 / radToDeg) % (2 * np.pi))
+                a2 = Calculations.LineSlope(c, (P2x, P2y))
+                t2 = np.arctan(a2 / 1)
+                if P2x < c[0] :
+                    t2 = ((t2 + 180 / radToDeg) % (2 * np.pi))
+                t = t1
 
-                #get correct arc based on arc endpoints and angle between respective radius and x-axis
-                alpha1x = np.degrees(np.arctan((a1) / 1))
-                alpha1x = (alpha1x + 360) % 360
-                alpha2x = np.degrees(np.arctan((a2) / 1))
-                alpha2x = (alpha2x + 360) % 360
-
-                if alpha1x > alpha2x :
-                    alphatmp = alpha1x - alpha2x
-                    if alphatmp > 180 :
-                        alphamin = alpha1x
-                        alphamax = alpha2x
-                        Px = P1x
-                        Py = P1y
-                        Pxmax = P2x
-                        Pymax = P2y
-                    else :
-                        alphamin = alpha2x
-                        alphamax = alpha1x
-                        Px = P2x
-                        Py = P2y
-                        Pxmax = P1x
-                        Pymax = P1y
+                if sweepFlag == 0 :
+                    cnt = -2 * np.pi / 18
                 else :
-                    alphatmp = alpha2x - alpha1x
-                    if alphatmp > 180 :
-                        alphamin = alpha2x
-                        alphamax = alpha1x
-                        Px = P2x
-                        Py = P2y
-                        Pxmax = P1x
-                        Pymax = P1y
-                    else :
-                        alphamin = alpha1x
-                        alphamax = alpha2x
-                        Px = P1x
-                        Py = P1y
-                        Pxmax = P2x
-                        Pymax = P2y
+                    cnt = 2 * np.pi / 18
 
-
-                if largeArcFlag == 0 :
-                    t = 0
-                    xprim = rx * np.cos(t) + c[0]
-                    yprim = rx * np.sin(t) + c[1]
-                    while not (xprim - 0.1 < Px and Px < xprim + 0.1) or not (yprim - 0.1 < Py and Py < yprim + 0.1) :
-                        t = (t + 0.05) % (2 * np.pi)
-                        xprim = rx * np.cos(t) + c[0]
-                        yprim = rx * np.sin(t) + c[1]
-
-                    t = (t + 0.05) % (2 * np.pi)
-                    while not (xprim - 0.1 < Pxmax and Pxmax < xprim + 0.1) or not (yprim - 0.1 < Pymax and Pymax < yprim + 0.1) :
+                if (t1 < t2 and sweepFlag == 1) or (t1 > t2 and sweepFlag == 0):
+                    while t < t2 :
                         xprim = rx * np.cos(t) + c[0]
                         yprim = rx * np.sin(t) + c[1]
                         polyPoints.append((xprim, yprim))
-                        #plt.plot(xprim, yprim, 'o', color = '#8c5667')
-                        t = (t + 0.05) % (2 * np.pi)
-                else :
-                    t = 0
-                    xprim = rx * np.cos(t) + c[0]
-                    yprim = rx * np.sin(t) + c[1]
-                    while not (xprim - 0.1 < Pxmax and Pxmax < xprim + 0.1) or not (yprim - 0.1 < Pymax and Pymax < yprim + 0.1) :
-                        t = (t + 0.05) % (2 * np.pi)
-                        xprim = rx * np.cos(t) + c[0]
-                        yprim = rx * np.sin(t) + c[1]
-                    t = (t + 0.05) % (2 * np.pi)
-                    while not (xprim - 0.1 < Px and Px < xprim + 0.1) or not (yprim - 0.1 < Py and Py < yprim + 0.1) :
+                        t += cnt
+                    if t - cnt == t1 :
+                        t += cnt / 2
                         xprim = rx * np.cos(t) + c[0]
                         yprim = rx * np.sin(t) + c[1]
                         polyPoints.append((xprim, yprim))
-                        #plt.plot(xprim, yprim, 'o', color = '#976aa5')
-                        t = (t + 0.05) % (2 * np.pi)
+                    xprim = rx * np.cos(t2) + c[0]
+                    yprim = rx * np.sin(t2) + c[1]
+                    polyPoints.append((xprim, yprim))
+                else :
+                    t = t2
+                    while t < 360 / radToDeg :
+                        xprim = rx * np.cos(t) + c[0]
+                        yprim = rx * np.sin(t) + c[1]
+                        polyPoints.append((xprim, yprim))
+                        t += cnt
+                    xprim = rx * np.cos(0) + c[0]
+                    yprim = rx * np.sin(0) + c[1]
+                    polyPoints.append((xprim, yprim))
+                    t = 0
+                    while t < t1 :
+                        xprim = rx * np.cos(t) + c[0]
+                        yprim = rx * np.sin(t) + c[1]
+                        polyPoints.append((xprim, yprim))
+                        t += cnt
+                    xprim = rx * np.cos(t1) + c[0]
+                    yprim = rx * np.sin(t1) + c[1]
+                    polyPoints.append((xprim, yprim))
             pos += 1
         return CP, polyPoints, pos
 
@@ -1241,11 +1203,11 @@ class File2(CalculateBezier, Rotate) :
                 x = r * np.cos(t)
                 y = r * np.sin(t)
                 polylinePoints.append((x, y))
-                t += 20
+                t += 36
 
         return points, polylinePoints, isShape
 
-                #these we will add later
+                #these we will add later...or not
                 #clip-path, clip-rule, color, color-interpolation, color-rendering, cursor, display, fill, fill-opacity, fill-rule, filter, mask, opacity, pointer-events, shape-rendering, stroke, stroke-dasharray, stroke-dashoffset, stroke-linecap, stroke-linejoin, stroke-miterlimit, stroke-opacity, stroke-width, transform, vector-effect, visibility
                 #class, style, also xml prikoli
 
@@ -1263,15 +1225,11 @@ class File2(CalculateBezier, Rotate) :
                 while text[pos] != '=' and pos < length :
                     attrib += text[pos]
                     pos += 1
-
             if text[pos] == '>' :
                 pos += 1
                 while text[pos] != '<' and pos < length :
                     tag += text[pos]
                     pos += 1
-
-
-
                 if attrib == 'x' :
                     x, pos = File2.GetValue(text, pos, length)
                 if attrib == 'y' :
@@ -1287,7 +1245,6 @@ class File2(CalculateBezier, Rotate) :
     #            if attrib == 'textLength' :
 
             pos += 1
-
         pointTags.append(tag)
         return pointTags
 
@@ -1366,7 +1323,6 @@ class File2(CalculateBezier, Rotate) :
             CP = ([[x1, y1], [x1, y1], [x2, y2], [x2, y2]])
         else :
             CP = ([[x2, y2], [x2, y2], [x1, y1], [x1, y1]])
-
         return CP, isShape
 
     def WritePath(text, pos, length, polylinePoints) :
@@ -1396,10 +1352,8 @@ class File2(CalculateBezier, Rotate) :
                     else :
                         return CPoints, polylinePoints, isShape
             pos += 1
-
         if len(polyPoints) > 0:
             polylinePoints.append(polyPoints)
-
         return CPoints, polylinePoints, isShape
 
 
@@ -1761,17 +1715,17 @@ class File2(CalculateBezier, Rotate) :
                                     CP2[j].extend(CP2[i])
                                     CP2.pop(i)
                                     i -= 1
-
                 i += 1
-
             j += 1
+        Bezier = []
         for i in polylinePoints :
+            if len(polylinePoints) == 2 :
+                Beziertmp, CPtmp = File2.Lines(polylinePoints[0], PolylinePoints[1], Bezier, CP2, linesSum)
+                continue
             Beziertmp, CPtmp = CalculateBezier.CompositeBezier(i, 2)
             CP2.append(CPtmp)
-
         points, line, CP2 = Rotate.Transformation(points, line, CP2)
 
-        Bezier = []
         Beziertmp = [[]]
         for i in CP2 :
             for j in i:
@@ -1787,11 +1741,6 @@ class File2(CalculateBezier, Rotate) :
 #            CP2.append(CPtmp)
 #            Bezier.append(Beziertmp)
         return points, line, Bezier, CP2
-
-
-
-
-
 
 class Plot(Calculations) :
     def __init__(plot) :
@@ -1811,21 +1760,22 @@ class Plot(Calculations) :
             plt.plot(Bx1, By1, color = clr, alpha = transp, linestyle = lstyle)
         return
 
-
+print("FILE1")
 if fileName1[-3] == 'd' and fileName1[-2] == 'x' and fileName1[-1] == 'f' :
     file1 = File1(fileName1)
     points1, line1, Bezier1, CP1 = file1.CalculateObjects()
 else :
     file1 = File2(fileName1)
     points1, line1, Bezier1, CP1 = file1.CalculateObjects()
-
+print("FILE1")
+print("FILE2")
 if fileName2[-3] == 'd' and fileName2[-2] == 'x' and fileName2[-1] == 'f' :
     file2 = File1(fileName2)
     points2, line2, Bezier2, CP2 = file2.CalculateObjects()
 else :
     file2 = File2(fileName2)
     points2, line2, Bezier2, CP2 = file2.CalculateObjects()
-
+print("FILE2")
 
 
 t = Symbol('t')
@@ -1840,27 +1790,6 @@ for i in CP2 :
 
 
 
-#We have got data from both given files
-#File #1
-#for i in points1:
-#    print('(', i[0], ',', i[1], ')')
-#for i in line1:
-#    print('(',latex(i[0]),',', latex(i[1]),')')
-#for i in Bezier1 :
-#    for j in range(len(i)):
-#    #    print('(',latex(i[j][0]),',', latex(i[j][1]),')')
-#        a = 1
-
-
-#File #2
-#for i in points2:
-#    print('(', i[0], ',', i[1], ')')
-#for i in line2:
-#    print('(',latex(i[0]),',', latex(i[1]),')')
-#for i in Bezier2 :
-#    for j in range(len(i)):
-#        #    print('(',latex(i[j][0]),',', latex(i[j][1]),')')
-#        a = 1
 
 #Lets find which points are represented as the 'same' points in both files
 #First we will take 3 points from first file and get the distances between them
@@ -1969,8 +1898,8 @@ class BezierCalculations(Calculations) :
 
     def DistantPointOnBezier(dist, nr, B, lineSt, C, disttmp, param) :
         t = Symbol('t')
-        xtmp = B[nr][0].subs(t, lineSt)
-        ytmp = B[nr][1].subs(t, lineSt)
+        xtmp = C[-lineSt][lineSt * 3][0]
+        ytmp = C[-lineSt][lineSt * 3][1]
         x2tmp = xtmp
         y2tmp = ytmp
         cnt = 1
@@ -1994,8 +1923,8 @@ class BezierCalculations(Calculations) :
                 Pdist = Calculations.PointDist((xtmp, ytmp), (x2tmp, y2tmp))
                 disttmp += Pdist
                 if param == abs(round((lineSt - 1), 3)) :
-                    x2tmp1 = B[nr][0].subs(t, lineSt)
-                    y2tmp1 = B[nr][1].subs(t, lineSt)
+                    x2tmp1 = C[nr][lineSt * 3][0]
+                    y2tmp1 = C[nr][lineSt * 3][1]
                     Pdist1 = Calculations.PointDist((xtmp, ytmp), (x2tmp1, y2tmp1))
                     disttmp1 = disttmp + Pdist1 - Pdist
                     if (disttmp1 <= dist + 0.05 and disttmp1 >= dist - 0.05) :
@@ -2040,8 +1969,46 @@ class BezierCalculations(Calculations) :
         x2tmp = B[nr][0].subs(t, param)
         y2tmp = B[nr][1].subs(t, param)
         return x2tmp, y2tmp, nr, disttmp, param
+    #returns max bezier distance based on equaly distributed points along both lines
+    def MaxBezierTDist(B1, B2, lineSt1, lineSt2) :
+        #as the lines may not consist of equal number of segments we have to set t value step for each line independly
+        len1 = len(B1)
+        len2 = len(B2)
+        cnt1 = round(1 / (20 / len1), 5)
+        cnts1 = 1
+        cnt2 = round(1 / (20 / len2), 5)
+        cnts2 = 1
+        t1 = lineSt1
+        t2 = lineSt2
+        nr1 = -lineSt1
+        nr2 = -lineSt2
+        maxDist = 0
+        if lineSt1 == 1 :
+            cnt1 = -cnt1
+            cnts1 = -1
+        if lineSt2 == 1 :
+            cnt2 = -cnt2
+            cnts2 = -1
+        for i in range(20) :
+            P1 = (B1[nr1][0].subs(t, t1), B1[nr1][1].subs(t, t1))
+            P2 = (B2[nr2][0].subs(t, t2), B2[nr2][1].subs(t, t2))
+            dist = Calculations.PointDist(P1, P2)
+            if dist > maxDist :
+                maxDist = dist
+            t1 += cnt1
+            if t1 > 1 or t1 < 0 :
+                nr1 += cnts1
+                t1 = t1 - cnts1
+            t2 += cnt2
+            if t2 > 1 or t2 < 0 :
+                nr2 += cnts2
+                t2 = t2 - cnts2
+        return maxDist
 
-    def MaxBezierDist(B1, B2, lineSt1, lineSt2) :
+    def MaxBezierDist(B1, B2, CP1, CP2, lineSt1, lineSt2) :
+        maxDistParam = BezierCalculations.MaxBezierTDist(B1, B2, lineSt1, lineSt2)
+        if maxDistParam <= 1 :
+            return maxDistParam, CP1[-lineSt1][lineSt1 * 3], CP2[-lineSt2][lineSt2 * 3]
         t = Symbol('t')
         lenB1 = len(B1)
         lenB2 = len(B2)
@@ -2064,37 +2031,37 @@ class BezierCalculations(Calculations) :
         nr = 0
 
         #check distance between endpoints
-        x2 = B2[0][0].subs(t, 0)
-        y2 = B2[0][1].subs(t, 0)
-        dist1 = Calculations.PointDist((x2, y2), (B1[0][0].subs(t, 0), B1[0][1].subs(t, 0)))
-        dist2 = Calculations.PointDist((x2, y2), (B1[-1][0].subs(t, 1), B1[-1][1].subs(t, 1)))
+        x2 = CP2[0][0][0]
+        y2 = CP2[0][0][1]
+        dist1 = Calculations.PointDist((x2, y2), (CP1[0][0][0], CP1[0][0][1]))
+        dist2 = Calculations.PointDist((x2, y2), (CP1[-1][3][0], CP1[-1][3][1]))
         if dist1 < dist2 :
             max = dist1
-            P11[0] = B1[0][0].subs(t, 0)
-            P11[1] = B1[0][1].subs(t, 0)
+            P11[0] = CP1[0][0][0]
+            P11[1] = CP1[0][0][1]
             P22[0] = x2
             P22[1] = y2
         else :
             max = dist2
-            P11[0] = B1[-1][0].subs(t, 1)
-            P11[1] = B1[-1][1].subs(t, 1)
+            P11[0] = CP1[-1][3][0]
+            P11[1] = CP1[-1][3][1]
             P22[0] = x2
             P22[1] = y2
 
-        x2 = B2[-1][0].subs(t, 1)
-        y2 = B2[-1][1].subs(t, 1)
-        dist1 = Calculations.PointDist((x2, y2), (B1[0][0].subs(t, 0), B1[0][1].subs(t, 0)))
-        dist2 = Calculations.PointDist((x2, y2), (B1[-1][0].subs(t, 1), B1[-1][1].subs(t, 1)))
+        x2 = CP2[-1][3][0]
+        y2 = CP2[-1][3][1]
+        dist1 = Calculations.PointDist((x2, y2), (CP1[0][0][0], CP1[0][0][1]))
+        dist2 = Calculations.PointDist((x2, y2), (CP1[-1][3][0], CP1[-1][3][1]))
         if dist1 < dist2 and dist1 > max :
             max = dist1
-            P11[0] = B1[0][0].subs(t, 0)
-            P11[1] = B1[0][1].subs(t, 0)
+            P11[0] = CP1[0][0][0]
+            P11[1] = CP1[0][0][1]
             P22[0] = x2
             P22[1] = y2
         elif dist2 <= dist1 and dist2 > max :
             max = dist2
-            P11[0] = B1[-1][0].subs(t, 1)
-            P11[1] = B1[-1][1].subs(t, 1)
+            P11[0] = CP1[-1][3][0]
+            P11[1] = CP1[-1][3][1]
             P22[0] = x2
             P22[1] = y2
 
@@ -2110,37 +2077,23 @@ class BezierCalculations(Calculations) :
                 #as the line may be composite, we have to find min distance for every segment form line, and choose the smallest one
                 for nr in range(lenB1) :
                     dist, P = BezierCalculations.BezierMinDist(B1[nr][0], B1[nr][1], (x2, y2))
-
                     if dist < min :
                         P1[0] = P[0]
                         P1[1] = P[1]
                         P2[0] = x2
                         P2[1] = y2
                         min = dist
-
                     if dist > min:
                         nr -= 1
                         break
-
                 if min > max and min != 10000 :
-
                     max = min
                     P11[0] = P1[0]
                     P11[1] = P1[1]
                     P22[0] = P2[0]
                     P22[1] = P2[1]
-
-
                 cnt = round(cnt + 0.1, 1)
                 param = cnt
-
-            #print(P1, P2)
-            #plt.plot([P1[0], P2[0]], [P1[1], P2[1]])
-        #plt.plot([P1[0], P2[0]], [P1[1], P2[1]], color = '#667281')
-#        a = ((P11[0] + P22[0]) / 2)
-#        b = ((P11[1] + P22[1]) / 2)
-#        ax.annotate(round(max / 10, 2), xy = (a, b), xytext = (a, b), alpha = 0.5, size = 'small')
-#        plt.plot([P11[0], P22[0]], [P11[1], P22[1]], color = 'black', alpha = 0.4)
         return max, P11, P22
 
     #Search for distance between point and Bezier curve
@@ -2161,7 +2114,6 @@ class BezierCalculations(Calculations) :
         elif dist1 > dist2 :
              min = dist2
              minParam = 1
-
         #check if in segments between previously determined points there is not point with smaller distance to the given point
         param = minParam
         dist1 = 0
@@ -2219,72 +2171,8 @@ class ObjectComparison(BezierCalculations, Calculations) :
     def __init__(comp) :
         pass
 
-    def ClosestPntLine(P, arr, visited, minDist):
-        min = -1
-        minPind = 0
-        lineSt = 0
-        for i in range(len(arr)) :
-            if min == -1 :
-                if not arr[i][0] in visited:
-                    mintmp = Calculations.PointDist(P, arr[i][0])
-                    if mintmp > minDist :
-                        min = mintmp
-                        minPind = i
-                        lineSt = 0
-                elif visited[arr[i][0]] == 1 :
-                    mintmp = Calculations.PointDist(P, arr[i][0])
-                    if mintmp > minDist :
-                        min = mintmp
-                        minPind = i
-                        lineSt = 0
-                continue
-            if not arr[i][0] in visited :
-                tmpD = Calculations.PointDist(P, arr[i][0])
-                if tmpD < min and tmpD > minDist:
-                    min = tmpD
-                    minPind = i
-                    lineSt = 0
-            elif visited[arr[i][0]] == 1 :
-                tmpD = Calculations.PointDist(P, arr[i][0])
-                if tmpD < min and tmpD > minDist:
-                    min = tmpD
-                    minPind = i
-                    lineSt = 0
-            if not arr[i][1] in visited :
-                tmpD = Calculations.PointDist(P, arr[i][1])
-                if tmpD < min and tmpD > minDist :
-                    min = tmpD
-                    minPind = i
-                    lineSt = 1
-            elif visited[arr[i][1]] == 1 :
-                tmpD = Calculations.PointDist(P, arr[i][1])
-                if tmpD < min and tmpD > minDist:
-                    min = tmpD
-                    minPind = i
-                    lineSt = 1
-        return arr[minPind][lineSt], min
-
-
-
+    #Adds objects to unique object type set
     def OneFileObject(P, line, Bezier, CP, visited, fnr, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2) :
-        lenLine = len(line)
-        for i in range(lenLine) :
-            if (P == line[i][0] or P == line[i][1]) :
-                if fnr == 1 :
-    #                plt.plot((line[i][0][0], line[i][1][0]), (line[i][0][1], line[i][1][1]), color = '#055583', linestyle = (0, (3, 5, 1, 5)))
-                    if uniqueObjectsLine1.get(i) == None and ObjectsLine1.get(i) == None:
-                        length = Calculations.PointDist(line[i][0], line[i][1])
-                        uniqueObjectsLine1[i] = length
-                if fnr == 2 :
-    #                plt.plot((line[i][0][0], line[i][1][0]), (line[i][0][1], line[i][1][1]), color = '#bc0e13', linestyle = (0, (3, 5, 1, 5)))
-                    if uniqueObjectsLine2.get(i) == None and ObjectsLine2.get(i) == None :
-                        length = Calculations.PointDist(line[i][0], line[i][1])
-                        uniqueObjectsLine2[i] = length
-                if not line[i][0] in visited :
-                    visited[line[i][0]] = 1
-                if not line[i][1] in visited :
-                    visited[line[i][1]] = 1
-
         lenCP = len(CP)
         for i in range(lenCP) :
             if (P == (CP[i][0][0][0], CP[i][0][0][1]) or (P == (CP[i][-1][3][0], CP[i][-1][3][1]))) :
@@ -2305,10 +2193,6 @@ class ObjectComparison(BezierCalculations, Calculations) :
 
         visited[P] = 2
         return visited
-
-
-
-
     #Calculate LeastSquare value between two given lines
     def LeastSquare(B1, int1, lineSt1, B2, int2, lineSt2, CP1, CP2) :
         dist1 = 0
@@ -2334,355 +2218,13 @@ class ObjectComparison(BezierCalculations, Calculations) :
             value += (Calculations.PointDist((P1x, P1y), (P2x, P2y)))**2
             dist1 += int1
             dist2 += int2
-    #        plt.plot(P1x, P1y, 'ro')
-    #        plt.plot(P2x, P2y, 'bo')
-    #        plt.plot([P1x, P2x], [P1y, P2y], color = '#af5ba3')
         t = Symbol('t')
         pos = int(round(lenB1 / 2))
-        a = B1[pos][0].subs(t, 0)
-        b = B1[pos][1].subs(t, 0)
+        a = CP1[pos][0][0]
+        b = CP1[pos][0][1]
         ax.annotate(value, xy = (a, b), xytext = (a, b), size = 'small', alpha = 0.8,
             color = '#562048', va = 'center', ha = 'center', family = 'monospace')
         return value
-
-
-
-
-
-
-    def DiffAllLine(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, minDist) :
-        #Check if given point isn`t already visited
-        if P1 in visited :
-            if visited[P1] == 2 :
-                return visited
-
-        #Get coordinates of the closest point in second file
-        if len(line2) > 0 :
-            P21, min21 = ObjectComparison.ClosestPntLine(P1, line2, visited, minDist)
-        else :
-            min21 = -1
-
-        if len(Bezier2) > 0 :
-            P22, min22 = BezierCalculations.ClosestPntBezier(P1, CP2, visited, minDist)
-        else :
-            min22 = -1
-        if  (min21 == -1 and min22 == -1) :
-            visited = ObjectComparison.OneFileObject(P1, line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
-            return visited
-        #Select closest point
-        if (min21 < min22 and min21 != -1) :
-            P2 = P21
-            min = min21
-        elif (min21 > min22 and min22 != -1) :
-            P2 = P22
-            min = min22
-        elif min21 != -1 :
-            P2 = P21
-            min = min21
-        elif min22 != -1 :
-            P2 = P22
-            min = min22
-        #if the point is too far, then probably that is not the respective point
-        if min >= 30 :
-            visited = ObjectComparison.OneFileObject(P1, line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
-            return visited
-        #Find all lines with one of the enpoints matching the given point
-        lenLine1 = len(line1)
-        lenLine2 = len(line2)
-        P1rndx = round(P1[0], 3)
-        P1rndy = round(P1[1], 3)
-        P2rndx = round(P2[0], 3)
-        P2rndy = round(P2[1], 3)
-        for i in range(lenLine1) :
-            P1Ind = -1
-            lineSt1 = -1
-            P1tmprndx0 = round(line1[i][0][0], 3)
-            P1tmprndy0 = round(line1[i][0][1], 3)
-            P1tmprndx1 = round(line1[i][1][0], 3)
-            P1tmprndy1 = round(line1[i][1][1], 3)
-            #if this one doesn`t correspond, then ignore
-            if P1rndx == P1tmprndx0 and P1rndy == P1tmprndy0 :
-                if not line1[i][0] in visited :
-                    if not line1[i][1] in visited :
-                        P1Ind = i
-                        lineSt1 = 0
-                        visited[line1[i][1]] = 1
-                    elif visited[line1[i][1]] == 1 :
-                        P1Ind = i
-                        lineSt1 = 0
-                elif visited[line1[i][0]] == 1 :
-                    if not line1[i][1] in visited :
-                        P1Ind = i
-                        lineSt1 = 0
-                        visited[line1[i][1]] = 1
-                    elif visited[line1[i][1]] == 1 :
-                        P1Ind = i
-                        lineSt1 = 0
-            elif P1rndx == P1tmprndx1 and P1rndy == P1tmprndy1 :
-                if not line1[i][1] in visited :
-                    if not line1[i][0] in visited :
-                        P1Ind = i
-                        lineSt1 = 1
-                        visited[line1[i][0]] = 1
-                    elif visited[line1[i][0]] == 1 :
-                        P1Ind = i
-                        lineSt1 = 1
-                elif visited[line1[i][1]] == 1 :
-                    if not line1[i][0] in visited :
-                        P1Ind = i
-                        lineSt1 = 1
-                        visited[line1[i][0]] = 1
-                    elif visited[line1[i][0]] == 1 :
-                        P1Ind = i
-                        lineSt1 = 1
-            else:
-                continue
-            #This is the case wher the other line end has been "fulli visited" or visited[] = 2
-            if P1Ind == -1 :
-                continue
-            a1 = Calculations.LineSlope(line1[P1Ind][0], line1[P1Ind][1])
-            lineSt2 = -1
-            P2Ind = -1
-            minEndDist = -1 #to find which line is the closest one to the line in line1
-            #find the respective line in second file
-            for j in range(lenLine2):
-                lineSt2tmp = -1
-                P2tmprndx0 = round(line2[j][0][0], 3)
-                P2tmprndy0 = round(line2[j][0][1], 3)
-                P2tmprndx1 = round(line2[j][1][0], 3)
-                P2tmprndy1 = round(line2[j][1][1], 3)
-                #if endpoints doesn`t match P2 then ignore and iterate forward
-                if P2rndx == P2tmprndx0 and P2rndy == P2tmprndy0 :
-                    if not line2[j][0] in visited :
-                        if not line2[j][1] in visited :
-                            lineSt2tmp = 0
-                        elif visited[line2[j][1]] == 1 :
-                            lineSt2tmp = 0
-                    elif visited[line2[j][0]] == 1 :
-                        if not line2[j][1] in visited :
-                            lineSt2tmp = 0
-                        elif visited[line2[j][1]] == 1 :
-                            lineSt2tmp = 0
-                elif P2rndx == P2tmprndx1 and P2rndy == P2tmprndy1 :
-                    if not line2[j][1] in visited :
-                        if not line2[j][0] in visited :
-                            lineSt2tmp = 1
-                        elif visited[line2[j][0]] == 1 :
-                            lineSt2tmp = 1
-                    elif visited[line2[j][1]] == 1 :
-                        if not line2[j][0] in visited :
-                            lineSt2tmp = 1
-                        elif visited[line2[j][0]] == 1 :
-                            lineSt2tmp = 1
-                else:
-                    continue
-                if lineSt2tmp == -1 :
-                    continue
-                a2 = Calculations.LineSlope(line2[j][0], line2[j][1])
-                angle = np.degrees(np.arctan((a2 - a1) / (1 + abs(a1 * a2))))
-                #if the angle between these two lines is bigger than 5, then we will assume that it is not the searched for line
-                if abs(angle) > 5 :
-                    #if (i == lenLine1 - 1 and not j in ObjectsLine2 and not j in equalObjectsLine2) :
-                        #visited = DiffAll(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min)
-    #                    plt.plot([line2[j][0][0], line2[j][1][0]], [line2[j][0][1], line2[j][1][1]], color = '#6c9f92', linestyle = (0, (3, 5, 1, 5)))
-                        #if uniqueObjectsLine2.get(j) == None and ObjectsLine2.get(j) == None:
-                        #    length = PointDist(line2[j][0], line2[j][1])
-                        #    uniqueObjectsLine2[j] = length
-                        #visited[line2[j][lineSt2tmp]] = 1
-                        #if not line2[j][lineSt2tmp - 1] in visited :
-                        #    visited[line2[j][lineSt2tmp - 1]] = 1
-                    continue
-                #if lines do exist, then choose the closest one from second file
-                if (lineSt1 != -1 and lineSt2tmp != -1) :
-                    endDist = Calculations.PointDist(line1[P1Ind][(lineSt1 + 1) % 2], line2[j][(lineSt2tmp + 1) % 2])
-                    #if the endpoint distance is larger than 30 then its probably not the respective line
-                    if (endDist >= 30 and not j in ObjectsLine2 and not j in equalObjectsLine2 and i == lenLine1 - 1) :
-                        visited = ObjectComparison.DiffAllLine(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min)
-    #                    plt.plot([line2[j][0][0], line2[j][1][0]], [line2[j][0][1], line2[j][1][1]], color = '#6c9f92', linestyle = (0, (3, 5, 1, 5)))
-                        if uniqueObjectsLine2.get(j) == None and ObjectsLine2.get(j) == None:
-                            length = Calculations.PointDist(line2[j][0], line2[j][1])
-                            uniqueObjectsLine2[j] = length
-                        visited[line2[j][lineSt2tmp]] = 1
-                        if not line2[j][lineSt2tmp - 1] in visited :
-                            visited[line2[j][lineSt2tmp - 1]] = 1
-                        continue
-
-                    if (minEndDist == -1 and endDist < 30):
-                        minEndDist = endDist
-                        P2Ind = j
-                        lineSt2 = lineSt2tmp
-                    elif endDist < minEndDist :
-                        #if (i == lenLine1 - 1 and not P2Ind in ObjectsLine2 and not P2Ind in equalObjectsLine2) :
-    #                        plt.plot([line2[P2Ind][0][0], line2[P2Ind][1][0]], [line2[P2Ind][0][1], line2[P2Ind][1][1]], color = '#6c9f92', linestyle = (0, (3, 5, 1, 5)))
-                        #    if uniqueObjectsLine2.get(P2Ind) == None and ObjectsLine2.get(P2Ind):
-                        #        length = PointDist(line2[P2Ind][0], line2[P2Ind][1])
-                        #        uniqueObjectsLine2[P2Ind] = length
-                        #    visited[line2[P2Ind][lineSt2]] = 1
-                        #    if not line2[P2Ind][lineSt2 - 1] in visited :
-                        #        visited[line2[P2Ind][lineSt2 - 1]] = 1
-
-                        minEndDist = endDist
-                        P2Ind = j
-                        lineSt2 = lineSt2tmp
-            #if there is no respective line in second file then 1. file line is found only in one file -> lets mark it differently
-            if (P2Ind == -1 and P1Ind != -1):
-                visited = ObjectComparison.DiffAllLine(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min)
-    #            plt.plot([line1[P1Ind][0][0], line1[P1Ind][1][0]], [line1[P1Ind][0][1], line1[P1Ind][1][1]], color = '#055583', linestyle = (0, (3, 5, 1, 5)))
-                if uniqueObjectsLine1.get(P1Ind) == None and ObjectsLine1.get(P1Ind) == None:
-                    length = Calculations.PointDist(line1[P1Ind][0], line1[P2Ind][1])
-                    uniqueObjectsLine1[P1Ind] = length
-                if P1rndx == P1tmprndx0 and P1rndy == P1tmprndy0 :
-                    if not line1[P1Ind][1] in visited :
-                        visited[line1[P1Ind][1]] = 1
-                if P1rndx == P1tmprndx1 and P1rndy == P1tmprndy1 :
-                    if not line1[P1Ind][0] in visited :
-                        visited[line1[P1Ind][0]] = 1
-
-            #if the corresponding line in second file is found, then connect respective endpoints and get the max distance between the lines, which also is the respective endpoint distance
-            if (P2Ind != -1 and P1Ind != -1):
-                if not line1[P1Ind][(lineSt1 + 1) % 2] in visited :
-                    visited[line1[P1Ind][(lineSt1 + 1) % 2]] = 1
-                if not line2[P2Ind][(lineSt2 + 1) % 2] in visited :
-                    visited[line2[P2Ind][(lineSt2 + 1) % 2]] = 1
-
-                if not line1[P1Ind][lineSt1] in visited :
-                    visited[line1[P1Ind][lineSt1]] = 1
-                if not line2[P2Ind][lineSt2] in visited :
-                    visited[line2[P2Ind][lineSt2]] = 1
-
-                dist1 = Calculations.PointDist(line1[P1Ind][lineSt1], line2[P2Ind][lineSt2])
-                a = ((line1[P1Ind][lineSt1][0] + line2[P2Ind][lineSt2][0]) / 2)
-                b = ((line1[P1Ind][lineSt1][1] + line2[P2Ind][lineSt2][1]) / 2)
-                ax.annotate(round(dist1 / 10, 2), xy = (a, b), xytext = (a, b), alpha = 0.5, size = 'small')
-                plt.plot([line1[P1Ind][lineSt1][0], line2[P2Ind][lineSt2][0]],
-                    [line1[P1Ind][lineSt1][1], line2[P2Ind][lineSt2][1]],
-                    color = 'black', alpha = 0.4)
-
-                dist2 = Calculations.PointDist(line1[P1Ind][(lineSt1 + 1) % 2], line2[P2Ind][(lineSt2 + 1) % 2])
-                a = ((line1[P1Ind][(lineSt1 + 1) % 2][0] + line2[P2Ind][(lineSt2 + 1) % 2][0]) / 2)
-                b = ((line1[P1Ind][(lineSt1 + 1) % 2][1] + line2[P2Ind][(lineSt2 + 1) % 2][1]) / 2)
-                ax.annotate(round(dist2 / 10, 2), xy = (a, b), xytext = (a, b), alpha = 0.5, size = 'small')
-                plt.plot([line1[P1Ind][(lineSt1 + 1) % 2][0], line2[P2Ind][(lineSt2 + 1) % 2][0]],
-                    [line1[P1Ind][(lineSt1 + 1) % 2][1], line2[P2Ind][(lineSt2 + 1) % 2][1]],
-                    color = 'black', alpha = 0.4)
-
-                if dist1 >= dist2 :
-                    max = dist1
-                else :
-                    max = dist2
-    #            plt.plot([line1[P1Ind][lineSt1][0], line2[P2Ind][lineSt2][0]], [line1[P1Ind][lineSt1][1], line2[P2Ind][lineSt2][1]], color = '#6c9f92')
-    #            plt.plot([line1[P1Ind][(lineSt1 + 1) % 2][0], line2[P2Ind][(lineSt2 + 1) % 2][0]], [line1[P1Ind][(lineSt1 + 1) % 2][1], line2[P2Ind][(lineSt2 + 1) % 2][1]], color = '#6c9f92')
-                #equal objects will be drawn from file 1
-                if max <= 0.1 :
-                    if equalObjectsLine.get(P1Ind) == None :
-                        length = Calculations.PointDist(line1[P1Ind][lineSt1], line1[P1Ind][(lineSt1 + 1) % 2])
-                        equalObjectsLine[P1Ind] = length
-                    if equalObjectsLine2.get(P2Ind) == None :
-                        length = Calculations.PointDist(line2[P2Ind][lineSt2], line2[P2Ind][(lineSt2 + 1) % 2])
-                        equalObjectsLine2[P2Ind] = length
-                    continue
-
-                if ObjectsLine1.get(P1Ind) == None :
-                    length = Calculations.PointDist(line1[P1Ind][lineSt1], line1[P1Ind][(lineSt1 + 1) % 2])
-                    ObjectsLine1[P1Ind] = length
-                if ObjectsLine2.get(P2Ind) == None :
-                    length = Calculations.PointDist(line2[P2Ind][lineSt2], line2[P2Ind][(lineSt2 + 1) % 2])
-                    ObjectsLine2[P2Ind] = length
-
-        lenCP1 = len(CP1)
-        lenCP2 = len(CP2)
-        for i in range(lenCP1) :
-            P1Ind = -1
-            lineSt1 = -1
-            t = Symbol('t')
-            P1tmprndx0 = round(CP1[i][0][0][0], 3)
-            P1tmprndy0 = round(CP1[i][0][0][1], 3)
-            P1tmprndx1 = round(CP1[i][-1][3][0], 3)
-            P1tmprndy1 = round(CP1[i][-1][3][1], 3)
-
-            if P1rndx == P1tmprndx0 and P1rndy == P1tmprndy0 :
-                if not (CP1[i][0][0][0], CP1[i][0][0][1]) in visited :
-                    if not (CP1[i][-1][3][0], CP1[i][-1][3][1]) in visited :
-                        P1Ind = i
-                        lineSt1 = 0
-                        visited[(CP1[i][-1][3][0], CP1[i][-1][3][1])] = 1
-                    elif visited[(CP1[i][-1][3][0], CP1[i][-1][3][1])] == 1 :
-                        P1Ind = i
-                        lineSt1 = 0
-                elif visited[(CP1[i][0][0][0], CP1[i][0][0][1])] == 1 :
-                    if not (CP1[i][-1][3][0], CP1[i][-1][3][1]) in visited :
-                        P1Ind = i
-                        lineSt1 = 0
-                        visited[(CP1[i][-1][3][0], CP1[i][-1][3][1])] = 1
-                    elif visited[(CP1[i][-1][3][0], CP1[i][-1][3][1])] == 1 :
-                        P1Ind = i
-                        lineSt1 = 0
-            elif P1rndx == P1tmprndx1 and P1rndy == P1tmprndy1 :
-                if not (CP1[i][-1][3][0], CP1[i][-1][3][1]) in visited :
-                    if not (CP1[i][0][0][0], CP1[i][0][0][1]) in visited :
-                        P1Ind = i
-                        lineSt1 = 1
-                        visited[(CP1[i][0][0][0], CP1[i][0][0][1])] = 1
-                    elif visited[(CP1[i][0][0][0], CP1[i][0][0][1])] == 1 :
-                        P1Ind = i
-                        lineSt1 = 1
-                elif visited[(CP1[i][-1][3][0], CP1[i][-1][3][1])] == 1 :
-                    if not (CP1[i][0][0][0], CP1[i][0][0][1]) in visited :
-                        P1Ind = i
-                        lineSt1 = 1
-                        visited[(CP1[i][0][0][0], CP1[i][0][0][1])] = 1
-                    elif visited[(CP1[i][0][0][0], CP1[i][0][0][1])] == 1 :
-                        P1Ind = i
-                        lineSt1 = 1
-            else:
-                continue
-            #This is the case wher the other line end has been "fulli visited" or visited[] = 2
-            if P1Ind == -1 :
-                continue
-            visited[P2] = 1
-            visited[P1] = 1
-            return visited
-
-        for j in range(lenB2):
-            lineSt2tmp = -1
-            P2tmprndx0 = round(CP2[j][0][0][0], 3)
-            P2tmprndy0 = round(CP2[j][0][0][1], 3)
-            P2tmprndx1 = round(CP2[j][-1][3][0], 3)
-            P2tmprndy1 = round(CP2[j][-1][3][1], 3)
-            if P2rndx == P2tmprndx0 and P2rndy == P2tmprndy0 :
-                if not (CP2[j][0][0][0], CP2[j][0][0][1]) in visited :
-                    if not (CP2[j][-1][3][0], CP2[j][-1][3][1]) in visited :
-                        lineSt2tmp = 0
-                    elif visited[(CP2[j][-1][3][0], CP2[j][-1][3][1])] == 1 :
-                        lineSt2tmp = 0
-                elif visited[(CP2[j][0][0][0], CP2[j][0][0][1])] == 1 :
-                    if not (CP2[j][-1][3][0], CP2[j][-1][3][1]) in visited :
-                        lineSt2tmp = 0
-                    elif visited[(CP2[j][-1][3][0], CP2[j][-1][3][1])] == 1 :
-                        lineSt2tmp = 0
-            elif P2rndx == P2tmprndx1 and P2rndy == P2tmprndy1 :
-                if not (CP2[j][-1][3][0], CP2[j][-1][3][1]) in visited :
-                    if not (CP2[j][0][0][0], CP2[j][0][0][1]) in visited :
-                        lineSt2tmp = 1
-                    elif visited[(CP2[j][0][0][0], CP2[j][0][0][1])] == 1 :
-                        lineSt2tmp = 1
-                elif visited[(CP2[j][-1][3][0], CP2[j][-1][3][1])] == 1 :
-                    if not (CP2[j][0][0][0], CP2[j][0][0][1]) in visited :
-                        lineSt2tmp = 1
-                    elif visited[(CP2[j][0][0][0], CP2[j][0][0][1])] == 1 :
-                        lineSt2tmp = 1
-            else:
-                continue
-            #This is the case wher the other line end has been "fulli visited" or visited[] = 2
-            if lineSt2tmp == -1 :
-                continue
-            visited[P2] = 1
-            visited[P1] = 1
-            return visited
-
-        visited[P2] = 1
-        visited[P1] = 2
-        return visited
 
 
     def DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, minDist, absMaxDist) :
@@ -2692,31 +2234,14 @@ class ObjectComparison(BezierCalculations, Calculations) :
                 return visited, absMaxDist
 
         #Get coordinates of the closest point in second file
-        if len(line2) > 0 :
-            P21, min21 = ObjectComparison.ClosestPntLine(P1, line2, visited, minDist)
-        else :
-            min21 = -1
-
         if len(Bezier2) > 0 :
-            P22, min22 = BezierCalculations.ClosestPntBezier(P1, CP2, visited, minDist)
+            print("Closest Point")
+            P2, min = BezierCalculations.ClosestPntBezier(P1, CP2, visited, minDist)
+            print("Closest Point")
         else :
-            min22 = -1
-        if  (min21 == -1 and min22 == -1) :
+            min = -1
             visited = ObjectComparison.OneFileObject(P1, line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
             return visited, absMaxDist
-        #Select closest point
-        if (min21 < min22 and min21 != -1) :
-            P2 = P21
-            min = min21
-        elif (min21 > min22 and min22 != -1) :
-            P2 = P22
-            min = min22
-        elif min21 != -1 :
-            P2 = P21
-            min = min21
-        elif min22 != -1 :
-            P2 = P22
-            min = min22
         #if the point is too far, then probably that is not the respective point
         if min >= 30 :
             print("min")
@@ -2833,24 +2358,24 @@ class ObjectComparison(BezierCalculations, Calculations) :
                     continue
                 if (lineSt1 != -1 and lineSt2tmp != -1) :
                     endDist = Calculations.PointDist((CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][0], CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][1]), (CP2[j][-((lineSt2tmp + 1) % 2)][((lineSt2tmp + 1) % 2) * 3][0], CP2[j][-((lineSt2tmp + 1) % 2)][((lineSt2tmp + 1) % 2) * 3][1]))
-                    if (i == lenLine1 - 1 and not j in ObjectsBezier2 and not j in equalObjectsBezier2 and endDist >= 30) :
-                        visited, absMaxDist = ObjectComparison.DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min, absMaxDist)
-    #                    PlotBezier(CP2[j], '#6c9f92', 1, (0, (3, 5, 1, 5)))
-                        visited[(CP2[j][-lineSt2tmp][lineSt2tmp * 3][0], CP2[j][-lineSt2tmp][lineSt2tmp * 3][1])] = 1
+                    #->if (i == lenLine1 - 1 and not j in ObjectsBezier2 and not j in equalObjectsBezier2 and endDist >= 30) :
+                    #->    visited, absMaxDist = ObjectComparison.DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min, absMaxDist)
+    #               #->     PlotBezier(CP2[j], '#6c9f92', 1, (0, (3, 5, 1, 5)))
+                    #->    visited[(CP2[j][-lineSt2tmp][lineSt2tmp * 3][0], CP2[j][-lineSt2tmp][lineSt2tmp * 3][1])] = 1
 
-                        if not (CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][0], CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][1]) in visited :
-                            visited[(CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][0], CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][1])] = 1
-                        if uniqueObjectsBezier2.get(i) == None and ObjectsBezier2.get(i) == None:
-                            print("comp")
-                            length = BezierCalculations.CompositeBezierLen(CP2[i])
-                            print("comp")
-                            uniqueObjectsBezier2[i] = length
+                    #->    if not (CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][0], CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][1]) in visited :
+                    #->        visited[(CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][0], CP1[i][-((lineSt1 + 1) % 2)][((lineSt1 + 1) % 2) * 3][1])] = 1
+                    #->    if uniqueObjectsBezier2.get(i) == None and ObjectsBezier2.get(i) == None:
+                    #->        print("comp")
+                    #->        length = BezierCalculations.CompositeBezierLen(CP2[i])
+                    #->        print("comp")
+                    #->        uniqueObjectsBezier2[i] = length
                     if (minEndDist == -1 and endDist < 30):
                         minEndDist = endDist
                         P2Ind = j
                         lineSt2 = lineSt2tmp
                         print("maxDist")
-                        absDist, P1max, P2max = BezierCalculations.MaxBezierDist(Bezier1[i], Bezier2[j], lineSt1, lineSt2)
+                        absDist, P1max, P2max = BezierCalculations.MaxBezierDist(Bezier1[i], Bezier2[j], CP1[i], CP2[j], lineSt1, lineSt2)
                         print("maxDist")
                     elif endDist <= minEndDist :
                     #    if (i == lenLine1 - 1 and not P2Ind in ObjectsBezier2 and not P2Ind in equalObjectsBezier2) :
@@ -2863,24 +2388,21 @@ class ObjectComparison(BezierCalculations, Calculations) :
                     #            uniqueObjectsBezier2[P2Ind] = length
                         if endDist == minEndDist :
                             print("maxDist1")
-                            absDisttmp, P1maxtmp, P2maxtmp = BezierCalculations.MaxBezierDist(Bezier1[i], Bezier2[j],  lineSt1, lineSt2)
+                            absDisttmp, P1maxtmp, P2maxtmp = BezierCalculations.MaxBezierDist(Bezier1[i], Bezier2[j], CP1[i], CP2[j],  lineSt1, lineSt2)
                             print("maxDist1")
                             if absDisttmp < absDist :
                                 minEndDist = endDist
                                 P2Ind = j
                                 lineSt2 = lineSt2tmp
-                                print("maxDist2")
                                 absDist = absDisttmp
                                 P1max = P1maxtmp
                                 P2max = P2maxtmp
-                                print("maxDist2")
-
                         else :
                             minEndDist = endDist
                             P2Ind = j
                             lineSt2 = lineSt2tmp
                             print("maxDist3")
-                            absDist, P1max, P2max = BezierCalculations.MaxBezierDist(Bezier1[i], Bezier2[j],  lineSt1, lineSt2)
+                            absDist, P1max, P2max = BezierCalculations.MaxBezierDist(Bezier1[i], Bezier2[j], CP1[i], CP2[j],  lineSt1, lineSt2)
                             print("maxDist3")
 
 
@@ -2892,7 +2414,9 @@ class ObjectComparison(BezierCalculations, Calculations) :
                 if not (CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][0], CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][1]) :
                     visited[(CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][0], CP1[i][-abs(-lineSt1 + 1)][abs(-lineSt1 + 1) * 3][1])] = 1
                 if uniqueObjectsBezier1.get(i) == None and ObjectsBezier1.get(i) == None :
+                    print("Length")
                     length = BezierCalculations.CompositeBezierLen(CP1[i])
+                    print("Length")
                     uniqueObjectsLine1[i] = length
 
             if (P2Ind != -1 and P1Ind != -1):
@@ -2905,9 +2429,10 @@ class ObjectComparison(BezierCalculations, Calculations) :
                     visited[CP1[i][-lineSt1][lineSt1 * 3][0], CP1[i][-lineSt1][lineSt1 * 3][1]] = 1
                 if not (CP2[P2Ind][-lineSt2][lineSt2 * 3][0], CP2[P2Ind][-lineSt2][lineSt2 * 3][1]) :
                     visited[CP2[P2Ind][-lineSt2][lineSt2 * 3][0], CP2[P2Ind][-lineSt2][lineSt2 * 3][1]] = 1
-
+                print("Length2")
                 len1 = BezierCalculations.CompositeBezierLen(CP1[i])
                 len2 = BezierCalculations.CompositeBezierLen(CP2[P2Ind])
+                print("Length2")
                 a = ((P1max[0] + P2max[0]) / 2)
                 b = ((P1max[1] + P2max[1]) / 2)
                 ax.annotate(round(absDist / 10, 2), xy = (a, b), xytext = (a, b), alpha = 0.5, size = 'small')
@@ -3006,18 +2531,8 @@ lenBezier1 = len(Bezier1)
 lenBezier2 = len(Bezier2)
 
 visited = {}
-for i in line1 :
-    if not i[0] in visited :
-        visited = ObjectComparison.DiffAllLine(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, -1)
-    elif visited[i[0]] == 1 :
-        visited = ObjectComparison.DiffAllLine(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, -1)
 #    elif visited[i[1]] == 1:
 #        visited = DiffAll(i[1], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
-
-#for i in line1 :
-#    if i[1] in visited :
-#        if visited[i[1]] == 1:
-#            visited = DiffAll(i[1], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
 
 absMaxDist = 0
 t = Symbol('t')
@@ -3032,70 +2547,23 @@ for i in CP1 :
 #        if visited[(i[-1][0].subs(t, 1), i[-1][1].subs(t, 1))] == 1 :
 #            visited = DiffAll((i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
 
-#for i in range(lenLine1) :
-#    if not i in ObjectsLine1 and not i in equalObjectsLine:
-#        visited = OneFileObject(line1[i][0], line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
-
 for i in range(lenLine2) :
     if not i in ObjectsLine2 and not i in equalObjectsLine2 :
         visited = ObjectComparison.OneFileObject(line2[i][0], line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
 
-
-#for i in range(lenBezier1) :
-#    if not i in ObjectsBezier1 and not i in equalObjectsBezier:
-#        visited = OneFileObject((Bezier1[i][0][0].subs(t, 0), Bezier1[i][0][1].subs(t, 0)), line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
 for i in range(lenBezier2) :
     if not i in ObjectsBezier2 and not i in equalObjectsBezier2:
-        visited = ObjectComparison.OneFileObject((Bezier2[i][0][0].subs(t, 0), Bezier2[i][0][1].subs(t, 0)), line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
-
-
-#for i in line1 :
-#    if i[0] in visited :
-#        if visited[i[0]] == 1 :
-#            visited = CheckWhereVisited1(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
-#    if i[1] in visited :
-#        if visited[i[1]] == 1 :
-#            visited = CheckWhereVisited1(i[0], visited, line1, line2, Bezier1, Bezier2, CP1, CP2)
-
-visited.clear()
-def ClosestCircle(CP, r, circle2) :
-    for i in circle :
-        dist = PointDist(CP, i)
-        if dist < 0.1:
-            if (r + 0.05 > circle2[i] and circle2[i] > r - 0.05) :
-                closest = i
-#find differences between circles in bothe files
-def CircleDiff(CP, r, circle1, circle2, visited) :
-    P2 = ClosestCircle(CP, r, circle2)
-
-#for i in circle1 :
-#    if not centerPoints1 in visited :
-#        visited = CircleDiff(i, circle1, circle2, visited)
-
-
-
+        visited = ObjectComparison.OneFileObject((CP2[i][0][0][0], CP2[i][0][0][1]), line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
 
 #new color of the first file : #20456d
-
 
 nreqf = 0.0
 nr1f = 1.0
 nr2f = 2.0
 nrf = 3.0
 
-
-#ax.annotate(nr1f, xy = (200, 200), xytext = (200,200) )
-
-for i in range(lenLine1) :
-    if i in equalObjectsLine :
-        nreqf += 0.01
-        plt.plot([line1[i][0][0], line1[i][1][0]], [line1[i][0][1], line1[i][1][1]],
-            color = '#60635d', alpha = 0.3)
-        a = ((line1[i][0][0] + line1[i][1][0]) / 2)
-        b = ((line1[i][0][1] + line1[i][1][1]) / 2)
-        ax.annotate(round(nreqf, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#60635d', ha = 'center', va = 'center', weight = 'bold')
-        print(round(nreqf, 2), ' - ', equalObjectsLine[i] / 10, 'cm')
+print()
+lenBezier1 = len(Bezier1)
 for i in range(lenBezier1) :
     if i in equalObjectsBezier :
         Plot.PlotBezier(CP1[i], '#60635d', 0.3, 'solid')
@@ -3106,31 +2574,6 @@ for i in range(lenBezier1) :
         ax.annotate(round(nreqf, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
             color = '#60635d', ha = 'center', va = 'center', weight = 'bold')
         print(round(nreqf, 2), ' - ', equalObjectsBezier[i] / 10, 'cm')
-
-print()
-for i in range(lenLine1) :
-    if i in ObjectsLine1 :
-        nr1f += 0.01
-        plt.plot([line1[i][0][0], line1[i][1][0]], [line1[i][0][1], line1[i][1][1]],
-            color = firstFileCol, alpha = 0.5)
-        a = ((line1[i][0][0] + line1[i][1][0]) / 2)
-        b = ((line1[i][0][1] + line1[i][1][1]) / 2)
-        ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#00304c', ha = 'center', va = 'center', weight = 'bold')
-        print(round(nr1f, 2), ' - ', ObjectsLine1[i] / 10, 'cm')
-    if i in uniqueObjectsLine1 :
-        nr1f += 0.01
-        plt.plot([line1[i][0][0], line1[i][1][0]], [line1[i][0][1], line1[i][1][1]],
-            color = firstFileCol, alpha = 0.5, linestyle = (0, (3, 5, 1, 5)))
-        a = ((line1[i][0][0] + line1[i][1][0]) / 2)
-        b = ((line1[i][0][1] + line1[i][1][1]) / 2)
-        ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#00304c', ha = 'center', va = 'center', weight = 'bold')
-        print(round(nr1f, 2), ' - ', uniqueObjectsLine1[i] / 10, 'cm')
-
-lenBezier1 = len(Bezier1)
-for i in range(lenBezier1) :
-
     if i in ObjectsBezier1 :
         Plot.PlotBezier(CP1[i], firstFileCol, 0.5, 'solid')
         nr1f += 0.01
@@ -3138,7 +2581,7 @@ for i in range(lenBezier1) :
         a = Bezier1[i][pos][0].subs(t, 0.5)
         b = Bezier1[i][pos][1].subs(t, 0.5)
         ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#00304c', ha = 'center', va = 'center', weight = 'bold')
+            color = firstFileCol, ha = 'center', va = 'center', weight = 'bold')
         print(round(nr1f, 2), ' - ', ObjectsBezier1[i] / 10, 'cm')
     if i in uniqueObjectsBezier1 :
         Plot.PlotBezier(CP1[i], firstFileCol, 0.5, (0, (3, 5, 1, 5)))
@@ -3147,33 +2590,10 @@ for i in range(lenBezier1) :
         a = Bezier1[i][pos][0].subs(t, 0.5)
         b = Bezier1[i][pos][1].subs(t, 0.5)
         ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#00304c', ha = 'center', va = 'center', weight = 'bold')
+            color = firstFileCol, ha = 'center', va = 'center', weight = 'bold')
         print(round(nr1f, 2), ' - ', uniqueObjectsBezier1[i] / 10, 'cm')
 
 print()
-for i in range(lenLine2) :
-    if i in ObjectsLine2 :
-        nr2f += 0.01
-        plt.plot([line2[i][0][0], line2[i][1][0]], [line2[i][0][1], line2[i][1][1]],
-            color = secondFileCol, alpha = 0.5)
-        a = ((line2[i][0][0] + line2[i][1][0]) / 2)
-        b = ((line2[i][0][1] + line2[i][1][1]) / 2)
-        ax.annotate(round(nr2f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#59080a', ha = 'center', va = 'center', weight = 'bold')
-        print(round(nr2f, 2), ' - ', ObjectsLine2[i] / 10, 'cm')
-    if i in uniqueObjectsLine2 :
-        nr2f += 0.01
-        plt.plot([line2[i][0][0], line2[i][1][0]], [line2[i][0][1], line2[i][1][1]],
-            color = secondFileCol, alpha = 0.5, linestyle = (0, (3, 5, 1, 5)))
-        a = ((line2[i][0][0] + line2[i][1][0]) / 2)
-        b = ((line2[i][0][1] + line2[i][1][1]) / 2)
-        ax.annotate(round(nr2f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#59080a', ha = 'center', va = 'center', weight = 'bold')
-        print(round(nr2f, 2), ' - ', uniqueObjectsLine2[i] / 10, 'cm')
-
-
-print()
-
 lenBezier2 = len(Bezier2)
 for i in range(lenBezier2) :
     if i in ObjectsBezier2 :
