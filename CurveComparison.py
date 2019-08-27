@@ -12,29 +12,43 @@ import matplotlib.axes as axes
 import subprocess
 import os
 import sys
+import logging
 
-#DXF
-fileName1 = sys.argv[1]
-#fileName1 = str(input("Enter DXF file path:   "))
-#fileName1 = 'D:/prog/svgFiles/torss/SIEVIETES_TORSS__AR__KOEF.svgSheet.ii.svg'
-#SVG
-fileName2 = sys.argv[2]
-#fileName2 = str(input("Enter SVG file path:   "))
-#fileName2 = 'D:/prog/svgFiles/torss/SIEVIETES_TORSS__AR__KOEF.svgSheet.iii.svg'
 
-#subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "D:/prog/file2.eps","--export-ignore-filters", "--export-ps-level=3"])
-#subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-polyaslines", "D:/prog/file2.eps", "D:/prog/file2.dxf"])
+logging.basicConfig(filename = "Comparison.log", format = '%(message)s', level = logging.INFO)
 
-#fileName2 = 'D:/prog/file2.dxf'
+maxOffset = 0.2 #cm maximal acceptable similar object offset
 
-#Filenames should be written in the following two lines, as shown in example:
-#   dxf1(2) = dxfgrabber.readfile("filename")
-#dxf1 = dxfgrabber.readfile(fileName1)
-#dxf2 = dxfgrabber.readfile(fileName2)
+isFile1 = False
+dir = sys.argv[1]
+
+
+
+
+
+##DXF
+#fileName1 = sys.argv[1]
+##fileName1 = str(input("Enter DXF file path:   "))
+##fileName1 = 'D:/prog/svgFiles/torss/SIEVIETES_TORSS__AR__KOEF.svgSheet.ii.svg'
+##SVG
+#fileName2 = sys.argv[2]
+##fileName2 = str(input("Enter SVG file path:   "))
+##fileName2 = 'D:/prog/svgFiles/torss/SIEVIETES_TORSS__AR__KOEF.svgSheet.iii.svg'
+#
+##subprocess.run(["c:\Program Files\Inkscape\inkscape.com", "-f", fileName2, "-E", "D:/prog/file2.eps","--export-ignore-filters", "--export-ps-level=3"])
+##subprocess.run(["c:\Program Files\pstoedit\pstoedit.exe", "-f", "dxf:-polyaslines", "D:/prog/file2.eps", "D:/prog/file2.dxf"])
+#
+##fileName2 = 'D:/prog/file2.dxf'
+#
+##Filenames should be written in the following two lines, as shown in example:
+##   dxf1(2) = dxfgrabber.readfile("filename")
+##dxf1 = dxfgrabber.readfile(fileName1)
+##dxf2 = dxfgrabber.readfile(fileName2)
 
 
 firstFileCol = '#000ec7'
 secondFileCol = '#bc0e13'
+
 
 #Graph formatting
 def MyForm(x, p):
@@ -59,6 +73,11 @@ ax.get_yaxis().set_major_formatter(
     mpl.ticker.FuncFormatter(MyForm))
 
 
+
+
+
+
+
 class Calculations :
     def __init__(calc) :
         pass
@@ -77,6 +96,7 @@ class Calculations :
         Pp.append(x)
         Pp.append(y)
         return Pp
+
     def LineIntersect(P11, P12, P21, P22):
         y1 = - 1
         y2 = - 1
@@ -1760,33 +1780,7 @@ class Plot(Calculations) :
             plt.plot(Bx1, By1, color = clr, alpha = transp, linestyle = lstyle)
         return
 
-print("FILE1")
-if fileName1[-3] == 'd' and fileName1[-2] == 'x' and fileName1[-1] == 'f' :
-    file1 = File1(fileName1)
-    points1, line1, Bezier1, CP1 = file1.CalculateObjects()
-else :
-    file1 = File2(fileName1)
-    points1, line1, Bezier1, CP1 = file1.CalculateObjects()
-print("FILE1")
-print("FILE2")
-if fileName2[-3] == 'd' and fileName2[-2] == 'x' and fileName2[-1] == 'f' :
-    file2 = File1(fileName2)
-    points2, line2, Bezier2, CP2 = file2.CalculateObjects()
-else :
-    file2 = File2(fileName2)
-    points2, line2, Bezier2, CP2 = file2.CalculateObjects()
-print("FILE2")
 
-
-t = Symbol('t')
-for i in CP1 :
-    Plot.PlotBezier(i, firstFileCol, 0.2, 'solid')
-    plt.plot(i[0][0][0], i[0][0][1], 'o', ms = 1, color = firstFileCol, alpha = 0.7)
-    plt.plot(i[-1][3][0], i[-1][3][1], 'o', ms = 1, color = firstFileCol, alpha = 0.7)
-for i in CP2 :
-    Plot.PlotBezier(i, secondFileCol, 0.2, 'solid')
-    plt.plot(i[0][0][0], i[0][0][1], 'o', ms = 1, color = secondFileCol, alpha = 0.7)
-    plt.plot(i[-1][3][0], i[-1][3][1], 'o', ms = 1, color = secondFileCol, alpha = 0.7)
 
 
 
@@ -2466,156 +2460,214 @@ class ObjectComparison(BezierCalculations, Calculations) :
         visited[P1] = 2
         return visited, absMaxDist
 
+class Files(ObjectComparison, Plot):
+    def __init(files) :
+        pass
+
+    def Compare(points1, line1, Bezier1, CP1, points2, line2, Bezier2, CP2) :
+        uniqueObjectsLine1 = {}
+        uniqueObjectsLine2 = {}
+        ObjectsLine1 = {}
+        ObjectsLine2 = {}
+        uniqueObjectsBezier1 = {}
+        uniqueObjectsBezier2 = {}
+        ObjectsBezier1 = {}
+        ObjectsBezier2 = {}
+        uniqueObjectsArc1 = {}
+        uniqueObjectsArc2 = {}
+        ObjectsArc1 = {}
+        ObjectsArc2 = {}
+        uniqueObjectsCircle1 = {}
+        uniqueObjectsCircle2 = {}
+        ObjectCircle = {}
+        ObjectCircle1 = {}
+        ObjectCircle2 = {}
+        uniqueObjectsEllipse1 = {}
+        uniqueObjectsEllipse2 = {}
+        ObjectEllipse1 = {}
+        ObjectEllipse2 = {}
+
+        equalObjectsLine = {}
+        equalObjectsBezier = {}
+
+        equalObjectsLine2 = {}
+        equalObjectsBezier2 = {}
 
 
+        #Min distance from given point to Bezier curve
+        #given: cnt - nr of Bezier curve segment
+        #       B - Bezier curve on which we need to find point on
+        #       P - given point from which the closest line will be calculated
+        #       minDist - that has been found already
+        #       len - the length of B array
+        #       minPtmp - just some point, that we dont need to create every time the function is called
+        #       minP - coordinates of the closest point on Bezier curve to P
+        def MinDistTanBezier(cnt, B, P, minDist, len, minPtmp, minP) :
+            if cnt > len - 1 :
+                return len - 1, minP, minDist
+            dist, minPtmp = BezierMinDist(B[cnt][0], B[cnt][1], P)
+            if minDist >= dist :
+                minDist = dist
+                minP = minPtmp
+                cnt += 1
+                return MinDistTanBezier(cnt, B, P, minDist, len)
+            elif dist > minDist :
+                cnt -= 1
+                return cnt, minP, minDist
+            return cnt, minP, minDist
 
 
-uniqueObjectsLine1 = {}
-uniqueObjectsLine2 = {}
-ObjectsLine1 = {}
-ObjectsLine2 = {}
-uniqueObjectsBezier1 = {}
-uniqueObjectsBezier2 = {}
-ObjectsBezier1 = {}
-ObjectsBezier2 = {}
-uniqueObjectsArc1 = {}
-uniqueObjectsArc2 = {}
-ObjectsArc1 = {}
-ObjectsArc2 = {}
-uniqueObjectsCircle1 = {}
-uniqueObjectsCircle2 = {}
-ObjectCircle = {}
-ObjectCircle1 = {}
-ObjectCircle2 = {}
-uniqueObjectsEllipse1 = {}
-uniqueObjectsEllipse2 = {}
-ObjectEllipse1 = {}
-ObjectEllipse2 = {}
+        lenLine1 = len(line1)
+        lenLine2 = len(line2)
+        lenBezier1 = len(Bezier1)
+        lenBezier2 = len(Bezier2)
 
-equalObjectsLine = {}
-equalObjectsBezier = {}
+        visited = {}
+        #    elif visited[i[1]] == 1:
+        #        visited = DiffAll(i[1], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
 
-equalObjectsLine2 = {}
-equalObjectsBezier2 = {}
-#find closest point in lines array
+        absMaxDist = 0
+        t = Symbol('t')
+        for i in CP1 :
+            if not (i[0][0][0], i[0][0][1]) in visited :
+                visited, absMaxDist = ObjectComparison.DiffAllBezier((i[0][0][0], i[0][0][1]), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, -1, absMaxDist)
+            elif visited[(i[0][0][0], i[0][0][1])] == 1 :
+                visited, absMaxDist = ObjectComparison.DiffAllBezier((i[0][0][0], i[0][0][1]), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, -1, absMaxDist)
+
+        #for i in Bezier1:
+        #    if (i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)) in visited :
+        #        if visited[(i[-1][0].subs(t, 1), i[-1][1].subs(t, 1))] == 1 :
+        #            visited = DiffAll((i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
+
+        for i in range(lenLine2) :
+            if not i in ObjectsLine2 and not i in equalObjectsLine2 :
+                visited = ObjectComparison.OneFileObject(line2[i][0], line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
+
+        for i in range(lenBezier2) :
+            if not i in ObjectsBezier2 and not i in equalObjectsBezier2:
+                visited = ObjectComparison.OneFileObject((CP2[i][0][0][0], CP2[i][0][0][1]), line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
+
+        return visited, absMaxDist, equalObjectsBezier, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2
+
+        #new color of the first file : #20456d
+    def PlotFiles(Bezier1, CP1, Bezier2, CP2, equalObjectsBezier, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2) :
+        nreqf = 0.0
+        nr1f = 1.0
+        nr2f = 2.0
+        nrf = 3.0
+
+        print()
+        lenBezier1 = len(Bezier1)
+        for i in range(lenBezier1) :
+            if i in equalObjectsBezier :
+                Plot.PlotBezier(CP1[i], '#60635d', 0.3, 'solid')
+                nreqf += 0.01
+                pos = int(round(len(Bezier1[i]) / 5))
+                a = Bezier1[i][pos][0].subs(t, 0.5)
+                b = Bezier1[i][pos][1].subs(t, 0.5)
+                ax.annotate(round(nreqf, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
+                    color = '#60635d', ha = 'center', va = 'center', weight = 'bold')
+                print(round(nreqf, 2), ' - ', equalObjectsBezier[i] / 10, 'cm')
+            if i in ObjectsBezier1 :
+                Plot.PlotBezier(CP1[i], firstFileCol, 0.5, 'solid')
+                nr1f += 0.01
+                pos = int(round(len(Bezier1[i]) / 5))
+                a = Bezier1[i][pos][0].subs(t, 0.5)
+                b = Bezier1[i][pos][1].subs(t, 0.5)
+                ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
+                    color = firstFileCol, ha = 'center', va = 'center', weight = 'bold')
+                print(round(nr1f, 2), ' - ', ObjectsBezier1[i] / 10, 'cm')
+            if i in uniqueObjectsBezier1 :
+                Plot.PlotBezier(CP1[i], firstFileCol, 0.5, (0, (3, 5, 1, 5)))
+                nr1f += 0.01
+                pos = int(round(len(Bezier1[i]) / 2))
+                a = Bezier1[i][pos][0].subs(t, 0.5)
+                b = Bezier1[i][pos][1].subs(t, 0.5)
+                ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
+                    color = firstFileCol, ha = 'center', va = 'center', weight = 'bold')
+                print(round(nr1f, 2), ' - ', uniqueObjectsBezier1[i] / 10, 'cm')
+
+        print()
+        lenBezier2 = len(Bezier2)
+        for i in range(lenBezier2) :
+            if i in ObjectsBezier2 :
+                Plot.PlotBezier(CP2[i], secondFileCol, 0.5, 'solid')
+                nr2f += 0.01
+                pos = int(round(len(Bezier2[i]) / 4))
+                a = Bezier2[i][pos][0].subs(t, 0.5)
+                b = Bezier2[i][pos][1].subs(t, 0.5)
+                ax.annotate(round(nr2f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
+                    color = '#59080a', ha = 'center', va = 'center', weight = 'bold')
+                print(round(nr2f, 2), ' - ', ObjectsBezier2[i] / 10, 'cm')
+            if i in uniqueObjectsBezier2 :
+                Plot.PlotBezier(CP2[i], secondFileCol, 0.5, (0, (3, 5, 1, 5)))
+                nr2f += 0.01
+                pos = int(round(len(Bezier2[i]) / 2))
+                a = Bezier2[i][pos][0].subs(t, 0.5)
+                b = Bezier2[i][pos][1].subs(t, 0.5)
+                ax.annotate(round(nr2f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
+                    color = '#59080a', ha = 'center', va = 'center', weight = 'bold')
+                print(round(nr2f, 2), ' - ', uniqueObjectsBezier2[i] / 10, 'cm')
+
+        t = Symbol('t')
+        for i in CP1 :
+            Plot.PlotBezier(i, firstFileCol, 0.2, 'solid')
+            plt.plot(i[0][0][0], i[0][0][1], 'o', ms = 1, color = firstFileCol, alpha = 0.7)
+            plt.plot(i[-1][3][0], i[-1][3][1], 'o', ms = 1, color = firstFileCol, alpha = 0.7)
+        for i in CP2 :
+            Plot.PlotBezier(i, secondFileCol, 0.2, 'solid')
+            plt.plot(i[0][0][0], i[0][0][1], 'o', ms = 1, color = secondFileCol, alpha = 0.7)
+            plt.plot(i[-1][3][0], i[-1][3][1], 'o', ms = 1, color = secondFileCol, alpha = 0.7)
+
+        print()
+        print("MAX Distance")
+        print(absMaxDist / 10)
+
+        return
+
+    def WriteLog(fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1) :
+        logging.info('--- {0}   {1}'.format(fileName1, fileName2))
+        if absMaxDist / 10 > maxOffset :
+            logging.info('  Max Distance: {0} cm'.format(absMaxDist / 10))
+            logging.info('  Unique Object Sum: {0} + {1}'.format(len(uniqueObjectsBezier1), len(uniqueObjectsBezier2)))
+            logging.info('  Mismatching Objects Sum: {0}'.format(len(ObjectsBezier1)))
+        else:
+            logging.info('OK')
+        plt.show()
 
 
+def GetObjects(fileName1, fileName2) :
+    print("FILE1")
+    if fileName1[-3] == 'd' and fileName1[-2] == 'x' and fileName1[-1] == 'f' :
+        file1 = File1(fileName1)
+        points1, line1, Bezier1, CP1 = file1.CalculateObjects()
+    else :
+        file1 = File2(fileName1)
+        points1, line1, Bezier1, CP1 = file1.CalculateObjects()
+    print("FILE1")
+    print("FILE2")
+    if fileName2[-3] == 'd' and fileName2[-2] == 'x' and fileName2[-1] == 'f' :
+        file2 = File1(fileName2)
+        points2, line2, Bezier2, CP2 = file2.CalculateObjects()
+    else :
+        file2 = File2(fileName2)
+        points2, line2, Bezier2, CP2 = file2.CalculateObjects()
+    print("FILE2")
+
+    visited, absMaxDist, equalObjectsBezier, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2 = Files.Compare(points1, line1, Bezier1, CP1, points2, line2, Bezier2, CP2)
+    PlotFiles(Bezier1, CP1, Bezier2, CP2, equalObjectsBezier, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2)
+    WriteLog(fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1)
 
 
-#Min distance from given point to Bezier curve
-#given: cnt - nr of Bezier curve segment
-#       B - Bezier curve on which we need to find point on
-#       P - given point from which the closest line will be calculated
-#       minDist - that has been found already
-#       len - the length of B array
-#       minPtmp - just some point, that we dont need to create every time the function is called
-#       minP - coordinates of the closest point on Bezier curve to P
-def MinDistTanBezier(cnt, B, P, minDist, len, minPtmp, minP) :
-    if cnt > len - 1 :
-        return len - 1, minP, minDist
-    dist, minPtmp = BezierMinDist(B[cnt][0], B[cnt][1], P)
-    if minDist >= dist :
-        minDist = dist
-        minP = minPtmp
-        cnt += 1
-        return MinDistTanBezier(cnt, B, P, minDist, len)
-    elif dist > minDist :
-        cnt -= 1
-        return cnt, minP, minDist
-    return cnt, minP, minDist
+for filename in os.listdir(dir) :
+    if filename.endswith(".dxf") or (".svg") :
+        if isFile1 == False :
+            isFile1 = True
+            fileName1 = dir + '/' + filename
+            continue
+        else :
+            fileName2 = dir + '/' + filename
+            GetObjects(fileName1, fileName2)
 
-
-lenLine1 = len(line1)
-lenLine2 = len(line2)
-lenBezier1 = len(Bezier1)
-lenBezier2 = len(Bezier2)
-
-visited = {}
-#    elif visited[i[1]] == 1:
-#        visited = DiffAll(i[1], visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
-
-absMaxDist = 0
-t = Symbol('t')
-for i in CP1 :
-    if not (i[0][0][0], i[0][0][1]) in visited :
-        visited, absMaxDist = ObjectComparison.DiffAllBezier((i[0][0][0], i[0][0][1]), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, -1, absMaxDist)
-    elif visited[(i[0][0][0], i[0][0][1])] == 1 :
-        visited, absMaxDist = ObjectComparison.DiffAllBezier((i[0][0][0], i[0][0][1]), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, -1, absMaxDist)
-
-#for i in Bezier1:
-#    if (i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)) in visited :
-#        if visited[(i[-1][0].subs(t, 1), i[-1][1].subs(t, 1))] == 1 :
-#            visited = DiffAll((i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2)
-
-for i in range(lenLine2) :
-    if not i in ObjectsLine2 and not i in equalObjectsLine2 :
-        visited = ObjectComparison.OneFileObject(line2[i][0], line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
-
-for i in range(lenBezier2) :
-    if not i in ObjectsBezier2 and not i in equalObjectsBezier2:
-        visited = ObjectComparison.OneFileObject((CP2[i][0][0][0], CP2[i][0][0][1]), line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
-
-#new color of the first file : #20456d
-
-nreqf = 0.0
-nr1f = 1.0
-nr2f = 2.0
-nrf = 3.0
-
-print()
-lenBezier1 = len(Bezier1)
-for i in range(lenBezier1) :
-    if i in equalObjectsBezier :
-        Plot.PlotBezier(CP1[i], '#60635d', 0.3, 'solid')
-        nreqf += 0.01
-        pos = int(round(len(Bezier1[i]) / 5))
-        a = Bezier1[i][pos][0].subs(t, 0.5)
-        b = Bezier1[i][pos][1].subs(t, 0.5)
-        ax.annotate(round(nreqf, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#60635d', ha = 'center', va = 'center', weight = 'bold')
-        print(round(nreqf, 2), ' - ', equalObjectsBezier[i] / 10, 'cm')
-    if i in ObjectsBezier1 :
-        Plot.PlotBezier(CP1[i], firstFileCol, 0.5, 'solid')
-        nr1f += 0.01
-        pos = int(round(len(Bezier1[i]) / 5))
-        a = Bezier1[i][pos][0].subs(t, 0.5)
-        b = Bezier1[i][pos][1].subs(t, 0.5)
-        ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = firstFileCol, ha = 'center', va = 'center', weight = 'bold')
-        print(round(nr1f, 2), ' - ', ObjectsBezier1[i] / 10, 'cm')
-    if i in uniqueObjectsBezier1 :
-        Plot.PlotBezier(CP1[i], firstFileCol, 0.5, (0, (3, 5, 1, 5)))
-        nr1f += 0.01
-        pos = int(round(len(Bezier1[i]) / 2))
-        a = Bezier1[i][pos][0].subs(t, 0.5)
-        b = Bezier1[i][pos][1].subs(t, 0.5)
-        ax.annotate(round(nr1f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = firstFileCol, ha = 'center', va = 'center', weight = 'bold')
-        print(round(nr1f, 2), ' - ', uniqueObjectsBezier1[i] / 10, 'cm')
-
-print()
-lenBezier2 = len(Bezier2)
-for i in range(lenBezier2) :
-    if i in ObjectsBezier2 :
-        Plot.PlotBezier(CP2[i], secondFileCol, 0.5, 'solid')
-        nr2f += 0.01
-        pos = int(round(len(Bezier2[i]) / 4))
-        a = Bezier2[i][pos][0].subs(t, 0.5)
-        b = Bezier2[i][pos][1].subs(t, 0.5)
-        ax.annotate(round(nr2f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#59080a', ha = 'center', va = 'center', weight = 'bold')
-        print(round(nr2f, 2), ' - ', ObjectsBezier2[i] / 10, 'cm')
-    if i in uniqueObjectsBezier2 :
-        Plot.PlotBezier(CP2[i], secondFileCol, 0.5, (0, (3, 5, 1, 5)))
-        nr2f += 0.01
-        pos = int(round(len(Bezier2[i]) / 2))
-        a = Bezier2[i][pos][0].subs(t, 0.5)
-        b = Bezier2[i][pos][1].subs(t, 0.5)
-        ax.annotate(round(nr2f, 2), xy = (a, b), xytext = (a, b), family = 'monospace',
-            color = '#59080a', ha = 'center', va = 'center', weight = 'bold')
-        print(round(nr2f, 2), ' - ', uniqueObjectsBezier2[i] / 10, 'cm')
-print()
-print("MAX Distance")
-print(absMaxDist/ 10)
-
-plt.show()
+    else :
+        continue
