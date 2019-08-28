@@ -15,7 +15,23 @@ import sys
 import logging
 
 
-logging.basicConfig(filename = "Comparison.log", format = '%(message)s', level = logging.INFO)
+if os.path.exists("info.log") :
+    os.remove("info.log")
+if os.path.exists("result.log") :
+    os.remove("result.log")
+handler = logging.FileHandler('result.log')
+handler.setFormatter(logging.Formatter('%(message)s'))
+resultlog = logging.getLogger('resultlog')
+resultlog.setLevel(logging.INFO)
+resultlog.addHandler(handler)
+
+handler = logging.FileHandler('info.log')
+handler.setFormatter(logging.Formatter('%(message)s'))
+infolog = logging.getLogger('infolog')
+infolog.setLevel(logging.INFO)
+infolog.addHandler(handler)
+#logging.basicConfig(filename = "info.log", format = '%(message)s', level = logging.INFO)
+
 
 maxOffset = 0.2 #cm maximal acceptable similar object offset
 
@@ -48,33 +64,6 @@ dir = sys.argv[1]
 
 firstFileCol = '#000ec7'
 secondFileCol = '#bc0e13'
-
-
-#Graph formatting
-def MyForm(x, p):
-    return x/10
-
-plt.rcParams['xtick.bottom'] = plt.rcParams['xtick.labelbottom'] = False
-plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
-major_ticks = np.arange(-1000, 1000, 100)
-minor_ticks = np.arange(-1000, 1000, 10)
-ax.set_xticks(major_ticks)
-ax.set_xticks(minor_ticks, minor = True)
-ax.set_yticks(major_ticks)
-ax.set_yticks(minor_ticks, minor = True)
-ax.grid(which = 'both')
-ax.grid(which = 'major', alpha = 0.5)
-ax.grid(which = 'minor', alpha = 0.2)
-ax.get_xaxis().set_major_formatter(
-    mpl.ticker.FuncFormatter(MyForm))
-ax.get_yaxis().set_major_formatter(
-    mpl.ticker.FuncFormatter(MyForm))
-
-
-
-
 
 
 
@@ -1977,6 +1966,7 @@ class BezierCalculations(Calculations) :
         nr1 = -lineSt1
         nr2 = -lineSt2
         maxDist = 0
+        t = Symbol('t')
         if lineSt1 == 1 :
             cnt1 = -cnt1
             cnts1 = -1
@@ -2166,7 +2156,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
         pass
 
     #Adds objects to unique object type set
-    def OneFileObject(P, line, Bezier, CP, visited, fnr, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2) :
+    def OneFileObject(P, line, Bezier, CP, visited, fnr, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2) :
         lenCP = len(CP)
         for i in range(lenCP) :
             if (P == (CP[i][0][0][0], CP[i][0][0][1]) or (P == (CP[i][-1][3][0], CP[i][-1][3][1]))) :
@@ -2221,7 +2211,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
         return value
 
 
-    def DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, minDist, absMaxDist) :
+    def DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2, minDist, absMaxDist) :
         #Check if given point isn`t already visited
         if P1 in visited :
             if visited[P1] == 2 :
@@ -2234,14 +2224,14 @@ class ObjectComparison(BezierCalculations, Calculations) :
             print("Closest Point")
         else :
             min = -1
-            visited = ObjectComparison.OneFileObject(P1, line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
-            return visited, absMaxDist
+            visited = ObjectComparison.OneFileObject(P1, line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2)
+            return visited, absMaxDist, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2
         #if the point is too far, then probably that is not the respective point
         if min >= 30 :
             print("min")
-            visited = ObjectComparison.OneFileObject(P1, line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
+            visited = ObjectComparison.OneFileObject(P1, line1, Bezier1, CP1, visited, 1, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2)
             print("min")
-            return visited, absMaxDist
+            return visited, absMaxDist, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2
         #Find all lines with one of the enpoints matching the given point
         lenLine1 = len(line1)
         lenLine2 = len(line2)
@@ -2401,7 +2391,7 @@ class ObjectComparison(BezierCalculations, Calculations) :
 
 
             if (P2Ind == -1) :
-                visited, absMaxDist = ObjectComparison.DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, min, absMaxDist)
+                visited, absMaxDist, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2 = ObjectComparison.DiffAllBezier(P1, visited, line1, line2, Bezier1, Bezier2, CP1, CP2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier, ObjectsBezier1, ObjectsBezier2, min, absMaxDist)
     #            PlotBezier(CP1[i], '#055583', 1, (0, (3, 5, 1, 5)))
                 t = Symbol('t')
     #            visited[(CP1[i][-lineSt1][lineSt1 * 3][0], CP1[i][-lineSt1][lineSt1 * 3][1])] = 2
@@ -2458,13 +2448,40 @@ class ObjectComparison(BezierCalculations, Calculations) :
     #            BezierDiff(Bezier1[i], int1, lineSt1, Bezier2[P2Ind], int2, lineSt2, CP1, CP2)
         visited[P2] = 1
         visited[P1] = 2
-        return visited, absMaxDist
+        return visited, absMaxDist, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2
+
+
 
 class Files(ObjectComparison, Plot):
     def __init(files) :
         pass
 
+
     def Compare(points1, line1, Bezier1, CP1, points2, line2, Bezier2, CP2) :
+
+
+        #Min distance from given point to Bezier curve
+        #given: cnt - nr of Bezier curve segment
+        #       B - Bezier curve on which we need to find point on
+        #       P - given point from which the closest line will be calculated
+        #       minDist - that has been found already
+        #       len - the length of B array
+        #       minPtmp - just some point, that we dont need to create every time the function is called
+        #       minP - coordinates of the closest point on Bezier curve to P
+        #def MinDistTanBezier(cnt, B, P, minDist, len, minPtmp, minP) :
+        #    if cnt > len - 1 :
+        #        return len - 1, minP, minDist
+        #    dist, minPtmp = BezierMinDist(B[cnt][0], B[cnt][1], P)
+        #    if minDist >= dist :
+        #        minDist = dist
+        #        minP = minPtmp
+        #        cnt += 1
+        #        return MinDistTanBezier(cnt, B, P, minDist, len)
+        #    elif dist > minDist :
+        #        cnt -= 1
+        #        return cnt, minP, minDist
+        #    return cnt, minP, minDist
+
         uniqueObjectsLine1 = {}
         uniqueObjectsLine2 = {}
         ObjectsLine1 = {}
@@ -2493,30 +2510,6 @@ class Files(ObjectComparison, Plot):
         equalObjectsLine2 = {}
         equalObjectsBezier2 = {}
 
-
-        #Min distance from given point to Bezier curve
-        #given: cnt - nr of Bezier curve segment
-        #       B - Bezier curve on which we need to find point on
-        #       P - given point from which the closest line will be calculated
-        #       minDist - that has been found already
-        #       len - the length of B array
-        #       minPtmp - just some point, that we dont need to create every time the function is called
-        #       minP - coordinates of the closest point on Bezier curve to P
-        def MinDistTanBezier(cnt, B, P, minDist, len, minPtmp, minP) :
-            if cnt > len - 1 :
-                return len - 1, minP, minDist
-            dist, minPtmp = BezierMinDist(B[cnt][0], B[cnt][1], P)
-            if minDist >= dist :
-                minDist = dist
-                minP = minPtmp
-                cnt += 1
-                return MinDistTanBezier(cnt, B, P, minDist, len)
-            elif dist > minDist :
-                cnt -= 1
-                return cnt, minP, minDist
-            return cnt, minP, minDist
-
-
         lenLine1 = len(line1)
         lenLine2 = len(line2)
         lenBezier1 = len(Bezier1)
@@ -2530,9 +2523,9 @@ class Files(ObjectComparison, Plot):
         t = Symbol('t')
         for i in CP1 :
             if not (i[0][0][0], i[0][0][1]) in visited :
-                visited, absMaxDist = ObjectComparison.DiffAllBezier((i[0][0][0], i[0][0][1]), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, -1, absMaxDist)
+                visited, absMaxDist, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2 = ObjectComparison.DiffAllBezier((i[0][0][0], i[0][0][1]), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2, -1, absMaxDist)
             elif visited[(i[0][0][0], i[0][0][1])] == 1 :
-                visited, absMaxDist = ObjectComparison.DiffAllBezier((i[0][0][0], i[0][0][1]), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, -1, absMaxDist)
+                visited, absMaxDist, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2 = ObjectComparison.DiffAllBezier((i[0][0][0], i[0][0][1]), visited, line1, line2, Bezier1, Bezier2, CP1, CP2,uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2, -1, absMaxDist)
 
         #for i in Bezier1:
         #    if (i[-1][0].subs(t, 1), i[-1][1].subs(t, 1)) in visited :
@@ -2541,21 +2534,21 @@ class Files(ObjectComparison, Plot):
 
         for i in range(lenLine2) :
             if not i in ObjectsLine2 and not i in equalObjectsLine2 :
-                visited = ObjectComparison.OneFileObject(line2[i][0], line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
+                visited = ObjectComparison.OneFileObject(line2[i][0], line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2)
 
         for i in range(lenBezier2) :
             if not i in ObjectsBezier2 and not i in equalObjectsBezier2:
-                visited = ObjectComparison.OneFileObject((CP2[i][0][0][0], CP2[i][0][0][1]), line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2)
+                visited = ObjectComparison.OneFileObject((CP2[i][0][0][0], CP2[i][0][0][1]), line2, Bezier2, CP2, visited, 2, uniqueObjectsLine1, uniqueObjectsLine2, uniqueObjectsBezier1, uniqueObjectsBezier2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2)
 
-        return visited, absMaxDist, equalObjectsBezier, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2
+        return visited, absMaxDist, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2
 
         #new color of the first file : #20456d
-    def PlotFiles(Bezier1, CP1, Bezier2, CP2, equalObjectsBezier, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2) :
+    def PlotFiles(absMaxDist, Bezier1, CP1, Bezier2, CP2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2) :
         nreqf = 0.0
         nr1f = 1.0
         nr2f = 2.0
         nrf = 3.0
-
+        t = Symbol('t')
         print()
         lenBezier1 = len(Bezier1)
         for i in range(lenBezier1) :
@@ -2625,15 +2618,16 @@ class Files(ObjectComparison, Plot):
 
         return
 
-    def WriteLog(fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1) :
-        logging.info('--- {0}   {1}'.format(fileName1, fileName2))
+    def WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1) :
+        infolog.info('{0}--- {1}   {2}'.format(nr, fileName1, fileName2))
         if absMaxDist / 10 > maxOffset :
-            logging.info('  Max Distance: {0} cm'.format(absMaxDist / 10))
-            logging.info('  Unique Object Sum: {0} + {1}'.format(len(uniqueObjectsBezier1), len(uniqueObjectsBezier2)))
-            logging.info('  Mismatching Objects Sum: {0}'.format(len(ObjectsBezier1)))
+            infolog.info('  Max Distance: {0} cm'.format(absMaxDist / 10))
+            infolog.info('  Unique Object Sum: {0} + {1}'.format(len(uniqueObjectsBezier1), len(uniqueObjectsBezier2)))
+            infolog.info('  Mismatching Objects Sum: {0}'.format(len(ObjectsBezier1)))
+            return 0
         else:
-            logging.info('OK')
-        plt.show()
+            infolog.info('OK')
+            return 1
 
 
 def GetObjects(fileName1, fileName2) :
@@ -2643,6 +2637,7 @@ def GetObjects(fileName1, fileName2) :
         points1, line1, Bezier1, CP1 = file1.CalculateObjects()
     else :
         file1 = File2(fileName1)
+        Files()
         points1, line1, Bezier1, CP1 = file1.CalculateObjects()
     print("FILE1")
     print("FILE2")
@@ -2654,11 +2649,15 @@ def GetObjects(fileName1, fileName2) :
         points2, line2, Bezier2, CP2 = file2.CalculateObjects()
     print("FILE2")
 
-    visited, absMaxDist, equalObjectsBezier, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2 = Files.Compare(points1, line1, Bezier1, CP1, points2, line2, Bezier2, CP2)
-    PlotFiles(Bezier1, CP1, Bezier2, CP2, equalObjectsBezier, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2)
-    WriteLog(fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1)
+    visited, absMaxDist, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2 = Files.Compare(points1, line1, Bezier1, CP1, points2, line2, Bezier2, CP2)
+    Files.PlotFiles(absMaxDist, Bezier1, CP1, Bezier2, CP2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2)
+    return absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1
 
-
+def MyForm(x, p):
+    return x/10
+nr = 1
+isOkCnt = 0
+mismatchFiles = {}
 for filename in os.listdir(dir) :
     if filename.endswith(".dxf") or (".svg") :
         if isFile1 == False :
@@ -2666,8 +2665,37 @@ for filename in os.listdir(dir) :
             fileName1 = dir + '/' + filename
             continue
         else :
+            #Graph formatting
+            plt.rcParams['xtick.bottom'] = plt.rcParams['xtick.labelbottom'] = False
+            plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            major_ticks = np.arange(-1000, 1000, 100)
+            minor_ticks = np.arange(-1000, 1000, 10)
+            ax.set_xticks(major_ticks)
+            ax.set_xticks(minor_ticks, minor = True)
+            ax.set_yticks(major_ticks)
+            ax.set_yticks(minor_ticks, minor = True)
+            ax.grid(which = 'both')
+            ax.grid(which = 'major', alpha = 0.5)
+            ax.grid(which = 'minor', alpha = 0.2)
+            ax.get_xaxis().set_major_formatter(
+                mpl.ticker.FuncFormatter(MyForm))
+            ax.get_yaxis().set_major_formatter(
+                mpl.ticker.FuncFormatter(MyForm))
             fileName2 = dir + '/' + filename
-            GetObjects(fileName1, fileName2)
-
+            absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1 = GetObjects(fileName1, fileName2)
+            isOk = Files.WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1)
+            isOkCnt += isOk
+            if isOk == 0:
+                mismatchFiles[fileName2] = absMaxDist / 10
+            nr += 1
+            plt.show()
     else :
         continue
+
+resultlog.info('Number of Matching files (max offset: {2} cm):      {0} / {1}'.format(isOkCnt, nr - 1, maxOffset))
+if isOkCnt != nr - 1 :
+    resultlog.info('files that don`t match with {0}: '.format(fileName2))
+    for filename in mismatchFiles :
+        resultlog.info('max offset: {0} cm   filename: {1}'.format(mismatchFiles[filename], filename.replace(dir + '/', '')))

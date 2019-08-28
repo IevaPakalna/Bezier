@@ -1,0 +1,6 @@
+1--- testFiles/DS123-17.svg   testFiles/PG173-35.svg
+  Max Distance: 2.598187271101912 cm
+  Unique Object Sum: 14 + 14
+  Mismatching Objects Sum: 1
+2--- testFiles/DS123-17.svg   testFiles/PGS31-25.svg
+OK
