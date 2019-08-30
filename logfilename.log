@@ -1,0 +1,68 @@
+Number of Matching files (max offset: 0.4 cm):      1 / 2
+
+files that don`t match:
+1. max offset: 2.598187271101912 cm   filename: ('DS123-17.svg', 'DS123-17.svg')
+
+1 files (in testFiles) with unfound comparable file: 
+1    PG173-35.svg
+)a
+m)
+cm
+1
+.1
+0.1
+0.1, 0.4, False
+)a
+m)
+cm
+2
+.2
+0.2
+0.2, 0.4, False
+)a
+m)
+cm
+3
+.3
+0.3
+0.3, 0.4, False
+Ka
+OK
+ O
+% 
+0%
+.0
+0.
+50
+ 5
+) 
+m)
+cm
+4
+.4
+0.4
+0.4, 0.4, True
+)a
+m)
+cm
+5
+.5
+0.5
+0.5, 0.4, False
+Oa
+ O
+% 
+0%
+.0
+0.
+50
+ 5
+  
+  
+) 
+m)
+cm
+8
+.8
+0.8
+0.8, 0.4, False

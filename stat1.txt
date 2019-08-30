@@ -1,0 +1,6 @@
+3 / 6 compared files match (max offset 0.1 cm)
+5 / 10 compared files match (max offset 0.2 cm)
+3 / 6 compared files match (max offset 0.3 cm)
+3 / 6 compared files match (max offset 0.4 cm) 50.0% OK
+3 / 6 compared files match (max offset 0.5 cm)
+1 / 2 compared files match (max offset 0.8 cm)   50.0% OK

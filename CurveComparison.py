@@ -13,30 +13,55 @@ import subprocess
 import os
 import sys
 import logging
+import fileinput
 
 
-if os.path.exists("info.log") :
-    os.remove("info.log")
-if os.path.exists("result.log") :
-    os.remove("result.log")
-handler = logging.FileHandler('result.log')
+maxOffset = 0.4 #cm maximal acceptable similar object offset
+
+
+
+
+filename1 = sys.argv[1]
+filename2 = sys.argv[2]
+logfilename = sys.argv[3]
+showPlot = sys.argv[4].replace('showPlot=', '')
+if showPlot == "True" :
+    showPlot = True
+else:
+    showPlot = False
+
+statFile = sys.argv[5]
+if not os.path.exists(statFile):
+    stat = open(statFile, 'w')
+    stat.close()
+
+statInfo = sys.argv[6]
+handler = logging.FileHandler(statInfo)
 handler.setFormatter(logging.Formatter('%(message)s'))
-resultlog = logging.getLogger('resultlog')
+statInfolog = logging.getLogger("statInfolog")
+statInfolog.setLevel(logging.INFO)
+statInfolog.addHandler(handler)
+
+
+if os.path.exists(logfilename + "info.txt") :
+    os.remove(logfilename + "info.txt")
+if os.path.exists(logfilename + ".log") :
+    os.remove(logfilename + ".log")
+
+handler = logging.FileHandler(logfilename + '.log')
+handler.setFormatter(logging.Formatter('%(message)s'))
+resultlog = logging.getLogger("resultlog")
 resultlog.setLevel(logging.INFO)
 resultlog.addHandler(handler)
 
-handler = logging.FileHandler('info.log')
+handler = logging.FileHandler(logfilename + 'INFO.txt')
 handler.setFormatter(logging.Formatter('%(message)s'))
-infolog = logging.getLogger('infolog')
+infolog = logging.getLogger("infolog")
 infolog.setLevel(logging.INFO)
 infolog.addHandler(handler)
 #logging.basicConfig(filename = "info.log", format = '%(message)s', level = logging.INFO)
 
 
-maxOffset = 0.2 #cm maximal acceptable similar object offset
-
-isFile1 = False
-dir = sys.argv[1]
 
 
 
@@ -2655,47 +2680,186 @@ def GetObjects(fileName1, fileName2) :
 
 def MyForm(x, p):
     return x/10
+
+if not os.path.exists(filename1):
+    infolog.error('ERROR:     {0} not found'.format(filename1))
+if not os.path.exists(filename2):
+    infolog.error('ERROR:     {0} not found'.format(filename2))
+
+
 nr = 1
 isOkCnt = 0
 mismatchFiles = {}
-for filename in os.listdir(dir) :
-    if filename.endswith(".dxf") or (".svg") :
-        if isFile1 == False :
-            isFile1 = True
-            fileName1 = dir + '/' + filename
-            continue
+
+if (filename1.endswith(".dxf") or filename1.endswith(".svg")) and (filename2.endswith(".dxf") or filename2.endswith(".svg")) :
+    fileName1 = filename1
+    fileName2 = filename2
+    #Graph formatting
+    plt.rcParams['xtick.bottom'] = plt.rcParams['xtick.labelbottom'] = False
+    plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    major_ticks = np.arange(-1000, 1000, 100)
+    minor_ticks = np.arange(-1000, 1000, 10)
+    ax.set_xticks(major_ticks)
+    ax.set_xticks(minor_ticks, minor = True)
+    ax.set_yticks(major_ticks)
+    ax.set_yticks(minor_ticks, minor = True)
+    ax.grid(which = 'both')
+    ax.grid(which = 'major', alpha = 0.5)
+    ax.grid(which = 'minor', alpha = 0.2)
+    ax.get_xaxis().set_major_formatter(
+        mpl.ticker.FuncFormatter(MyForm))
+    ax.get_yaxis().set_major_formatter(
+        mpl.ticker.FuncFormatter(MyForm))
+
+    absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1 = GetObjects(fileName1, fileName2)
+    isOk = Files.WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1)
+    if showPlot == True :
+        plt.show()
+elif not (filename1.endswith(".dxf") or filename1.endswith(".svg")) or (filename2.endswith(".dxf") or filename2.endswith(".svg")) :
+    unfoundcnt = 0
+    unfoundPair = []
+    for filename in os.listdir(filename1) :
+        if filename.endswith(".dxf") or filename.endswith(".svg") :
+            fileName1 = filename1 + '/' + filename
+            existsFile2 = False
+            for filenametmp in os.listdir(filename2) :
+                if (filenametmp.endswith(".dxf") or filenametmp.endswith(".svg")) and (filenametmp.startswith(filename)):
+
+                    #Graph formatting
+                    plt.rcParams['xtick.bottom'] = plt.rcParams['xtick.labelbottom'] = False
+                    plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
+                    fig = plt.figure()
+                    ax = fig.add_subplot(1, 1, 1)
+                    major_ticks = np.arange(-1000, 1000, 100)
+                    minor_ticks = np.arange(-1000, 1000, 10)
+                    ax.set_xticks(major_ticks)
+                    ax.set_xticks(minor_ticks, minor = True)
+                    ax.set_yticks(major_ticks)
+                    ax.set_yticks(minor_ticks, minor = True)
+                    ax.grid(which = 'both')
+                    ax.grid(which = 'major', alpha = 0.5)
+                    ax.grid(which = 'minor', alpha = 0.2)
+                    ax.get_xaxis().set_major_formatter(
+                        mpl.ticker.FuncFormatter(MyForm))
+                    ax.get_yaxis().set_major_formatter(
+                        mpl.ticker.FuncFormatter(MyForm))
+
+                    fileName2 = filename2 + '/' + filenametmp
+                    absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1 = GetObjects(fileName1, fileName2)
+                    isOk = Files.WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1)
+                    isOkCnt += isOk
+                    if isOk == 0:
+                        mismatchFiles[(filename, filenametmp)] = absMaxDist / 10
+                    nr += 1
+                    existsFile2 = True
+                    if showPlot == True :
+                        plt.show()
+            if existsFile2 == False :
+                unfoundcnt += 1
+                unfoundPair.append(filename)
+                infolog.error('ERROR:     matching file not found for {0}'.format(filename))
         else :
-            #Graph formatting
-            plt.rcParams['xtick.bottom'] = plt.rcParams['xtick.labelbottom'] = False
-            plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
-            fig = plt.figure()
-            ax = fig.add_subplot(1, 1, 1)
-            major_ticks = np.arange(-1000, 1000, 100)
-            minor_ticks = np.arange(-1000, 1000, 10)
-            ax.set_xticks(major_ticks)
-            ax.set_xticks(minor_ticks, minor = True)
-            ax.set_yticks(major_ticks)
-            ax.set_yticks(minor_ticks, minor = True)
-            ax.grid(which = 'both')
-            ax.grid(which = 'major', alpha = 0.5)
-            ax.grid(which = 'minor', alpha = 0.2)
-            ax.get_xaxis().set_major_formatter(
-                mpl.ticker.FuncFormatter(MyForm))
-            ax.get_yaxis().set_major_formatter(
-                mpl.ticker.FuncFormatter(MyForm))
-            fileName2 = dir + '/' + filename
-            absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1 = GetObjects(fileName1, fileName2)
-            isOk = Files.WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1)
-            isOkCnt += isOk
-            if isOk == 0:
-                mismatchFiles[fileName2] = absMaxDist / 10
-            nr += 1
-            plt.show()
-    else :
-        continue
+            continue
+else :
+    infolog.error('ERROR:     given file types don´t match')
+
+
 
 resultlog.info('Number of Matching files (max offset: {2} cm):      {0} / {1}'.format(isOkCnt, nr - 1, maxOffset))
 if isOkCnt != nr - 1 :
-    resultlog.info('files that don`t match with {0}: '.format(fileName2))
-    for filename in mismatchFiles :
-        resultlog.info('max offset: {0} cm   filename: {1}'.format(mismatchFiles[filename], filename.replace(dir + '/', '')))
+    resultlog.info('')
+    resultlog.info('files that don`t match:'.format(fileName2))
+    cnt = 0
+    for filenames in mismatchFiles :
+        cnt += 1
+        resultlog.info('{0}. max offset: {1} cm   filename: {2}'.format(cnt, mismatchFiles[filenames], filenames))
+if unfoundcnt > 0:
+    resultlog.info('')
+    resultlog.info("{0} files (in {1}) with unfound comparable file: ".format(unfoundcnt, filename1))
+    cnt = 0
+    for filename in unfoundPair :
+        cnt += 1
+        resultlog.info('{0}    {1}'.format(cnt, filename))
+
+stat = open(statFile, "r")
+textLines = stat.readlines()
+linecnt = len(textLines)
+
+if len(textLines) == 0:
+    stat.close()
+    stat = open(statFile, "w")
+    stat.write("{0} / {1} compared files match (max offset {2} cm)".format(isOkCnt, nr - 1, maxOffset))
+else :
+    stat.close()
+    difOffset = True
+    print(len(textLines))
+    stat = fileinput.input(statFile, inplace = True)
+    for n, textline in enumerate(stat, start = 0):
+        if len(textline) < 5 :
+            continue
+        statOk = ''
+        i = 0
+        while textline[i] != ' ':
+            statOk += textline[i]
+            i += 1
+        statOk = int(statOk)
+
+        statcnt = ''
+        i += 3
+        while textline[i] != ' ':
+            statcnt += textline[i]
+            i += 1
+        statcnt = int(statcnt)
+
+        pastOffset = ''
+        i = len(textline) - 2
+        tmp = "aa"
+        while tmp != "cm" :
+            tmp = textline[i] + tmp[0]
+            resultlog.info(tmp)
+            i -= 1
+        i -= 1
+        while textline[i] != ' ':
+            pastOffset = textline[i] + pastOffset
+            i -= 1
+            resultlog.info(pastOffset)
+        pastOffset = round(float(pastOffset), 2)
+        resultlog.info("{0}, {1}, {2}".format(pastOffset, maxOffset, pastOffset == maxOffset))
+        if pastOffset == maxOffset :
+            difOffset = False
+        #stat.close()
+        #stat = open(statFile, "w")
+            if n == 0 :
+                print("{0} / {1} compared files match (max offset {2} cm)   {3}% OK".format(statOk + isOkCnt, statcnt + nr - 1, maxOffset, (100 / (statcnt + nr - 1) * (statOk + isOkCnt))), end = '')
+            else :
+                print("\n{0} / {1} compared files match (max offset {2} cm) {3}% OK".format(statOk + isOkCnt, statcnt + nr - 1, maxOffset, (100 / (statcnt + nr - 1) * (statOk + isOkCnt))), end = '')
+        #textline in fileinput.input(statFile, inplace = True)
+            #textline = ("{0} / {1} compared files match (max offset {2} cm)\n".format(statOk + isOkCnt, statcnt + nr - 1, maxOffset)) + textline.rstrip('\n')
+            continue
+
+        if pastOffset > maxOffset and difOffset == True:
+            difOffset = False
+            if n == 0 :
+                print("{0} / {1} compared files match (max offset {2} cm)   {3}% OK".format(isOkCnt, nr - 1, maxOffset, 100 / (nr - 1) * isOkCnt))
+                print(textline.replace('\n', ''), end = '')
+            else :
+                print("\n{0} / {1} compared files match (max offset {2} cm) {3}% OK".format(isOkCnt, nr - 1, maxOffset, 100 / (nr - 1) * isOkCnt))
+                print(textline.replace('\n', ''), end = '')
+            #print(textline, end = '')
+            continue
+        if difOffset == True and n == linecnt - 1:
+            #print(textline, end = '')
+            if n == 0 :
+                print(textline.replace('\n', ''))
+                print("{0} / {1} compared files match (max offset {2} cm)   {3}% OK".format(isOkCnt, nr - 1, maxOffset, 100 / (nr - 1) * isOkCnt), end = '')
+            else :
+                print("\n{0}".format(textline.replace('\n', '')))
+                print("{0} / {1} compared files match (max offset {2} cm)   {3}% OK".format(isOkCnt, nr - 1, maxOffset, 100 / (nr - 1) * isOkCnt), end = '')
+            continue
+        if n == 0 :
+            print(textline.replace('\n', ''), end = '')
+        else :
+            print("\n{0}".format(textline.replace('\n', '')), end = '')
+stat.close()
