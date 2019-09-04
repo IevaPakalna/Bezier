@@ -20,45 +20,29 @@ maxOffset = 0.4 #cm maximal acceptable similar object offset
 
 
 
-
 filename1 = sys.argv[1]
 filename2 = sys.argv[2]
-logfilename = sys.argv[3]
-showPlot = sys.argv[4].replace('showPlot=', '')
+showPlot = sys.argv[3].replace('showPlot=', '')
 if showPlot == "True" :
     showPlot = True
 else:
     showPlot = False
 
-statFile = sys.argv[5]
+statFile = sys.argv[4]
 if not os.path.exists(statFile):
     stat = open(statFile, 'w')
     stat.close()
 
-statInfo = sys.argv[6]
-handler = logging.FileHandler(statInfo)
+handler = logging.FileHandler(statFile.replace('.log', '_INFO.log'))
 handler.setFormatter(logging.Formatter('%(message)s'))
 statInfolog = logging.getLogger("statInfolog")
 statInfolog.setLevel(logging.INFO)
 statInfolog.addHandler(handler)
 
+maxOffset = float(sys.argv[5].replace('maxOffset(cm)=', ''))
 
-if os.path.exists(logfilename + "info.txt") :
-    os.remove(logfilename + "info.txt")
-if os.path.exists(logfilename + ".log") :
-    os.remove(logfilename + ".log")
 
-handler = logging.FileHandler(logfilename + '.log')
-handler.setFormatter(logging.Formatter('%(message)s'))
-resultlog = logging.getLogger("resultlog")
-resultlog.setLevel(logging.INFO)
-resultlog.addHandler(handler)
 
-handler = logging.FileHandler(logfilename + 'INFO.txt')
-handler.setFormatter(logging.Formatter('%(message)s'))
-infolog = logging.getLogger("infolog")
-infolog.setLevel(logging.INFO)
-infolog.addHandler(handler)
 #logging.basicConfig(filename = "info.log", format = '%(message)s', level = logging.INFO)
 
 
@@ -2644,14 +2628,14 @@ class Files(ObjectComparison, Plot):
         return
 
     def WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1) :
-        infolog.info('{0}--- {1}   {2}'.format(nr, fileName1, fileName2))
+        resultlog.info('{0}--- {1}   {2}'.format(nr, fileName1, fileName2))
         if absMaxDist / 10 > maxOffset :
-            infolog.info('  Max Distance: {0} cm'.format(absMaxDist / 10))
-            infolog.info('  Unique Object Sum: {0} + {1}'.format(len(uniqueObjectsBezier1), len(uniqueObjectsBezier2)))
-            infolog.info('  Mismatching Objects Sum: {0}'.format(len(ObjectsBezier1)))
+            resultlog.info('  Max Distance: {0} cm'.format(absMaxDist / 10))
+            resultlog.info('  Unique Object Sum: {0} + {1}'.format(len(uniqueObjectsBezier1), len(uniqueObjectsBezier2)))
+            resultlog.info('  Mismatching Objects Sum: {0}'.format(len(ObjectsBezier1)))
             return 0
         else:
-            infolog.info('OK')
+            resultlog.info('OK')
             return 1
 
 
@@ -2660,26 +2644,31 @@ def GetObjects(fileName1, fileName2) :
     if fileName1[-3] == 'd' and fileName1[-2] == 'x' and fileName1[-1] == 'f' :
         file1 = File1(fileName1)
         points1, line1, Bezier1, CP1 = file1.CalculateObjects()
+        fileName1 = fileName1.replace('.dxf', '')
     else :
         file1 = File2(fileName1)
         Files()
         points1, line1, Bezier1, CP1 = file1.CalculateObjects()
+        fileName1 = fileName1.replace('.svg', '')
     print("FILE1")
     print("FILE2")
     if fileName2[-3] == 'd' and fileName2[-2] == 'x' and fileName2[-1] == 'f' :
         file2 = File1(fileName2)
         points2, line2, Bezier2, CP2 = file2.CalculateObjects()
+        fileName2 = fileName1.replace('.dxf', '')
     else :
         file2 = File2(fileName2)
         points2, line2, Bezier2, CP2 = file2.CalculateObjects()
+        fileName2 = fileName1.replace('.svg', '')
     print("FILE2")
 
     visited, absMaxDist, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2 = Files.Compare(points1, line1, Bezier1, CP1, points2, line2, Bezier2, CP2)
     Files.PlotFiles(absMaxDist, Bezier1, CP1, Bezier2, CP2, equalObjectsBezier, equalObjectsBezier2, ObjectsBezier1, ObjectsBezier2, uniqueObjectsBezier1, uniqueObjectsBezier2)
-    return absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1
+    return absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1, fileName1, fileName2
 
 def MyForm(x, p):
     return x/10
+
 
 if not os.path.exists(filename1):
     infolog.error('ERROR:     {0} not found'.format(filename1))
@@ -2713,7 +2702,7 @@ if (filename1.endswith(".dxf") or filename1.endswith(".svg")) and (filename2.end
     ax.get_yaxis().set_major_formatter(
         mpl.ticker.FuncFormatter(MyForm))
 
-    absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1 = GetObjects(fileName1, fileName2)
+    absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1, fileName1, fileName2 = GetObjects(fileName1, fileName2)
     isOk = Files.WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1)
     if showPlot == True :
         plt.show()
@@ -2747,7 +2736,7 @@ elif not (filename1.endswith(".dxf") or filename1.endswith(".svg")) or (filename
                         mpl.ticker.FuncFormatter(MyForm))
 
                     fileName2 = filename2 + '/' + filenametmp
-                    absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1 = GetObjects(fileName1, fileName2)
+                    absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1, fileName1, fileName2 = GetObjects(fileName1, fileName2)
                     isOk = Files.WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1)
                     isOkCnt += isOk
                     if isOk == 0:
@@ -2759,12 +2748,21 @@ elif not (filename1.endswith(".dxf") or filename1.endswith(".svg")) or (filename
             if existsFile2 == False :
                 unfoundcnt += 1
                 unfoundPair.append(filename)
-                infolog.error('ERROR:     matching file not found for {0}'.format(filename))
+                resultlog.error('ERROR:     matching file not found for {0}'.format(filename))
         else :
             continue
 else :
-    infolog.error('ERROR:     given file types don´t match')
+    resultlog.error('ERROR:     given file types don´t match')
 
+
+if os.path.exists(fileName1 + "_" + fileName2 + ".log") :
+    os.remove(fileName1 + "_" + fileName2 + ".log")
+
+handler = logging.FileHandler(fileName1 + "_" + fileName2 + ".log")
+handler.setFormatter(logging.Formatter('%(message)s'))
+resultlog = logging.getLogger("resultlog")
+resultlog.setLevel(logging.INFO)
+resultlog.addHandler(handler)
 
 
 resultlog.info('Number of Matching files (max offset: {2} cm):      {0} / {1}'.format(isOkCnt, nr - 1, maxOffset))
@@ -2781,7 +2779,7 @@ if unfoundcnt > 0:
     cnt = 0
     for filename in unfoundPair :
         cnt += 1
-        resultlog.info('{0}    {1}'.format(cnt, filename))
+        resultlog.info('    {0}    {1}'.format(cnt, filename))
 
 stat = open(statFile, "r")
 textLines = stat.readlines()
@@ -2818,15 +2816,12 @@ else :
         tmp = "aa"
         while tmp != "cm" :
             tmp = textline[i] + tmp[0]
-            resultlog.info(tmp)
             i -= 1
         i -= 1
         while textline[i] != ' ':
             pastOffset = textline[i] + pastOffset
             i -= 1
-            resultlog.info(pastOffset)
         pastOffset = round(float(pastOffset), 2)
-        resultlog.info("{0}, {1}, {2}".format(pastOffset, maxOffset, pastOffset == maxOffset))
         if pastOffset == maxOffset :
             difOffset = False
         #stat.close()
