@@ -41,6 +41,26 @@ statInfolog.addHandler(handler)
 
 maxOffset = float(sys.argv[5].replace('maxOffset(cm)=', ''))
 
+if filename1.endswith(".dxf") :
+    fileName1 = filename1.replace(".dxf", '')
+elif filename1.endswith(".svg") :
+    fileName1 = filename1.replace(".svg", '')
+else :
+    fileName1 = filename1
+if filename2.endswith(".dxf") :
+    fileName2 = filename2.replace(".dxf", '')
+elif filename2.endswith(".svg") :
+    fileName2 = filename2.replace(".svg", '')
+else :
+    fileName2 = filename2
+if os.path.exists(fileName1 + "_" + fileName2 + ".log") :
+    os.remove(fileName1 + "_" + fileName2 + ".log")
+
+handler = logging.FileHandler(fileName1 + "_" + fileName2 + ".log")
+handler.setFormatter(logging.Formatter('%(message)s'))
+resultlog = logging.getLogger("resultlog")
+resultlog.setLevel(logging.INFO)
+resultlog.addHandler(handler)
 
 
 #logging.basicConfig(filename = "info.log", format = '%(message)s', level = logging.INFO)
@@ -2628,6 +2648,7 @@ class Files(ObjectComparison, Plot):
         return
 
     def WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1) :
+        resultlog.info('Max acceptable offset:   {0}\n'.format(maxOffset))
         resultlog.info('{0}--- {1}   {2}'.format(nr, fileName1, fileName2))
         if absMaxDist / 10 > maxOffset :
             resultlog.info('  Max Distance: {0} cm'.format(absMaxDist / 10))
@@ -2635,7 +2656,7 @@ class Files(ObjectComparison, Plot):
             resultlog.info('  Mismatching Objects Sum: {0}'.format(len(ObjectsBezier1)))
             return 0
         else:
-            resultlog.info('OK')
+            resultlog.info('    OK')
             return 1
 
 
@@ -2670,15 +2691,17 @@ def MyForm(x, p):
     return x/10
 
 
+
 if not os.path.exists(filename1):
-    infolog.error('ERROR:     {0} not found'.format(filename1))
+    resultlog.error('ERROR:     {0} not found'.format(filename1))
 if not os.path.exists(filename2):
-    infolog.error('ERROR:     {0} not found'.format(filename2))
+    resultlog.error('ERROR:     {0} not found'.format(filename2))
 
 
 nr = 1
 isOkCnt = 0
 mismatchFiles = {}
+unfoundcnt = 0
 
 if (filename1.endswith(".dxf") or filename1.endswith(".svg")) and (filename2.endswith(".dxf") or filename2.endswith(".svg")) :
     fileName1 = filename1
@@ -2704,14 +2727,21 @@ if (filename1.endswith(".dxf") or filename1.endswith(".svg")) and (filename2.end
 
     absMaxDist, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1, fileName1, fileName2 = GetObjects(fileName1, fileName2)
     isOk = Files.WriteLog(nr, fileName1, fileName2, absMaxDist, maxOffset, uniqueObjectsBezier1, uniqueObjectsBezier2, ObjectsBezier1)
+    isOkCnt += isOk
+    if isOk == 0:
+        mismatchFiles[(fileName1, fileName2)] = absMaxDist / 10
+    nr += 1
     if showPlot == True :
         plt.show()
 elif not (filename1.endswith(".dxf") or filename1.endswith(".svg")) or (filename2.endswith(".dxf") or filename2.endswith(".svg")) :
-    unfoundcnt = 0
     unfoundPair = []
     for filename in os.listdir(filename1) :
         if filename.endswith(".dxf") or filename.endswith(".svg") :
             fileName1 = filename1 + '/' + filename
+            if filename.endswith('.dxf') :
+                filename = filename.replace('.dxf', '')
+            if filename.endswith('.svg') :
+                filename = filename.replace('.svg', '')
             existsFile2 = False
             for filenametmp in os.listdir(filename2) :
                 if (filenametmp.endswith(".dxf") or filenametmp.endswith(".svg")) and (filenametmp.startswith(filename)):
@@ -2755,18 +2785,9 @@ else :
     resultlog.error('ERROR:     given file types don´t match')
 
 
-if os.path.exists(fileName1 + "_" + fileName2 + ".log") :
-    os.remove(fileName1 + "_" + fileName2 + ".log")
-
-handler = logging.FileHandler(fileName1 + "_" + fileName2 + ".log")
-handler.setFormatter(logging.Formatter('%(message)s'))
-resultlog = logging.getLogger("resultlog")
-resultlog.setLevel(logging.INFO)
-resultlog.addHandler(handler)
-
-
-resultlog.info('Number of Matching files (max offset: {2} cm):      {0} / {1}'.format(isOkCnt, nr - 1, maxOffset))
 if isOkCnt != nr - 1 :
+    resultlog.info('')
+    resultlog.info('Number of Matching files (max offset: {2} cm):      {0} / {1}'.format(isOkCnt, nr - 1, maxOffset))
     resultlog.info('')
     resultlog.info('files that don`t match:'.format(fileName2))
     cnt = 0
@@ -2788,7 +2809,7 @@ linecnt = len(textLines)
 if len(textLines) == 0:
     stat.close()
     stat = open(statFile, "w")
-    stat.write("{0} / {1} compared files match (max offset {2} cm)".format(isOkCnt, nr - 1, maxOffset))
+    stat.write("{0} / {1} compared files match (max offset {2} cm)  {3}% OK".format(isOkCnt, nr - 1, maxOffset, 100 / (nr - 1) * isOkCnt))
 else :
     stat.close()
     difOffset = True
@@ -2858,3 +2879,21 @@ else :
         else :
             print("\n{0}".format(textline.replace('\n', '')), end = '')
 stat.close()
+
+statInfo = open(statFile.replace('.log', '_INFO.log'), "r")
+textLines = statInfo.readlines()
+linecnt = len(textLines)
+nr = 0
+if linecnt > 0 :
+    i = 0
+    nr = ''
+    while textLines[-1][i] != '.' :
+        nr = nr + textLines[-1][i]
+        i += 1
+    nr = int(nr)
+statInfo.close()
+
+statInfo = open(statFile.replace('.log', '_INFO.log'), "a")
+if len(mismatchFiles) > 0 :
+    statInfo.write("-------------------------------------------------\n")
+    statInfo.write("{0}. {1}_{2}.log   {3} file pairs offsets exceeds maximum acceptable offset {4}cm\n".format(nr + 1, fileName1, fileName2, len(mismatchFiles), maxOffset))

@@ -1,3 +1,3 @@
-CurveComparison.py "testFiles" "testFiles1" showPlot=False "stat1.log" maxOffset(cm)=0.1
+CurveComparison.py "test21" "test22" showPlot=True "stat1.log" maxOffset(cm)=0.1
 
 pause

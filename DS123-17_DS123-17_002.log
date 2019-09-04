@@ -1,0 +1,11 @@
+Max acceptable offset:   0.1
+
+1--- DS123-17   DS123-17
+  Max Distance: 0.9880130565938894 cm
+  Unique Object Sum: 2 + 32
+  Mismatching Objects Sum: 10
+
+Number of Matching files (max offset: 0.1 cm):      0 / 1
+
+files that don`t match:
+1. max offset: 0.9880130565938894 cm   filename: ('DS123-17', 'DS123-17')

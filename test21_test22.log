@@ -1,0 +1,38 @@
+Max acceptable offset:   0.1
+
+1--- test21/DS123-17   test21/DS123-17
+  Max Distance: 0.9880130565938894 cm
+  Unique Object Sum: 2 + 32
+  Mismatching Objects Sum: 10
+Max acceptable offset:   0.1
+
+2--- test21/PG173-35   test21/PG173-35
+  Max Distance: 1.5309868850535593 cm
+  Unique Object Sum: 4 + 33
+  Mismatching Objects Sum: 7
+ERROR:     matching file not found for PGS31-25
+Max acceptable offset:   0.1
+
+3--- test21/SG160-14   test21/SG160-14
+  Max Distance: 1.0 cm
+  Unique Object Sum: 3 + 37
+  Mismatching Objects Sum: 9
+Max acceptable offset:   0.1
+
+4--- test21/SGS27-28   test21/SGS27-28
+  Max Distance: 2.002188569306098 cm
+  Unique Object Sum: 6 + 38
+  Mismatching Objects Sum: 7
+ERROR:     matching file not found for SKAIDRA
+
+Number of Matching files (max offset: 0.1 cm):      0 / 4
+
+files that don`t match:
+1. max offset: 0.9880130565938894 cm   filename: ('DS123-17', 'DS123-17_002.dxf')
+2. max offset: 1.5309868850535593 cm   filename: ('PG173-35', 'PG173-35_002.dxf')
+3. max offset: 1.0 cm   filename: ('SG160-14', 'SG160-14_002.dxf')
+4. max offset: 2.002188569306098 cm   filename: ('SGS27-28', 'SGS27-28_002.dxf')
+
+2 files (in test21) with unfound comparable file: 
+    1    PGS31-25
+    2    SKAIDRA
