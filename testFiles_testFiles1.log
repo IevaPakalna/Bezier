@@ -1,15 +1,47 @@
-1--- testFiles/DS123-17   testFiles/DS123-17
-  Max Distance: 2.598187271101912 cm
-  Unique Object Sum: 14 + 14
-  Mismatching Objects Sum: 1
-ERROR:     matching file not found for PG173-35.svg
-2--- testFiles/PGS31-25   testFiles/PGS31-25
-    OK
+D:\prog\testFiles       D:\prog\testFiles1
 
-Number of Matching files (max offset: 0.1 cm):      1 / 2
+Max acceptable offset:   0.1
+1--- D:\prog\testFiles\DS123-17.svg   testFiles1\DS123-17_002.dxf
+  Max Distance: 0.9880130565938894 cm
+  Unique Object Sum: 2 + 32
+  Mismatching Objects Sum: 10
+
+Max acceptable offset:   0.1
+2--- D:\prog\testFiles\PG173-35.svg   testFiles1\PG173-35_002.dxf
+  Max Distance: 1.5309772129479915 cm
+  Unique Object Sum: 4 + 33
+  Mismatching Objects Sum: 7
+
+Max acceptable offset:   0.1
+3--- D:\prog\testFiles\PGS31-25.svg   testFiles1\PGS31-25_002.dxf
+  Max Distance: 0.5713744999997813 cm
+  Unique Object Sum: 0 + 31
+  Mismatching Objects Sum: 12
+
+Max acceptable offset:   0.1
+4--- D:\prog\testFiles\SG160-14.svg   testFiles1\SG160-14_002.dxf
+  Max Distance: 1.0 cm
+  Unique Object Sum: 3 + 37
+  Mismatching Objects Sum: 9
+
+Max acceptable offset:   0.1
+5--- D:\prog\testFiles\SGS27-28.svg   testFiles1\SGS27-28_002.dxf
+  Max Distance: 2.002201018837769 cm
+  Unique Object Sum: 6 + 38
+  Mismatching Objects Sum: 7
+
+Max acceptable offset:   0.1
+6--- D:\prog\testFiles\SKAIDRA.svg   testFiles1\SKAIDRA_.dxf
+  Max Distance: 0.832709084854969 cm
+  Unique Object Sum: 4 + 18
+  Mismatching Objects Sum: 13
+
+Number of Matching files (max offset: 0.1 cm):      0 / 6
 
 files that don`t match:
-1. max offset: 2.598187271101912 cm   filename: ('DS123-17.svg', 'DS123-17.svg')
-
-1 files (in testFiles) with unfound comparable file: 
-    1    PG173-35.svg
+1. max offset: 0.9880130565938894 cm   files: ('D:\\prog\\testFiles\\DS123-17.svg', 'testFiles1\\DS123-17_002.dxf')
+2. max offset: 1.5309772129479915 cm   files: ('D:\\prog\\testFiles\\PG173-35.svg', 'testFiles1\\PG173-35_002.dxf')
+3. max offset: 0.5713744999997813 cm   files: ('D:\\prog\\testFiles\\PGS31-25.svg', 'testFiles1\\PGS31-25_002.dxf')
+4. max offset: 1.0 cm   files: ('D:\\prog\\testFiles\\SG160-14.svg', 'testFiles1\\SG160-14_002.dxf')
+5. max offset: 2.002201018837769 cm   files: ('D:\\prog\\testFiles\\SGS27-28.svg', 'testFiles1\\SGS27-28_002.dxf')
+6. max offset: 0.832709084854969 cm   files: ('D:\\prog\\testFiles\\SKAIDRA.svg', 'testFiles1\\SKAIDRA_.dxf')

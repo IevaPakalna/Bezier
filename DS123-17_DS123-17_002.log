@@ -1,11 +1,12 @@
-Max acceptable offset:   0.1
+D:\prog\DS123-17.svg       D:\prog\DS123-17_002.dxf
 
-1--- DS123-17   DS123-17
-  Max Distance: 0.9880130565938894 cm
-  Unique Object Sum: 2 + 32
-  Mismatching Objects Sum: 10
+Max acceptable offset:   0.1
+1--- D:\prog\DS123-17.svg   D:\prog\DS123-17_002.dxf
+  Max Distance: 0.5410069348021336 cm
+  Unique Object Sum: 0 + 35
+  Mismatching Objects Sum: 9
 
 Number of Matching files (max offset: 0.1 cm):      0 / 1
 
 files that don`t match:
-1. max offset: 0.9880130565938894 cm   filename: ('DS123-17', 'DS123-17')
+1. max offset: 0.5410069348021336 cm   files: ('D:\\prog\\DS123-17.svg', 'D:\\prog\\DS123-17_002.dxf')
